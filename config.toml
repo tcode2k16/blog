@@ -1,5 +1,7 @@
 # Site settings
-baseurl = "http://localhost:8000/blog/"
+baseurl = "https://tcode2k16.github.io/blog/"
+publishDir = "docs"
+
 languageCode = "en"
 title = "Alan's Blog"
 theme = "hugo-theme-cactus-plus"
