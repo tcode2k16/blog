@@ -8,7 +8,7 @@
 		<meta name="author" content="Alan Chang">
 		<meta name="description" content="a random blog about cybersecurity and programming">
 		<meta name="generator" content="Hugo 0.40.3" />
-		<title>First Post &middot; Alan&#39;s Blog</title>
+		<title>SHA1 Collision &middot; Alan&#39;s Blog</title>
 		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
 		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
 		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
@@ -46,17 +46,21 @@
             <article>
                 <header>
                     <h1>
-                        First Post
+                        SHA1 Collision
                     </h1>
                     <h2 class="headline">
-                    May 14, 2018 14:35
-                    · 38 words
+                    May 16, 2018 11:32
+                    · 112 words
                     · 1 minute read
                       <span class="tags">
                       
                       
                           
                               <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/hash">hash</a>
                           
                       
                       
@@ -72,7 +76,9 @@
 <ul>
 <li>
 <ul>
-<li><a href="#lorem-ipsum-dolor">Lorem ipsum dolor.</a></li>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#research">Research</a></li>
+<li><a href="#result">Result</a></li>
 </ul></li>
 </ul></li>
 </ul>
@@ -83,9 +89,17 @@
                 <section id="post-body">
                     
 
-<h3 id="lorem-ipsum-dolor">Lorem ipsum dolor.</h3>
+<h3 id="introduction">Introduction</h3>
 
-<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea dicta corporis ad inventore itaque impedit dolor atque amet exercitationem! Veniam qui voluptas maiores vel laudantium necessitatibus, velit ducimus! Iste hic facere, accusamus fugiat enim facilis.</p>
+<p>When I was doing the <a href="https://www.oooverflow.io/">DEF CON CTF Qualifier</a> last weekend, I came across an interesting question where you need to create two pdf files with the same SHA1 hash.</p>
+
+<h3 id="research">Research</h3>
+
+<p>I know SHA1 hash was already broken when google blogged about <a href="https://security.googleblog.com/2017/02/announcing-first-sha1-collision.html">creating the first SHA1 collision</a>, but I was not sure that I can reproduce the process with limited hardware.</p>
+
+<h3 id="result">Result</h3>
+
+<p>In the end, I came across <a href="http://alf.nu/SHA1">this website</a> that is able to generate two PDF files with the same SHA1 hash using two JPG images based on <a href="https://shattered.io/">this paper</a>. This helps demonstrate how SHA1 is no longer secure and developers should start using other hashing algorithms such as SHA256</p>
 
                 </section>
             </article>
