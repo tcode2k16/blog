@@ -4,12 +4,13 @@ title = "About"
 hidden = true
 +++
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ipsa ullam earum dolorum! Sed, perspiciatis.
+### About me
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+I am a high school student in Singapore who is interested in programming and cyber security.
+
 
 ***
 
-### Lorem ipsum dolor.
+### About this blog
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ea dicta corporis ad inventore itaque impedit dolor atque amet exercitationem! Veniam qui voluptas maiores vel laudantium necessitatibus, velit ducimus! Iste hic facere, accusamus fugiat enim facilis.
+This blog will be used to post CTF writeups, random learnings, and project updates.
