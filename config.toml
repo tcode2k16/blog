@@ -5,7 +5,7 @@ publishDir = "docs"
 languageCode = "en"
 title = "Alan's Blog"
 theme = "hugo-theme-cactus-plus"
-googleAnalytics = "your_google_analytics_id"
+googleAnalytics = "UA-88069322-2"
 # Set the value to true if your site include CJK (Chinese, Japanese, and Korean languages) characters
 hasCJKLanguage = false
 
@@ -29,7 +29,7 @@ hasCJKLanguage = false
 	useDescriptionReplaceSummary = true
 
 
-	enableGoogleAnalytics = false
+	enableGoogleAnalytics = true
 	enableBaiduAnalytics = false
 	# Set the value to your baidu analysis code if you want to use baidu analytics
 	baiduAnalytics = 'your_baidu_analysis_code'
