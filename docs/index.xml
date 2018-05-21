@@ -6,10 +6,20 @@
     <description>Recent content on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Fri, 18 May 2018 11:28:59 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 19 May 2018 13:05:55 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Crossctf 2018 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/crossctf-2018-writeup/</link>
+      <pubDate>Sat, 19 May 2018 13:05:55 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/crossctf-2018-writeup/</guid>
+      <description>QuirkyScript 1 Problem var flag = require(&amp;quot;./flag.js&amp;quot;); var express = require(&#39;express&#39;) var app = express() app.get(&#39;/flag&#39;, function (req, res) { if (req.query.first) { if (req.query.first.length == 8 &amp;amp;&amp;amp; req.query.first == &amp;quot;,,,,,,,&amp;quot; ) { res.send(flag.flag); return; } } res.send(&amp;quot;Try to solve this.&amp;quot;); }); app.listen(31337)  Solution According to the express.js docs, req.query.* can be an array.
+Also, the code used == instead of ===; therefore, values of different types can be equal to each other and types are converted according to this:</description>
+    </item>
     
     <item>
       <title>Vagrant virtual machine for CTF competitions</title>

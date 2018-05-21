@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.40.3" />
+		<title>Crossctf 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        Crossctf 2018 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    May 19, 2018 13:05
+                    · 409 words
+                    · 2 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#quirkyscript-1">QuirkyScript 1</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#quirkyscript-2">QuirkyScript 2</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#quirkyscript-3">QuirkyScript 3</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#quirkyscript-4">QuirkyScript 4</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#quirkyscript-5">QuirkyScript 5</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="quirkyscript-1">QuirkyScript 1</h1>
+
+<h2 id="problem">Problem</h2>
+
+<pre><code class="language-javascript">var flag = require(&quot;./flag.js&quot;);
+var express = require('express')
+var app = express()
+
+app.get('/flag', function (req, res) {
+    if (req.query.first) {
+        if (req.query.first.length == 8 &amp;&amp; req.query.first == &quot;,,,,,,,&quot; ) {
+            res.send(flag.flag);
+            return;
+        }
+    }
+    res.send(&quot;Try to solve this.&quot;);
+});
+
+app.listen(31337)
+</code></pre>
+
+<h2 id="solution">Solution</h2>
+
+<p>According to the <a href="https://expressjs.com/en/api.html#req.query">express.js docs</a>, <code>req.query.*</code> can be an array.</p>
+
+<p>Also, the code used <code>==</code> instead of <code>===</code>; therefore, values of different types can be equal to each other and types are converted according to <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Equality_comparisons_and_sameness">this</a>:</p>
+
+<p><img src="/blog/images/crossctf-2018-writeup/equal-table.png" alt="equal table" /></p>
+
+<p>So, when <code>req.query.first = ['','','','','','','','']</code>, it has a length of <code>8</code> and equals to string <code>',,,,,,,'</code>.</p>
+
+<p>Final payload: <code>http://ctf.pwn.sg:8081/flag?first[0]=&amp;first[1]=&amp;first[2]=&amp;first[3]=&amp;first[4]=&amp;first[5]=&amp;first[6]=&amp;first[7]=&amp;</code></p>
+
+<p>Flag: <code>CrossCTF{C0mm4s_4ll_th3_w4y_t0_th3_fl4g}</code></p>
+
+<h1 id="quirkyscript-2">QuirkyScript 2</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<pre><code class="language-javascript">var flag = require(&quot;./flag.js&quot;);
+var express = require('express')
+var app = express()
+app.get('/flag', function (req, res) {
+  if (req.query.second) {
+    if (req.query.second != &quot;1&quot; &amp;&amp; req.query.second.length == 10 &amp;&amp; req.query.second == true) {
+      res.send(flag.flag);
+      return;
+    }
+  }
+  res.send(&quot;Try to solve this.&quot;);
+});
+app.listen(31337)
+</code></pre>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>If <code>req.query.second</code> equals <code>'1'</code> plus nine spaces, the condition with be fulfilled.</p>
+
+<p>Final payload: <code>http://ctf.pwn.sg:8082/flag?second=1%20%20%20%20%20%20%20%20%20&amp;</code></p>
+
+<p>Flag: <code>CrossCTF{M4ny_w4ys_t0_mak3_4_numb3r}</code></p>
+
+<h1 id="quirkyscript-3">QuirkyScript 3</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<pre><code class="language-javascript">var flag = require(&quot;./flag.js&quot;);
+var express = require('express')
+var app = express()
+
+app.get('/flag', function (req, res) {
+    if (req.query.third) {
+        if (Array.isArray(req.query.third)) {
+            third = req.query.third;
+            third_sorted = req.query.third.sort();
+            if (Number.parseInt(third[0]) &gt; Number.parseInt(third[1]) &amp;&amp; third_sorted[0] == third[0] &amp;&amp; third_sorted[1] == third[1]) {
+                res.send(flag.flag);
+                return;
+            }
+        }
+    }
+    res.send(&quot;Try to solve this.&quot;);
+});
+
+app.listen(31337)
+</code></pre>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>To solve this problem, you need to know how <code>Array.prototype.sort()</code> works.</p>
+
+<p>According to the <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort">specs</a>: <code>The default sort order is according to string Unicode code points</code>; therefore, I just picked <code>[ '110', '13' ]</code> which works in this case.</p>
+
+<p>Final payload: <code>http://ctf.pwn.sg:8083/flag?third[0]=110&amp;third[1]=13</code></p>
+
+<p>Flag: <code>CrossCTF{th4t_r0ck3t_1s_hug3}</code></p>
+
+<h1 id="quirkyscript-4">QuirkyScript 4</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<pre><code class="language-javascript">var flag = require(&quot;./flag.js&quot;);
+var express = require('express')
+var app = express()
+app.get('/flag', function (req, res) {
+  if (req.query.fourth) {
+    if (req.query.fourth == 1 &amp;&amp; req.query.fourth.indexOf(&quot;1&quot;) == -1) {
+      res.send(flag.flag);
+      return;
+    }
+  }
+  res.send(&quot;Try to solve this.&quot;);
+});
+app.listen(31337)
+</code></pre>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>You can have <code>[['1']]</code> which meets the requirements.</p>
+
+<p>Final payload: <code>http://ctf.pwn.sg:8084/flag?fourth[0][0]=1</code></p>
+
+<p>Flag: <code>CrossCTF{1m_g0ing_hungry}</code></p>
+
+<h1 id="quirkyscript-5">QuirkyScript 5</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<pre><code class="language-javascript">var flag = require(&quot;./flag.js&quot;);
+var express = require('express')
+var app = express()
+app.get('/flag', function (req, res) {
+  var re = new RegExp('^I_AM_ELEET_HAX0R$', 'g');
+  if (re.test(req.query.fifth)) {
+    if (req.query.fifth === req.query.six &amp;&amp; !re.test(req.query.six)) {
+      res.send(flag.flag);
+    }
+  }
+  res.send(&quot;Try to solve this.&quot;);
+});
+app.listen(31337)
+</code></pre>
+
+<h2 id="solution-4">Solution</h2>
+
+<pre><code class="language-javascript">&gt; var re = new RegExp('^I_AM_ELEET_HAX0R$', 'g');
+undefined
+&gt; let a = 'I_AM_ELEET_HAX0R'
+undefined
+&gt; let b = 'I_AM_ELEET_HAX0R'
+undefined
+&gt; re.test(a)
+true
+&gt; re.test(b)
+false
+</code></pre>
+
+<p>It is just javascript weirdness with it comes to regexp.</p>
+
+<p>Final payload: <code>http://ctf.pwn.sg:8085/flag?fifth=I_AM_ELEET_HAX0R&amp;six=I_AM_ELEET_HAX0R</code></p>
+
+<p>Flag: <code>CrossCTF{1_am_n1k0las_ray_zhizihizhao}</code></p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-88069322-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
