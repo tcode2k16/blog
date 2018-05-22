@@ -468,3 +468,7 @@ Notes:
 * `strcmp` returns the next char code or difference
 
 Flag: `CrossCTF{I_just_want_someone_to_say_to_me}`
+
+# Other writeups
+
+[nush-osi-layer-8](https://github.com/nush-osi-layer-8/writeups/tree/master/crossctf-quals2018)
