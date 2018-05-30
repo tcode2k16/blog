@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://tcode2k16.github.io/blog/posts/barcode-scanner/</loc>
+    <lastmod>2018-05-30T08:03:41+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://tcode2k16.github.io/blog/posts/spacelab-launch/</loc>
     <lastmod>2018-05-22T10:17:10+08:00</lastmod>
   </url>
@@ -34,7 +39,7 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/</loc>
-    <lastmod>2018-05-22T10:17:10+08:00</lastmod>
+    <lastmod>2018-05-30T08:03:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -68,6 +73,12 @@
   </url>
   
   <url>
+    <loc>https://tcode2k16.github.io/blog/tags/javascript/</loc>
+    <lastmod>2018-05-30T08:03:41+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>https://tcode2k16.github.io/blog/tags/nasa/</loc>
     <lastmod>2018-05-22T10:17:10+08:00</lastmod>
     <priority>0</priority>
@@ -75,19 +86,19 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/posts/</loc>
-    <lastmod>2018-05-22T10:17:10+08:00</lastmod>
+    <lastmod>2018-05-30T08:03:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/project/</loc>
-    <lastmod>2018-05-22T10:17:10+08:00</lastmod>
+    <lastmod>2018-05-30T08:03:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/school/</loc>
-    <lastmod>2018-05-22T10:17:10+08:00</lastmod>
+    <lastmod>2018-05-30T08:03:41+08:00</lastmod>
     <priority>0</priority>
   </url>
   

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.40.3" />
+		<title>Barcode Scanner &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        Barcode Scanner
+                    </h1>
+                    <h2 class="headline">
+                    May 30, 2018 08:03
+                    · 387 words
+                    · 2 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/project">project</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/school">school</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/javascript">javascript</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+<li><a href="#implementation">Implementation</a></li>
+<li><a href="#future">Future</a></li>
+<li><a href="#end">End</a></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+
+<figure>
+    
+        <img src="/blog/barcode-scanner/dev.png" alt="Development environment with vscode and iTerm" />
+    
+    
+    <figcaption>
+        <p>
+        Development environment with vscode and iTerm
+        
+            
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<h1 id="problem">Problem</h1>
+
+<p>There is a used-book sale program at our school, and currently, it is difficult to find books people want as books are not indexed and sorted properly. The maintainers all mentioned the experience of being asked wherever a specific book is within the large collection of books.</p>
+
+<h1 id="solution">Solution</h1>
+
+<p>I attempt to make an efficient system for indexing all the books and encourage more people to buy books they want from the book sale.</p>
+
+<p>One of the major problems is time. The book sale program only has a limit number of volunteers that come in twice a month meaning that human input is not a viable solution.</p>
+
+<p>I came up with the idea of scanning the barcode on each book and use that to obtain detailed information for each book. By doing a little bit of research, I learned about <a href="https://en.wikipedia.org/wiki/International_Standard_Book_Number">ISBN</a> or <em>International Standard Book Number</em> which is unique for each book.</p>
+
+<p>Here are some fun facts about ISBN:</p>
+
+<ul>
+<li>It contains 13 digits (formerly 10)</li>
+<li>It always starts with <code>978</code></li>
+<li>The 4th digit indicates country
+
+<ul>
+<li>0 or 1 for English-speaking countries</li>
+<li>2 for French-speaking countries</li>
+<li>3 for German-speaking countries</li>
+<li>4 for Japan</li>
+<li>5 for Russian-speaking countries</li>
+<li>7 for People&rsquo;s Republic of China</li>
+</ul></li>
+</ul>
+
+<p>Using the barcode scanner, I can then search up the ISBN number in an online database. I used google books API in this case. That will then give me the title, description, author and etc about a certain book that is being scanned.</p>
+
+<h1 id="implementation">Implementation</h1>
+
+<p>I made the web app using <a href="https://vuejs.org/">vue.js</a> for the UI and <a href="https://serratus.github.io/quaggaJS/">quaggaJS</a> for the barcode scanning part. The app will currently scan a barcode located on a book and then give you the title and cover image of the book. I decided to go with a web app as it avoids the process of going through an app store, and it also makes the app cross-platform at the same time.</p>
+
+<blockquote>
+<p>Side note: It is still a pain to use <code>getUserMedia</code> to access the camera inside the browser (IOS 10 doesn&rsquo;t have support).</p>
+</blockquote>
+
+
+<figure>
+    
+        <img src="/blog/barcode-scanner/caniuse.png" />
+    
+    
+    <figcaption>
+        <p>
+        
+        
+            From caniuse.com
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<h1 id="future">Future</h1>
+
+<p>I am planning on a backend database that will take the information and store them. That will then allow me to implement functionalities such as: search, wishing list, and more.</p>
+
+<h1 id="end">End</h1>
+
+<p><strong><a href="https://tcode2k16.github.io/book-scanner/">Here</a></strong> is the web app. (It is still WIP)</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-88069322-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

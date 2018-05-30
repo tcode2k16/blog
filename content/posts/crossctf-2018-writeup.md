@@ -472,3 +472,5 @@ Flag: `CrossCTF{I_just_want_someone_to_say_to_me}`
 # Other writeups
 
 [nush-osi-layer-8](https://github.com/nush-osi-layer-8/writeups/tree/master/crossctf-quals2018)
+
+[CrossCTF 2017 · LFlare's Writeups](https://writeups.amosng.com/2018/crossctf_2018/)

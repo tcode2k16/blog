@@ -6,10 +6,20 @@
     <description>Recent content in Posts on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 22 May 2018 10:17:10 +0800</lastBuildDate>
+    <lastBuildDate>Wed, 30 May 2018 08:03:41 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Barcode Scanner</title>
+      <link>https://tcode2k16.github.io/blog/posts/barcode-scanner/</link>
+      <pubDate>Wed, 30 May 2018 08:03:41 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/barcode-scanner/</guid>
+      <description>Development environment with vscode and iTerm   Problem There is a used-book sale program at our school, and currently, it is difficult to find books people want as books are not indexed and sorted properly. The maintainers all mentioned the experience of being asked wherever a specific book is within the large collection of books.
+Solution I attempt to make an efficient system for indexing all the books and encourage more people to buy books they want from the book sale.</description>
+    </item>
     
     <item>
       <title>SpaceLab Launch</title>
