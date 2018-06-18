@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Vagrant on Alan&#39;s Blog</title>
-    <link>https://tcode2k16.github.io/blog/tags/vagrant/</link>
+    <link>https://tcode2k16.github.io/tags/vagrant/</link>
     <description>Recent content in Vagrant on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Fri, 18 May 2018 11:28:59 +0800</lastBuildDate>
     
-	<atom:link href="https://tcode2k16.github.io/blog/tags/vagrant/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://tcode2k16.github.io/tags/vagrant/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Vagrant virtual machine for CTF competitions</title>
-      <link>https://tcode2k16.github.io/blog/posts/vagrant-vm/</link>
+      <link>https://tcode2k16.github.io/posts/vagrant-vm/</link>
       <pubDate>Fri, 18 May 2018 11:28:59 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/blog/posts/vagrant-vm/</guid>
+      <guid>https://tcode2k16.github.io/posts/vagrant-vm/</guid>
       <description>Introduction I am running a cyber security club at my school. One of the club activities is to learn binary exploitation, most of my fellow club members don&amp;rsquo;t have linux installed on their computers and have little experience installing all the needed tools.
 To make binary exploitation more accessible, I created this vagrant file that will setup all the necessary tools within a ubuntu virtual machine.
 Method I picked vagrant over docker because of the follow reasons:</description>

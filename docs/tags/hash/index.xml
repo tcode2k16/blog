@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Hash on Alan&#39;s Blog</title>
-    <link>https://tcode2k16.github.io/blog/tags/hash/</link>
+    <link>https://tcode2k16.github.io/tags/hash/</link>
     <description>Recent content in Hash on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 16 May 2018 11:32:16 +0800</lastBuildDate>
     
-	<atom:link href="https://tcode2k16.github.io/blog/tags/hash/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://tcode2k16.github.io/tags/hash/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>SHA1 Collision</title>
-      <link>https://tcode2k16.github.io/blog/posts/sha1-collision/</link>
+      <link>https://tcode2k16.github.io/posts/sha1-collision/</link>
       <pubDate>Wed, 16 May 2018 11:32:16 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/blog/posts/sha1-collision/</guid>
+      <guid>https://tcode2k16.github.io/posts/sha1-collision/</guid>
       <description>Introduction When I was doing the DEF CON CTF Qualifier last weekend, I came across an interesting question where you need to create two pdf files with the same SHA1 hash.
 Research I know SHA1 hash was already broken when google blogged about creating the first SHA1 collision, but I was not sure that I can reproduce the process with limited hardware.
 Result In the end, I came across this website that is able to generate two PDF files with the same SHA1 hash using two JPG images based on this paper.</description>

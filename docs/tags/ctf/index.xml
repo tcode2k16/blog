@@ -2,41 +2,41 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Ctf on Alan&#39;s Blog</title>
-    <link>https://tcode2k16.github.io/blog/tags/ctf/</link>
+    <link>https://tcode2k16.github.io/tags/ctf/</link>
     <description>Recent content in Ctf on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 12 Jun 2018 22:32:57 +0800</lastBuildDate>
     
-	<atom:link href="https://tcode2k16.github.io/blog/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://tcode2k16.github.io/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Microcorruption Writeup</title>
-      <link>https://tcode2k16.github.io/blog/posts/microcorruption-writeup/</link>
+      <link>https://tcode2k16.github.io/posts/microcorruption-writeup/</link>
       <pubDate>Tue, 12 Jun 2018 22:32:57 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/blog/posts/microcorruption-writeup/</guid>
+      <guid>https://tcode2k16.github.io/posts/microcorruption-writeup/</guid>
       <description>New Orleans - 10pts Here is the code for checking the password:
 44bc: 0e43 clr	r14 44be: 0d4f mov	r15, r13 44c0: 0d5e add	r14, r13 44c2: ee9d 0024 cmp.b	@r13, 0x2400(r14) 44c6: 0520 jne	#0x44d2 &amp;lt;check_password+0x16&amp;gt; 44c8: 1e53 inc	r14 44ca: 3e92 cmp	#0x8, r14 44cc: f823 jne	#0x44be &amp;lt;check_password+0x2&amp;gt; 44ce: 1f43 mov	#0x1, r15 44d0: 3041 ret 44d2: 0f43 clr	r15 44d4: 3041 ret  It basically takes each byte and perform cmp.</description>
     </item>
     
     <item>
       <title>Crossctf Qualifier 2018 Writeup</title>
-      <link>https://tcode2k16.github.io/blog/posts/crossctf-2018-writeup/</link>
+      <link>https://tcode2k16.github.io/posts/crossctf-2018-writeup/</link>
       <pubDate>Sat, 19 May 2018 13:05:55 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/blog/posts/crossctf-2018-writeup/</guid>
+      <guid>https://tcode2k16.github.io/posts/crossctf-2018-writeup/</guid>
       <description>QuirkyScript 1 Problem var flag = require(&amp;quot;./flag.js&amp;quot;); var express = require(&#39;express&#39;) var app = express() app.get(&#39;/flag&#39;, function (req, res) { if (req.query.first) { if (req.query.first.length == 8 &amp;amp;&amp;amp; req.query.first == &amp;quot;,,,,,,,&amp;quot; ) { res.send(flag.flag); return; } } res.send(&amp;quot;Try to solve this.&amp;quot;); }); app.listen(31337)  Solution According to the express.js docs, req.query.* can be an array.
 Also, the code used == instead of ===; therefore, values of different types can be equal to each other and types are converted according to this:</description>
     </item>
     
     <item>
       <title>Vagrant virtual machine for CTF competitions</title>
-      <link>https://tcode2k16.github.io/blog/posts/vagrant-vm/</link>
+      <link>https://tcode2k16.github.io/posts/vagrant-vm/</link>
       <pubDate>Fri, 18 May 2018 11:28:59 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/blog/posts/vagrant-vm/</guid>
+      <guid>https://tcode2k16.github.io/posts/vagrant-vm/</guid>
       <description>Introduction I am running a cyber security club at my school. One of the club activities is to learn binary exploitation, most of my fellow club members don&amp;rsquo;t have linux installed on their computers and have little experience installing all the needed tools.
 To make binary exploitation more accessible, I created this vagrant file that will setup all the necessary tools within a ubuntu virtual machine.
 Method I picked vagrant over docker because of the follow reasons:</description>
@@ -44,10 +44,10 @@ Method I picked vagrant over docker because of the follow reasons:</description>
     
     <item>
       <title>SHA1 Collision</title>
-      <link>https://tcode2k16.github.io/blog/posts/sha1-collision/</link>
+      <link>https://tcode2k16.github.io/posts/sha1-collision/</link>
       <pubDate>Wed, 16 May 2018 11:32:16 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/blog/posts/sha1-collision/</guid>
+      <guid>https://tcode2k16.github.io/posts/sha1-collision/</guid>
       <description>Introduction When I was doing the DEF CON CTF Qualifier last weekend, I came across an interesting question where you need to create two pdf files with the same SHA1 hash.
 Research I know SHA1 hash was already broken when google blogged about creating the first SHA1 collision, but I was not sure that I can reproduce the process with limited hardware.
 Result In the end, I came across this website that is able to generate two PDF files with the same SHA1 hash using two JPG images based on this paper.</description>
