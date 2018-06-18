@@ -2,50 +2,50 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>School on Alan&#39;s Blog</title>
-    <link>https://tcode2k16.github.io/tags/school/</link>
+    <link>https://tcode2k16.github.io/blog/tags/school/</link>
     <description>Recent content in School on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 30 May 2018 11:15:48 +0800</lastBuildDate>
     
-	<atom:link href="https://tcode2k16.github.io/tags/school/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://tcode2k16.github.io/blog/tags/school/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>DC Generator Simulation</title>
-      <link>https://tcode2k16.github.io/posts/dc-generator-simulation/</link>
+      <link>https://tcode2k16.github.io/blog/posts/dc-generator-simulation/</link>
       <pubDate>Wed, 30 May 2018 11:15:48 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/posts/dc-generator-simulation/</guid>
+      <guid>https://tcode2k16.github.io/blog/posts/dc-generator-simulation/</guid>
       <description>final simulation   Here is the link to the simulation (use control key + mouse to move around).</description>
     </item>
     
     <item>
       <title>Barcode Scanner</title>
-      <link>https://tcode2k16.github.io/posts/barcode-scanner/</link>
+      <link>https://tcode2k16.github.io/blog/posts/barcode-scanner/</link>
       <pubDate>Wed, 30 May 2018 08:03:41 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/posts/barcode-scanner/</guid>
+      <guid>https://tcode2k16.github.io/blog/posts/barcode-scanner/</guid>
       <description>Development environment with vscode and iTerm   Problem There is a used-book sale program at our school, and currently, it is difficult to find books people want as books are not indexed and sorted properly. The maintainers all mentioned the experience of being asked wherever a specific book is within the large collection of books.
 Solution I attempt to make an efficient system for indexing all the books and encourage more people to buy books they want from the book sale.</description>
     </item>
     
     <item>
       <title>SpaceLab Launch</title>
-      <link>https://tcode2k16.github.io/posts/spacelab-launch/</link>
+      <link>https://tcode2k16.github.io/blog/posts/spacelab-launch/</link>
       <pubDate>Tue, 22 May 2018 10:17:10 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/posts/spacelab-launch/</guid>
+      <guid>https://tcode2k16.github.io/blog/posts/spacelab-launch/</guid>
       <description>Photo Credit: NASA/Aubrey Gemignani   The project SpaceLab is a school program at the Singapore American School. The program allows students to create a space experiment that will be sent to the international space station for one month.
 This is the second year of the program. A team of eleven students including me created a experiment that seeks to test the effect of micro-gravity on electro-plating copper.</description>
     </item>
     
     <item>
       <title>Automated School Calendar</title>
-      <link>https://tcode2k16.github.io/posts/school-calendar/</link>
+      <link>https://tcode2k16.github.io/blog/posts/school-calendar/</link>
       <pubDate>Thu, 17 May 2018 08:45:01 +0800</pubDate>
       
-      <guid>https://tcode2k16.github.io/posts/school-calendar/</guid>
+      <guid>https://tcode2k16.github.io/blog/posts/school-calendar/</guid>
       <description>Introduction I have finally got the chance to experiment with google apps script, and decided to use it to make my school life easier.
 I used google apps script along with the calendar api to create a web app that can auto generate my class schedule based on another calendar provided by my school.
 

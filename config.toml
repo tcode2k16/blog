@@ -1,5 +1,5 @@
 # Site settings
-baseurl = "https://tcode2k16.github.io/"
+baseurl = "https://tcode2k16.github.io/blog/"
 publishDir = "docs"
 
 languageCode = "en"
