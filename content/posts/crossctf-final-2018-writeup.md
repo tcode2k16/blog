@@ -501,3 +501,5 @@ Flag: `Dont_h@te_tHe_aUth0r_hat3_d@_gam3`
 [ahboon/Crossctf2018](https://github.com/ahboon/Crossctf2018/tree/master/Writeups)
 
 [NUSGreyhats/crossctf-2018-challenges](https://github.com/NUSGreyhats/crossctf-2018-challenges)
+
+[nushosilayer8/writeups](https://github.com/nushosilayer8/writeups/tree/master/writeups/crossctf-finals2018)

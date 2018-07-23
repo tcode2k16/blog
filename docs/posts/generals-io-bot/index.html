@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.40.3" />
+		<title>Generals.io game bot &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        Generals.io game bot
+                    </h1>
+                    <h2 class="headline">
+                    Jul 23, 2018 16:55
+                    · 657 words
+                    · 4 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/project">project</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/javascript">javascript</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/google">google</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/nodejs">nodejs</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/chrome">chrome</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#what-is-generals-io">What is Generals.io?</a></li>
+<li><a href="#idea-number-1-let-s-build-a-chrome-extension">Idea number 1: let&rsquo;s build a chrome extension!</a></li>
+<li><a href="#idea-number-2-let-s-build-a-game-helper">Idea number 2: let&rsquo;s build a game helper!</a></li>
+<li><a href="#idea-number-3-let-s-build-a-bot">Idea number 3: let&rsquo;s build a bot!</a></li>
+<li><a href="#extra">Extra</a></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+
+<figure>
+    
+        <img src="/blog/generals-io-bot/replay.gif" />
+    
+    
+    <figcaption>
+        <p>
+        
+        
+            Credit: dev.generals.io
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<h1 id="what-is-generals-io">What is Generals.io?</h1>
+
+<p>Generals.io is a turn-based strategy game that can be played in the browser. Each player starts out with one grid on a large map that is called the general. The goal of the game is to expand and eliminate other players&rsquo; generals. Once a player&rsquo;s general gets taken, the player loses the game, and in the end, the last player standing wins the game.</p>
+
+<h1 id="idea-number-1-let-s-build-a-chrome-extension">Idea number 1: let&rsquo;s build a chrome extension!</h1>
+
+<p>One day when I was playing the game, I found myself repeating similar actions over and over. These actions include expanding my territory and conquering neighboring lands. I wondered if I could write a sweet chrome extension to map these actions to some special shortcuts which helps me gain an advantage over my opponent.</p>
+
+<p>After three hours of tinkering, I managed to accomplish two goals. First, my extension was able to read the map and determine different types of cells such as: friendly troops, enemy troops, mountains and etc. Second, my extension can then formulate game moves based on the current map and my intended action. I was confident that the extension can be finished soon, and the only feature left to implement was to simulation human clicks. <em>How hard can that be?</em></p>
+
+<p><strong>Very!</strong> As it turned out.</p>
+
+<p>To prevent malicious websites from faking clicks, the major browsers including firefox and chrome have made it now nearly impossible to simulate multiple clicks at once. I tried all kinds of methods: emitting all kinds of different events, using browser specific APIs, and <strong>even jquery</strong>! Yes, I tried <strong>jquery</strong>! None of these things worked.</p>
+
+<p>After a total of six hours of development, this idea turned out to be not feasible; however, a new idea popped in my mind.</p>
+
+<h1 id="idea-number-2-let-s-build-a-game-helper">Idea number 2: let&rsquo;s build a game helper!</h1>
+
+<p>If the <strong>website</strong> can&rsquo;t simulate a click, the <strong>browser</strong> must be able to do it. I fired up nodejs and installed <a href="https://github.com/GoogleChrome/puppeteer">puppeteer</a> &ndash; a nodejs API for controlling headless chrome.</p>
+
+<pre><code class="language-bash">&gt; npm init
+&gt; npm i puppeteer
+</code></pre>
+
+<p>The new idea was to script the browser instead of the website and split my program into two parts:</p>
+
+<ul>
+<li><p>an injected script that runs in the website that is in charge of all the logic (reading the map and coming up with the moves)</p></li>
+
+<li><p>a nodejs script that launches chrome, clicks all the game buttons, injects the script above, and exposes an API that handles all the clicking</p></li>
+</ul>
+
+<p>Two more hours flew by, and finally, I created a general.io helper that can preform tasks for me. Now, with the click of a key, my game helper will plan and execute available game moves for me.</p>
+
+
+<figure>
+    
+        <img src="/blog/generals-io-bot/helper.gif" />
+    
+    
+    <figcaption>
+        <p>
+        
+        
+            game helper in action
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<h1 id="idea-number-3-let-s-build-a-bot">Idea number 3: let&rsquo;s build a bot!</h1>
+
+<p>Well, after I built the game helper, I realized that I was very close to building a bot. Using the game helper shortcuts, I was able to play a game without using any regular controls, and if I build a bot just to click the buttons, I would have a bot!</p>
+
+<p>That is exactly what I did. Combining simple behaviors such as <em>expand</em>, <em>attack</em>, and <em>defend</em>, I was able to build a bot within an hour.</p>
+
+<p>But we can do even better! <strong>What is the fun of building one bot, if we can have eight bots fighting each other?</strong></p>
+
+<p>Here I present you <a href="http://generals.io/replays/B5coA8nXX">the replay of eight bots fighting each other</a>!</p>
+
+<blockquote>
+<p>Just as a bonus, here is <a href="http://generals.io/replays/HdAVQDnm7">two of my bots defeating human</a></p>
+</blockquote>
+
+<h1 id="extra">Extra</h1>
+
+<p>Here are some other things I learned about puppeteer in the process of building this project:</p>
+
+<ul>
+<li><code>browser.createIncognitoBrowserContext</code> is helpful in creating multiple chrome sessions where each have its own local storage eliminating the need for launching more than one chrome instance.</li>
+<li>The <code>pageerror</code> and <code>console</code> events of the <code>page</code> object are useful in debugging injected javascript.</li>
+<li><code>page.exposeFunction</code> allows you to expose nodejs functions to website context.</li>
+</ul>
+
+<p>If you are interested in the code, you can find it on <a href="https://github.com/tcode2k16/generals_helper">github</a>.</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-88069322-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>
