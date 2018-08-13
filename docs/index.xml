@@ -6,10 +6,22 @@
     <description>Recent content on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 23 Jul 2018 16:55:46 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 11 Aug 2018 11:52:46 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>TJCTF 2018 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/tjctf-2018-writeup/</link>
+      <pubDate>Sat, 11 Aug 2018 11:52:46 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/tjctf-2018-writeup/</guid>
+      <description>Secure Secrets - Binary Exploitation Problem Written by evanyeyeye
+I am responsible for architecting the most recent paradigm in our modern technological revolution: Secure Secrets. Why don&amp;rsquo;t you try it out?
+Solution By playing around with the binary, we soon discover a format string vulnerability:
+Introducing Secure Secrets TM -- a revolutionary service for storing your most sensitive messages. NEW FEATURE COMING SOON: Safely store your darkest secrets as well!</description>
+    </item>
     
     <item>
       <title>Generals.io game bot</title>
