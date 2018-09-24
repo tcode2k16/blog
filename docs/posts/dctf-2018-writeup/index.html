@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.48" />
+		<title>DCTF 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        DCTF 2018 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Sep 24, 2018 15:18
+                    · 887 words
+                    · 5 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#ransomware-reverse-50-pcts">Ransomware (Reverse - 50 pcts.)</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#exfil-misc-330-pcts">Exfil (Misc - 330 pcts.)</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="ransomware-reverse-50-pcts">Ransomware (Reverse - 50 pcts.)</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>Someone encrypted my homework with this rude <a href="/blog/dctf-2018-writeup/Ransomware/ransomware.zip">script</a>. HELP!</p>
+
+<p>Author: Lucian Nitescu</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>There are two files for this challenge: <code>ransomware.pyc</code> and <code>youfool!.exe</code>.</p>
+
+<p>By doing <code>file</code> on both files, we get this:</p>
+
+<pre><code>❯ file ransomware.pyc
+ransomware.pyc: DBase 3 data file (1536068111 records)
+
+~/Documents/ctf/2018/dctf/Ransomware
+❯ file youfool\!.exe
+youfool!.exe: data
+</code></pre>
+
+<p>So <code>youfool!.exe</code> is apparently encrypted and <code>ransomware.pyc</code> is the only one executable.</p>
+
+<p>By using <a href="https://github.com/rocky/python-uncompyle6">uncompyle6</a>, we can then decompile the <code>pyc</code> file and get the source code:</p>
+
+<pre><code class="language-python"># uncompyle6 version 3.2.3
+# Python bytecode 2.7 (62211)
+# Decompiled from: Python 2.7.15rc1 (default, Apr 15 2018, 21:51:34)
+# [GCC 7.3.0]
+# Embedded file name: ransomware.py
+# Compiled at: 2018-09-04 13:35:11
+import string
+from random import *
+import itertools
+
+def caesar_cipher(buf, password):
+    password = password * (len(buf) / len(password) + 1)
+    return ('').join((chr(ord(x) ^ ord(y)) for x, y in itertools.izip(buf, password)))
+
+
+f = open('./FlagDCTF.pdf', 'r')
+buf = f.read()
+f.close()
+allchar = string.ascii_letters + string.punctuation + string.digits
+password = ('').join((choice(allchar) for _ in range(60)))
+buf = caesar_cipher(buf, password)
+f = open('./youfool!.exe', 'w')
+buf = f.write(buf)
+f.close()
+# okay decompiling ransomware.pyc
+</code></pre>
+
+<p>Just by looking at this code, we can see that <code>youfool!.exe</code> is, in fact, an encrypted pdf file, and the file is encrypted by xoring the original file with a key of 60 characters.</p>
+
+<p>Now we just have to find the 60 characters xor key to decrypt the file since encryption and decryption is the same when it comes to xor.</p>
+
+<p>We can get the first few bytes just by knowing that a pdf file starts with <code>%PDF-1.5</code>. After that, we can using a tool such as <a href="https://github.com/hellman/xortool">xortool</a> or <a href="https://wiremask.eu/tools/xor-cracker/">this</a> to find the rest of the key. The result from these tools are not perfect, so I have to manually change a few bytes to make it correct (I know that <code>?</code> in <code>/DecodePa?ms</code> is a <code>r</code> for sure).</p>
+
+<p>In the end, we get a readable <a href="/blog/dctf-2018-writeup/Ransomware/out.pdf">pdf</a> that contains the flag.</p>
+
+<p>Flag: <code>DCTF{d915b5e076215c3efb92e5844ac20d0620d19b15d427e207fae6a3b894f91333}</code></p>
+
+<h1 id="exfil-misc-330-pcts">Exfil (Misc - 330 pcts.)</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>An experienced hacker gained unauthorised access into a facility with limited options to exfiltrate data but he managed to launch a backdoor to solve this issue. However, he got arrested before intercepting the confidential data. Can you recover the information and maybe do some profits on his behalf? Flag format: DCTF{[A-Za-z0-9-]+}
+For this challenge you are allowed to scan using nmap, but it won&rsquo;t help you too much :)</p>
+
+<p>Target: 104.248.38.191</p>
+
+<p>Author: Andrei A</p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>For this challenge, we are given a ip with no running services for us to attack, but when you try to ping the server, you get this:</p>
+
+<pre><code>64 bytes from 104.248.38.191: icmp_seq=1 ttl=63 time=0.525 ms
+64 bytes from 104.248.38.191: icmp_seq=2 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=3 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=4 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=5 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=6 ttl=63 time=0.595 ms
+64 bytes from 104.248.38.191: icmp_seq=7 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=8 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=9 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=10 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=11 ttl=63 time=0.483 ms
+64 bytes from 104.248.38.191: icmp_seq=12 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=13 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=14 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=15 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=16 ttl=63 time=0.368 ms
+64 bytes from 104.248.38.191: icmp_seq=17 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=18 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=19 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=20 ttl=63 time=401 ms
+64 bytes from 104.248.38.191: icmp_seq=21 ttl=63 time=0.408 ms
+64 bytes from 104.248.38.191: icmp_seq=22 ttl=63 time=1000 ms
+64 bytes from 104.248.38.191: icmp_seq=23 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=24 ttl=63 time=1001 ms
+64 bytes from 104.248.38.191: icmp_seq=25 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=26 ttl=63 time=0.623 ms
+64 bytes from 104.248.38.191: icmp_seq=27 ttl=63 time=0.478 ms
+64 bytes from 104.248.38.191: icmp_seq=28 ttl=63 time=0.474 ms
+64 bytes from 104.248.38.191: icmp_seq=29 ttl=63 time=0.480 ms
+64 bytes from 104.248.38.191: icmp_seq=30 ttl=63 time=0.489 ms
+64 bytes from 104.248.38.191: icmp_seq=31 ttl=63 time=400 ms
+64 bytes from 104.248.38.191: icmp_seq=32 ttl=63 time=1000 ms
+...
+</code></pre>
+
+<p>As you can see, the packet delay is following a pattern alternating between <code>0.5 ms</code>, <code>400 ms</code> and <code>1000 ms</code>.</p>
+
+<p>My first attempt is to decode the message as morse code; however, there are patterns that are not valid morse codes.</p>
+
+<p>Later, I discovered that there is a <code>0.5 ms</code> packet for every four other packets.</p>
+
+<p>Then I just focused on the <code>400 ms</code> and the <code>1000 ms</code> packets and converted the list to packets to a binary string which yields the flag.</p>
+
+<pre><code class="language-python">from pwn import *
+
+# Hard-coded driver function to run the program 
+def main(): 
+    data = ''
+    with open('log3') as f:
+      for e in f.read().split('\n'):
+        v = float(e.split(' ')[-2].split('=')[-1])
+        if v &lt; 300:
+          data += ''
+        elif v &lt; 600:
+          data += '0'
+        else:
+          data += '1'
+    print data.split('     ')
+
+    for e in data.split('     '):
+      # result = decrypt(e.strip()) 
+      # print (result) 
+      result = ''
+      for x in e.split(' '):
+        if len(x) != 4:
+          result += ''
+        result += x
+      print unbits(result)
+      # print result
+# Executes the main function 
+if __name__ == '__main__': 
+    main()
+</code></pre>
+
+<blockquote>
+<p>Tip: get a server in the continent where the CTF is hosted to minimized network delays and errors.</p>
+</blockquote>
+
+<p>Flag: <code>DCTF{EXF1LTRAT3-L1K3-4-PR0-1S-4W3S0M3}</code></p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

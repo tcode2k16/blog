@@ -6,10 +6,24 @@
     <description>Recent content in Ctf on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 11 Aug 2018 11:52:46 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 24 Sep 2018 15:18:47 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/tags/ctf/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>DCTF 2018 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/dctf-2018-writeup/</link>
+      <pubDate>Mon, 24 Sep 2018 15:18:47 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/dctf-2018-writeup/</guid>
+      <description>Ransomware (Reverse - 50 pcts.) Problem Someone encrypted my homework with this rude script. HELP!
+Author: Lucian Nitescu
+Solution There are two files for this challenge: ransomware.pyc and youfool!.exe.
+By doing file on both files, we get this:
+❯ file ransomware.pyc ransomware.pyc: DBase 3 data file (1536068111 records) ~/Documents/ctf/2018/dctf/Ransomware ❯ file youfool\!.exe youfool!.exe: data  So youfool!.exe is apparently encrypted and ransomware.pyc is the only one executable.
+By using uncompyle6, we can then decompile the pyc file and get the source code:</description>
+    </item>
     
     <item>
       <title>TJCTF 2018 Writeup</title>

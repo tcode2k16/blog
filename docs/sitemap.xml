@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://tcode2k16.github.io/blog/posts/dctf-2018-writeup/</loc>
+    <lastmod>2018-09-24T15:18:47+08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://tcode2k16.github.io/blog/posts/tjctf-2018-writeup/</loc>
     <lastmod>2018-08-11T11:52:46+08:00</lastmod>
   </url>
@@ -69,7 +74,7 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/</loc>
-    <lastmod>2018-08-11T11:52:46+08:00</lastmod>
+    <lastmod>2018-09-24T15:18:47+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -86,13 +91,13 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/ctf/</loc>
-    <lastmod>2018-08-11T11:52:46+08:00</lastmod>
+    <lastmod>2018-09-24T15:18:47+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/cyber-security/</loc>
-    <lastmod>2018-08-11T11:52:46+08:00</lastmod>
+    <lastmod>2018-09-24T15:18:47+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -140,7 +145,7 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/posts/</loc>
-    <lastmod>2018-08-11T11:52:46+08:00</lastmod>
+    <lastmod>2018-09-24T15:18:47+08:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -176,7 +181,7 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/write-up/</loc>
-    <lastmod>2018-08-11T11:52:46+08:00</lastmod>
+    <lastmod>2018-09-24T15:18:47+08:00</lastmod>
     <priority>0</priority>
   </url>
   
