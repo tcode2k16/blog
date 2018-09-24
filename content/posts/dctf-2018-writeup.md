@@ -7,7 +7,7 @@ tags: [
   "cyber-security",
   "write-up"
 ]
-description: solves for DCTF 2018 challenges
+description: My solves for DCTF 2018 challenges
 ---
 
 
@@ -170,3 +170,9 @@ if __name__ == '__main__':
 > Tip: get a server in the continent where the CTF is hosted to minimized network delays and errors.
 
 Flag: `DCTF{EXF1LTRAT3-L1K3-4-PR0-1S-4W3S0M3}`
+
+# Extra
+
+My team, HATS Singapore, actually made it into the top 10 teams at the last minute, and we are now going to the final in Bucharest, Romania! :)
+
+{{< figure src="/blog/dctf-2018-writeup/rank.png" >}}
