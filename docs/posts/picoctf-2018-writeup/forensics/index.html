@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.48" />
+		<title>PicoCTF 2018 Writeup: Forensics &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        PicoCTF 2018 Writeup: Forensics
+                    </h1>
+                    <h2 class="headline">
+                    Oct 13, 2018 08:56
+                    · 1143 words
+                    · 6 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/picoctf">picoctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/forensics">forensics</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#forensics-warmup-1">Forensics Warmup 1</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#forensics-warmup-2">Forensics Warmup 2</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#desrouleaux">Desrouleaux</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#reading-between-the-eyes">Reading Between the Eyes</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#recovering-from-the-snap">Recovering From the Snap</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#admin-panel">admin panel</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+<li><a href="#hex-editor">hex editor</a>
+<ul>
+<li><a href="#problem-6">Problem</a></li>
+<li><a href="#solution-6">Solution</a></li>
+</ul></li>
+<li><a href="#truly-an-artist">Truly an Artist</a>
+<ul>
+<li><a href="#problem-7">Problem</a></li>
+<li><a href="#solution-7">Solution</a></li>
+</ul></li>
+<li><a href="#now-you-don-t">now you don&rsquo;t</a>
+<ul>
+<li><a href="#problem-8">Problem</a></li>
+<li><a href="#solution-8">Solution</a></li>
+</ul></li>
+<li><a href="#ext-super-magic">Ext Super Magic</a>
+<ul>
+<li><a href="#problem-9">Problem</a></li>
+<li><a href="#solution-9">Solution</a></li>
+</ul></li>
+<li><a href="#lying-out">Lying Out</a>
+<ul>
+<li><a href="#problem-10">Problem</a></li>
+<li><a href="#solution-10">Solution</a></li>
+</ul></li>
+<li><a href="#what-s-my-name">What&rsquo;s My Name?</a>
+<ul>
+<li><a href="#problem-11">Problem</a></li>
+<li><a href="#solution-11">Solution</a></li>
+</ul></li>
+<li><a href="#core">core</a>
+<ul>
+<li><a href="#problem-12">Problem</a></li>
+<li><a href="#solution-12">Solution</a></li>
+</ul></li>
+<li><a href="#malware-shops">Malware Shops</a>
+<ul>
+<li><a href="#problem-13">Problem</a></li>
+<li><a href="#solution-13">Solution</a></li>
+</ul></li>
+<li><a href="#loadsomebits">LoadSomeBits</a>
+<ul>
+<li><a href="#problem-14">Problem</a></li>
+<li><a href="#solution-14">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="forensics-warmup-1">Forensics Warmup 1</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>Can you unzip this <a href="/blog/picoctf-2018-writeup/Forensics/Forensics Warmup 1/flag.zip">file</a> for me and retreive the flag?</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>Just unzip the file.</p>
+
+<p>flag: <code>picoCTF{welcome_to_forensics}</code></p>
+
+<h1 id="forensics-warmup-2">Forensics Warmup 2</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Hmm for some reason I can&rsquo;t open this <a href="/blog/picoctf-2018-writeup/Forensics/Forensics Warmup 2/flag.png">PNG</a>? Any ideas?</p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>Using the <code>file</code> command, you can see that the image is, in fact, in <code>jpeg</code> format not <code>png</code>:</p>
+
+<pre><code class="language-bash">❯ file flag.png
+flag.png: JPEG image data, JFIF standard 1.01
+</code></pre>
+
+<p>Open the image as a <code>jpeg</code> file to get the file.</p>
+
+<p>flag: <code>picoCTF{extensions_are_a_lie}</code></p>
+
+<h1 id="desrouleaux">Desrouleaux</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>Our network administrator is having some trouble handling the tickets for all of of our incidents. Can you help him out by answering all the questions? Connect with <code>nc 2018shell2.picoctf.com 10493</code>. <a href="/blog/picoctf-2018-writeup/Forensics/Desrouleaux/incidents.json">incidents.json</a></p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>Here is the solution script:</p>
+
+<pre><code class="language-python">from sets import Set
+from pwn import *
+import json
+
+sh = remote('2018shell2.picoctf.com', 10493)
+
+with open('./incidents.json') as f:
+  data = json.loads(f.read())
+
+# question 1
+src = {}
+
+for each in data[u'tickets']:
+  src_ip = each[u'src_ip']
+  if src_ip in src:
+    src[src_ip] += 1
+  else:
+    src[src_ip] = 1
+
+print sh.recvuntil('ones.\n')
+sh.sendline(max(src, key=src.get))
+
+# question 2
+target = sh.recvuntil('?\n').split(' ')[-1][:-2]
+target_ls = {}
+count = 0
+for each in data[u'tickets']:
+  if each[u'src_ip'] == target and each[u'dst_ip'] not in target_ls:
+    target_ls[each[u'dst_ip']] = True
+    count += 1
+
+sh.sendline(str(count))
+
+# question 3
+hashes = {}
+for each in data[u'tickets']:
+  hash = each[u'file_hash']
+  if hash not in hashes:
+    hashes[hash] = Set()
+  hashes[hash].add(each[u'dst_ip'])
+
+avg = 0
+for each in hashes:
+  e = hashes[each]
+  avg += len(e)
+avg = (avg * 1.0) / len(hashes)
+
+print sh.recvuntil('.\n')
+sh.sendline(str(avg))
+
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>picoCTF{J4y_s0n_d3rUUUULo_a062e5f8}</code></p>
+
+<h1 id="reading-between-the-eyes">Reading Between the Eyes</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>Stego-Saurus hid a message for you in this <a href="/blog/picoctf-2018-writeup/Forensics/Reading Between the Eyes/husky.png">image</a>, can you retreive it?</p>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>This problem is about using the <a href="http://ijact.org/volume3issue4/IJ0340004.pdf">Least Significant Bit algorithm for image steganography</a>. It can be solved using an <a href="http://stylesuxx.github.io/steganography/">online decoder</a>.</p>
+
+
+<figure>
+    
+        <img src="/blog/picoctf-2018-writeup/Forensics/Reading%20Between%20the%20Eyes/image.png" />
+    
+    
+</figure>
+
+
+<p>flag: <code>picoCTF{r34d1ng_b37w33n_7h3_by73s}</code></p>
+
+<h1 id="recovering-from-the-snap">Recovering From the Snap</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>There used to be a bunch of <a href="/blog/picoctf-2018-writeup/Forensics/Recovering From the Snap/animals.dd">animals</a> here, what did Dr. Xernon do to them?</p>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>TODO</p>
+
+<h1 id="admin-panel">admin panel</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>We captured some <a href="/blog/picoctf-2018-writeup/Forensics/admin panel/data.pcap">traffic</a> logging into the admin panel, can you find the password?</p>
+
+<h2 id="solution-5">Solution</h2>
+
+
+<figure>
+    
+        <img src="/blog/picoctf-2018-writeup/Forensics/admin%20panel/image.png" />
+    
+    
+</figure>
+
+
+<p>If you look for <code>http</code> requests, you will see two login attempts, and the second request contains the flag:</p>
+
+<pre><code>POST /login HTTP/1.1
+Host: 192.168.3.128
+User-Agent: Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:59.0) Gecko/20100101 Firefox/59.0
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8
+Accept-Language: en-US,en;q=0.5
+Accept-Encoding: gzip, deflate
+Referer: http://192.168.3.128/
+Content-Type: application/x-www-form-urlencoded
+Content-Length: 53
+Connection: keep-alive
+Upgrade-Insecure-Requests: 1
+
+user=admin&amp;password=picoCTF{n0ts3cur3_9feedfbc}
+</code></pre>
+
+<p>flag: <code>picoCTF{n0ts3cur3_9feedfbc}</code></p>
+
+<h1 id="hex-editor">hex editor</h1>
+
+<h2 id="problem-6">Problem</h2>
+
+<p>This <a href="/blog/picoctf-2018-writeup/Forensics/hex editor/hex_editor.jpg">cat</a> has a secret to teach you. You can also find the file in /problems/hex-editor_4_0a7282b29fa47d68c3e2917a5a0d726b on the shell server.</p>
+
+<h2 id="solution-6">Solution</h2>
+
+<p>You can get the flag by looking at the hex hump of the image or just print out all the readable parts of the file:</p>
+
+<pre><code class="language-bash">❯ strings hex_editor.jpg | grep pico
+Your flag is: &quot;picoCTF{and_thats_how_u_edit_hex_kittos_dF817ec5}&quot;
+</code></pre>
+
+<p>flag: <code>picoCTF{and_thats_how_u_edit_hex_kittos_dF817ec5}</code></p>
+
+<h1 id="truly-an-artist">Truly an Artist</h1>
+
+<h2 id="problem-7">Problem</h2>
+
+<p>Can you help us find the flag in this <a href="/blog/picoctf-2018-writeup/Forensics/Truly an Artist/2018.png">Meta-Material</a>? You can also find the file in /problems/truly-an-artist_3_066d6319e350c1d579e5cf32e326ba02.</p>
+
+<h2 id="solution-7">Solution</h2>
+
+<p>The flag is in the EXIF meta-data of the image:</p>
+
+<pre><code class="language-bash">❯ exiftool 2018.png
+ExifTool Version Number         : 11.01
+File Name                       : 2018.png
+Directory                       : .
+File Size                       : 13 kB
+File Modification Date/Time     : 2018:10:09 23:34:05+08:00
+File Access Date/Time           : 2018:10:10 09:15:07+08:00
+File Inode Change Date/Time     : 2018:10:09 23:34:06+08:00
+File Permissions                : rw-r--r--
+File Type                       : PNG
+File Type Extension             : png
+MIME Type                       : image/png
+Image Width                     : 1200
+Image Height                    : 630
+Bit Depth                       : 8
+Color Type                      : RGB
+Compression                     : Deflate/Inflate
+Filter                          : Adaptive
+Interlace                       : Noninterlaced
+Artist                          : picoCTF{look_in_image_eeea129e}
+Image Size                      : 1200x630
+Megapixels                      : 0.756
+</code></pre>
+
+<p>flag: <code>picoCTF{look_in_image_eeea129e}</code></p>
+
+<h1 id="now-you-don-t">now you don&rsquo;t</h1>
+
+<h2 id="problem-8">Problem</h2>
+
+<p>We heard that there is something hidden in this <a href="/blog/picoctf-2018-writeup/Forensics/now you dont/nowYouDont.png">picture</a>. Can you find it?</p>
+
+<h2 id="solution-8">Solution</h2>
+
+<p>You can create another image with only one shade of red and diff that image with the one provided to get the flag:</p>
+
+<pre><code class="language-bash">❯ convert -size 857x703 canvas:&quot;#912020&quot; pure.png
+❯ compare nowYouDont.png pure.png diff.png
+</code></pre>
+
+
+<figure>
+    
+        <img src="/blog/picoctf-2018-writeup/Forensics/now%20you%20dont/diff.png" />
+    
+    
+    <figcaption>
+        <p>
+        
+        
+            diff.png
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<p>flag: <code>picoCTF{n0w_y0u_533_m3}</code></p>
+
+<h1 id="ext-super-magic">Ext Super Magic</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>We salvaged a ruined Ext SuperMagic II-class mech recently and pulled the <a href="/blog/picoctf-2018-writeup/Forensics/Ext Super Magic/ext-super-magic.img">filesystem</a> out of the black box. It looks a bit corrupted, but maybe there&rsquo;s something interesting in there. You can also find it in /problems/ext-super-magic_4_f196e59a80c3fdac37cc2f331692ef13 on the shell server.</p>
+
+<h2 id="solution-9">Solution</h2>
+
+<p>You are given a ext3 file image that is broken. To fix the image, you have to correct the magic number of the file. You can read more about the ext3 file format over <a href="http://www.nongnu.org/ext2-doc/ext2.html">here</a>.</p>
+
+<p>Here is the script that writes the magic number <code>0xEF53</code> into the file:</p>
+
+<pre><code class="language-python"># flag: picoCTF{a7DB29eCf7dB9960f0A19Fdde9d00Af0}nc 2018shell2.picoctf.com 2651
+
+from pwn import *
+
+with open('./ext-super-magic.img', 'rb') as f:
+  data = f.read()
+
+print enhex(data[1024:1024+82])
+print enhex(data[1024+56:1024+56+2])
+
+data = data[:1024+56] + p16(0xEF53) + data[1024+56+2:]
+
+with open('fixed.img', 'wb') as f:
+  f.write(data)
+</code></pre>
+
+<p>flag: <code>picoCTF{a7DB29eCf7dB9960f0A19Fdde9d00Af0}</code></p>
+
+<h1 id="lying-out">Lying Out</h1>
+
+<h2 id="problem-10">Problem</h2>
+
+<p>Some odd <a href="/blog/picoctf-2018-writeup/Forensics/Lying Out/traffic.png">traffic</a> has been detected on the network, can you identify it? More <a href="/blog/picoctf-2018-writeup/Forensics/Lying Out/info.txt">info</a> here. Connect with nc 2018shell2.picoctf.com 27108 to help us answer some questions.</p>
+
+<h2 id="solution-10">Solution</h2>
+
+<p>TODO</p>
+
+<h1 id="what-s-my-name">What&rsquo;s My Name?</h1>
+
+<h2 id="problem-11">Problem</h2>
+
+<p>Say my name, say <a href="/blog/picoctf-2018-writeup/Forensics/Whats My Name/myname.pcap">my name</a>.</p>
+
+<h2 id="solution-11">Solution</h2>
+
+<p>The hint is very helpful. It asks <code>If you visited a website at an IP address, how does it know the name of the domain?</code>.</p>
+
+<p>The answer to this question is that a domain is resolved through <code>DNS</code> packets.</p>
+
+<p>If we only look for <code>DNS</code> packets in wireshark, we will find the flag.</p>
+
+
+<figure>
+    
+        <img src="/blog/picoctf-2018-writeup/Forensics/Whats%20My%20Name/image.png" />
+    
+    
+</figure>
+
+
+<p>flag: <code>picoCTF{w4lt3r_wh1t3_33ddc9bcc77f22a319515c59736f64a2}</code></p>
+
+<h1 id="core">core</h1>
+
+<h2 id="problem-12">Problem</h2>
+
+<p>This <a href="/blog/picoctf-2018-writeup/Forensics/core/print_flag">program</a> was about to print the flag when it died. Maybe the flag is still in this <a href="/blog/picoctf-2018-writeup/Forensics/core/core">core</a> file that it dumped? Also available at /problems/core_1_722685357ac5a814524ee76a3dcd1521 on the shell server.</p>
+
+<h2 id="solution-12">Solution</h2>
+
+<p>Let&rsquo;s first take a look at the program using radare2:</p>
+
+<pre><code>[0x080484c0]&gt; s sym.print_flag
+[0x080487c1]&gt; pdf
+┌ (fcn) sym.print_flag 43
+│   sym.print_flag ();
+│           ; var int local_ch @ ebp-0xc
+│           ; CALL XREF from sym.main (0x8048802)
+│           0x080487c1      55             push ebp                    ; ./print_flag.c:90
+│           0x080487c2      89e5           ebp = esp
+│           0x080487c4      83ec18         esp -= 0x18
+│           0x080487c7      c745f4390500.  dword [local_ch] = 0x539    ; ./print_flag.c:91 ; 1337
+│           0x080487ce      8b45f4         eax = dword [local_ch]      ; ./print_flag.c:92
+│           0x080487d1      8b048580a004.  eax = dword [eax*4 + obj.strs] ; [0x804a080:4]=0
+│           0x080487d8      83ec08         esp -= 8
+│           0x080487db      50             push eax
+│           0x080487dc      684c890408     push str.your_flag_is:_picoCTF__s ; 0x804894c ; &quot;your flag is: picoCTF{%s}\n&quot; ; const char *format
+│           0x080487e1      e82afcffff     sym.imp.printf ()           ; int printf(const char *format)
+│           0x080487e6      83c410         esp += 0x10
+│           0x080487e9      90                                         ; ./print_flag.c:93
+│           0x080487ea      c9             leave
+└           0x080487eb      c3             return
+</code></pre>
+
+<p>As you can see, the flag pointer is located at <code>eax*4 + obj.strs</code> or <code>0x804a080+0x539*4</code> in memory:</p>
+
+<pre><code>❯ python
+&gt;&gt;&gt; hex(0x804a080+0x539*4)
+'0x804b564'
+</code></pre>
+
+<p>Now, we can use gdb and the core file to restore the application state and extract the flag from that address:</p>
+
+<pre><code>$ gdb ./print_flag ./core
+...
+gef➤  x 0x804b564
+0x804b564 &lt;strs+5348&gt;:	0x080610f0
+gef➤  x 0x080610f0
+0x80610f0:	&quot;e52f4714963eb207ae54fd424ce3c7d4&quot;
+</code></pre>
+
+<p>flag: <code>picoCTF{e52f4714963eb207ae54fd424ce3c7d4}</code></p>
+
+<h1 id="malware-shops">Malware Shops</h1>
+
+<h2 id="problem-13">Problem</h2>
+
+<p>There has been some <a href="/blog/picoctf-2018-writeup/Forensics/Malware Shops/plot.png">malware</a> detected, can you help with the analysis? More <a href="/blog/picoctf-2018-writeup/Forensics/Malware Shops/info.txt">info</a> here. Connect with nc 2018shell2.picoctf.com 46168.</p>
+
+<h2 id="solution-13">Solution</h2>
+
+<p>TODO</p>
+
+<h1 id="loadsomebits">LoadSomeBits</h1>
+
+<h2 id="problem-14">Problem</h2>
+
+<p>Can you find the flag encoded inside this image? You can also find the file in /problems/loadsomebits_2_c5bba4da53a839fcdda89e5203ac44d0 on the shell server.</p>
+
+<h2 id="solution-14">Solution</h2>
+
+<p>TODO</p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

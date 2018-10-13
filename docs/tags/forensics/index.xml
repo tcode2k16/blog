@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Forensics on Alan&#39;s Blog</title>
+    <link>https://tcode2k16.github.io/blog/tags/forensics/</link>
+    <description>Recent content in Forensics on Alan&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 13 Oct 2018 08:56:02 +0800</lastBuildDate>
+    
+	<atom:link href="https://tcode2k16.github.io/blog/tags/forensics/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>PicoCTF 2018 Writeup: Forensics</title>
+      <link>https://tcode2k16.github.io/blog/posts/picoctf-2018-writeup/forensics/</link>
+      <pubDate>Sat, 13 Oct 2018 08:56:02 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/picoctf-2018-writeup/forensics/</guid>
+      <description>Forensics Warmup 1 Problem Can you unzip this file for me and retreive the flag?
+Solution Just unzip the file.
+flag: picoCTF{welcome_to_forensics}
+Forensics Warmup 2 Problem Hmm for some reason I can&amp;rsquo;t open this PNG? Any ideas?
+Solution Using the file command, you can see that the image is, in fact, in jpeg format not png:
+❯ file flag.png flag.png: JPEG image data, JFIF standard 1.01  Open the image as a jpeg file to get the file.</description>
+    </item>
+    
+  </channel>
+</rss>

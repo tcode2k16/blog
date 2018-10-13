@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.48" />
+		<title>PicoCTF 2018 Writeup: Reversing &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        PicoCTF 2018 Writeup: Reversing
+                    </h1>
+                    <h2 class="headline">
+                    Oct 13, 2018 08:56
+                    · 4069 words
+                    · 20 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/picoctf">picoctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/reversing">reversing</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#reversing-warmup-1">Reversing Warmup 1</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#reversing-warmup-2">Reversing Warmup 2</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#assembly-0">assembly-0</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#assembly-1">assembly-1</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#be-quick-or-be-dead-1">be-quick-or-be-dead-1</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#quackme">quackme</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+<li><a href="#assembly-2">assembly-2</a>
+<ul>
+<li><a href="#problem-6">Problem</a></li>
+<li><a href="#solution-6">Solution</a></li>
+</ul></li>
+<li><a href="#be-quick-or-be-dead-2">be-quick-or-be-dead-2</a>
+<ul>
+<li><a href="#problem-7">Problem</a></li>
+<li><a href="#solution-7">Solution</a></li>
+</ul></li>
+<li><a href="#be-quick-or-be-dead-3">be-quick-or-be-dead-3</a>
+<ul>
+<li><a href="#problem-8">Problem</a></li>
+<li><a href="#solution-8">Solution</a></li>
+</ul></li>
+<li><a href="#quackme-up">quackme up</a>
+<ul>
+<li><a href="#problem-9">Problem</a></li>
+<li><a href="#solution-9">Solution</a></li>
+</ul></li>
+<li><a href="#radix-s-terminal">Radix&rsquo;s Terminal</a>
+<ul>
+<li><a href="#problem-10">Problem</a></li>
+<li><a href="#solution-10">Solution</a></li>
+</ul></li>
+<li><a href="#assembly-3">assembly-3</a>
+<ul>
+<li><a href="#problem-11">Problem</a></li>
+<li><a href="#solution-11">Solution</a></li>
+</ul></li>
+<li><a href="#keygen-me-1">keygen-me-1</a>
+<ul>
+<li><a href="#problem-12">Problem</a></li>
+<li><a href="#solution-12">Solution</a></li>
+</ul></li>
+<li><a href="#assembly-4">assembly-4</a>
+<ul>
+<li><a href="#problem-13">Problem</a></li>
+<li><a href="#solution-13">Solution</a></li>
+</ul></li>
+<li><a href="#special-pw">special-pw</a>
+<ul>
+<li><a href="#problem-14">Problem</a></li>
+<li><a href="#solution-14">Solution</a></li>
+</ul></li>
+<li><a href="#keygen-me-2">keygen-me-2</a>
+<ul>
+<li><a href="#problem-15">Problem</a></li>
+<li><a href="#solution-15">Solution</a></li>
+</ul></li>
+<li><a href="#circuit123">circuit123</a>
+<ul>
+<li><a href="#problem-16">Problem</a></li>
+<li><a href="#solution-16">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="reversing-warmup-1">Reversing Warmup 1</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>Throughout your journey you will have to run many programs. Can you navigate to /problems/reversing-warmup-1_0_f99f89de33522c93964bdec49fb2b838 on the shell server and run this <a href="/blog/picoctf-2018-writeup/reversing/Reversing Warmup 1/run">program</a> to retreive the flag?</p>
+
+<h2 id="solution">Solution</h2>
+
+<p>The problem <code>run</code> is known as a <a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">ELF binary</a>. It is the most common program format on Linux. Here are the steps to run the program:</p>
+
+<pre><code class="language-bash">alanc@pico-2018-shell-2:~$ cd /problems/reversing-warmup-1_0_f99f89de33522c93964bdec49fb2b838
+alanc@pico-2018-shell-2:/problems/reversing-warmup-1_0_f99f89de33522c93964bdec49fb2b838$ ls
+run
+alanc@pico-2018-shell-2:/problems/reversing-warmup-1_0_f99f89de33522c93964bdec49fb2b838$ ./run
+picoCTF{welc0m3_t0_r3VeRs1nG}
+</code></pre>
+
+<p>flag: <code>picoCTF{welc0m3_t0_r3VeRs1nG}</code></p>
+
+<h1 id="reversing-warmup-2">Reversing Warmup 2</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Can you decode the following string <code>dGg0dF93NHNfczFtcEwz</code> from base64 format to ASCII?</p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p><a href="https://en.wikipedia.org/wiki/Base64">Base64</a> is a common encoding format. You can read more about the distinction between encoding and encryption <a href="https://stackoverflow.com/questions/4657416/difference-between-encoding-and-encryption">here</a>.</p>
+
+<p>To decoee the string, we can use <a href="https://www.python.org/">python</a>, a handy programming language for hackers:</p>
+
+<pre><code class="language-python">Python 2.7.15 (default, Jun 17 2018, 12:51:03)
+[GCC 4.2.1 Compatible Apple LLVM 8.0.0 (clang-800.0.42.1)] on darwin
+Type &quot;help&quot;, &quot;copyright&quot;, &quot;credits&quot; or &quot;license&quot; for more information.
+&gt;&gt;&gt; 'dGg0dF93NHNfczFtcEwz'.decode('base64')
+'th4t_w4s_s1mpL3'
+</code></pre>
+
+<p>flag: <code>picoCTF{th4t_w4s_s1mpL3}</code></p>
+
+<h1 id="assembly-0">assembly-0</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>What does asm0(0xb6,0xc6) return? Submit the flag as a hexadecimal value (starting with &lsquo;0x&rsquo;). NOTE: Your submission for this question will NOT be in the normal flag format. <a href="/blog/picoctf-2018-writeup/reversing/assembly-0/intro_asm_rev.S">Source</a> located in the directory at /problems/assembly-0_0_5a220faedfaf4fbf26e6771960d4a359.</p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>Read about assembly language or assembly code <a href="https://en.wikipedia.org/wiki/Assembly_language">here</a>. Also, you can watch <a href="https://www.youtube.com/watch?v=wLXIWKUWpSs">this</a> youtube series which is helpful.</p>
+
+<p>Let&rsquo;s take a look at the assembly code:</p>
+
+<pre><code>.intel_syntax noprefix
+.bits 32
+	
+.global asm0
+
+asm0:
+	push	ebp
+	mov	ebp,esp
+	mov	eax,DWORD PTR [ebp+0x8]
+	mov	ebx,DWORD PTR [ebp+0xc]
+	mov	eax,ebx
+	mov	esp,ebp
+	pop	ebp	
+	ret
+</code></pre>
+
+<p>As you can see, there&rsquo;s a function named <code>asm0</code> that is being exported by the line <code>.global asm0</code>, and the content of the function is right below the <code>asm0:</code> label. We know that the function is called with the argument of <code>0xb6</code> and <code>0xc6</code> which are at <code>ebp+0x8</code> and <code>ebp+0xc</code> respectively.</p>
+
+<p>By converting the assembly code to preduo-code, we can the logic of the function:</p>
+
+<pre><code>eax = arg1
+ebx = arg2
+eax = ebx
+</code></pre>
+
+<p>Because we know that an assembly function always returns the value than is in the <code>eax</code> register, the <code>asm0</code> should always return the second argument passed to it; therefore, the return value is <code>0xc6</code>.</p>
+
+<p>If you find this explanation hard to understand or you want more practice with reading assembly code, take a look at <a href="https://microcorruption.com/login">microcorruption</a> which is a great place to get started with reverse engineering. Also, you can find my writeup for <code>microcorruption</code> <a href="/blog/posts/microcorruption-writeup/">here</a></p>
+
+<p>Flag: <code>0xc6</code></p>
+
+<h1 id="assembly-1">assembly-1</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>What does asm1(0x76) return? Submit the flag as a hexadecimal value (starting with &lsquo;0x&rsquo;). NOTE: Your submission for this question will NOT be in the normal flag format. <a href="/blog/picoctf-2018-writeup/reversing/assembly-1/eq_asm_rev.S">Source</a> located in the directory at /problems/assembly-1_0_cfb59ef3b257335ee403035a6e42c2ed.</p>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>This problem is similar to the last one. Let&rsquo;s take a look at the code:</p>
+
+<pre><code>.intel_syntax noprefix
+.bits 32
+	
+.global asm1
+
+asm1:
+	push	ebp
+	mov	ebp,esp
+	cmp	DWORD PTR [ebp+0x8],0x98
+	jg 	part_a	
+	cmp	DWORD PTR [ebp+0x8],0x8
+	jne	part_b
+	mov	eax,DWORD PTR [ebp+0x8]
+	add	eax,0x3
+	jmp	part_d
+part_a:
+	cmp	DWORD PTR [ebp+0x8],0x16
+	jne	part_c
+	mov	eax,DWORD PTR [ebp+0x8]
+	sub	eax,0x3
+	jmp	part_d
+part_b:
+	mov	eax,DWORD PTR [ebp+0x8]
+	sub	eax,0x3
+	jmp	part_d
+	cmp	DWORD PTR [ebp+0x8],0xbc
+	jne	part_c
+	mov	eax,DWORD PTR [ebp+0x8]
+	sub	eax,0x3
+	jmp	part_d
+part_c:
+	mov	eax,DWORD PTR [ebp+0x8]
+	add	eax,0x3
+part_d:
+	pop	ebp
+	ret
+</code></pre>
+
+<p>For this challenge, control flow is being introduced. We know than <code>[ebp+0x8]</code> is the argument that we passed in (<code>0x76</code> in this case). Because <code>0x76</code> is not larger than <code>0x98</code>, we will not follow the first <code>jg</code> (jumo greater than) to <code>part_a</code>. For the second comparison, because <code>0x76</code> does not equal <code>0x8</code>, we are going to jump to <code>part_b</code> (<code>jne</code> means jump not equal). In <code>part_b</code>, the argument is loaded into <code>eax</code> and <code>3</code> is subtracted from it. After that, the function returns; therefore, we just have to take <code>0x76</code> and subtract <code>0x3</code> from it to get the flag (<code>0x73</code>).</p>
+
+<p>flag: <code>0x73</code></p>
+
+<h1 id="be-quick-or-be-dead-1">be-quick-or-be-dead-1</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>You find <a href="https://www.youtube.com/watch?v=CTt1vk9nM9c">this</a> when searching for some music, which leads you to <a href="/blog/picoctf-2018-writeup/reversing/be-quick-or-be-dead-1/be-quick-or-be-dead-1">be-quick-or-be-dead-1</a>. Can you run it fast enough? You can also find the executable in /problems/be-quick-or-be-dead-1_3_aeb48854203a88fb1da963f41ae06a1c.</p>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>Playing around with the program, you can see that it will exit after a while before the key is calculated. Now, let&rsquo;s take a look at the code that competes the key with <a href="https://rada.re/r/">radare2</a>:</p>
+
+<pre><code>[0x004005a0]&gt; aaaa
+[0x00400827]&gt; pdf @ sym.calculate_key
+/ (fcn) sym.calculate_key 29
+|   sym.calculate_key ();
+|           ; var unsigned int local_4h @ rbp-0x4
+|           ; CALL XREF from sym.get_key (0x4007a9)
+|           0x00400706      55             push rbp
+|           0x00400707      4889e5         mov rbp, rsp
+|           0x0040070a      c745fc3c7ed4.  mov dword [local_4h], 0x6fd47e3c
+|           ; CODE XREF from sym.calculate_key (0x40071c)
+|       .-&gt; 0x00400711      8345fc01       add dword [local_4h], 1
+|       :   0x00400715      817dfc78fca8.  cmp dword [local_4h], 0xdfa8fc78 ; [0xdfa8fc78:4]=-1
+|       `=&lt; 0x0040071c      75f3           jne 0x400711
+|           0x0040071e      8b45fc         mov eax, dword [local_4h]
+|           0x00400721      5d             pop rbp
+\           0x00400722      c3             ret
+</code></pre>
+
+<p>As you can see, the function starts witht the value <code>0x6fd47e3c</code> and decrements it each time until it is equal to <code>0xdfa8fc78</code>. To speed up this function we can change the initial value to the final value minus 1. Here is how the patching is done in radare2:</p>
+
+<pre><code>[0x00400827]&gt; oo+
+[0x00400827]&gt; s 0x0040070a
+[0x0040070a]&gt; pd 1
+|           0x0040070a      c745fc3c7ed4.  mov dword [local_4h], 0x6fd47e3c
+[0x0040070a]&gt; wa mov dword [rbp-0x4], 0xdfa8fc77
+Written 7 byte(s) (mov dword [rbp-0x4], 0xdfa8fc77) = wx c745fc77fca8df
+[0x0040070a]&gt; q
+</code></pre>
+
+<p>Now if you run the program, it will happily print out the flag.</p>
+
+<p>flag: <code>picoCTF{why_bother_doing_unnecessary_computation_27f28e71}</code></p>
+
+<h1 id="quackme">quackme</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>Can you deal with the Duck Web? Get us the flag from this <a href="/blog/picoctf-2018-writeup/reversing/quackme/main">program</a>. You can also find the program in /problems/quackme_1_374d85dc071ada50a08b36597288bcfd.</p>
+
+<h2 id="solution-5">Solution</h2>
+
+<p>Let&rsquo;s first take a look at the core function of the program, <code>do_magic</code>:</p>
+
+<pre><code>int do_magic()
+{
+  int result; // eax
+  int v1; // [esp+Ch] [ebp-1Ch]
+  int i; // [esp+10h] [ebp-18h]
+  char *s; // [esp+14h] [ebp-14h]
+  signed int v4; // [esp+18h] [ebp-10h]
+  void *v5; // [esp+1Ch] [ebp-Ch]
+
+  s = (char *)read_input();
+  v4 = strlen(s);
+  v5 = malloc(v4 + 1);
+  if ( !v5 )
+  {
+    puts(&quot;malloc() returned NULL. Out of Memory\n&quot;);
+    exit(-1);
+  }
+  memset(v5, 0, v4 + 1);
+  v1 = 0;
+  for ( i = 0; ; ++i )
+  {
+    result = i;
+    if ( i &gt;= v4 )
+      break;
+    if ( greetingMessage[i] == (*(_BYTE *)(i + 0x8048858) ^ (unsigned __int8)s[i]) )
+      ++v1;
+    if ( v1 == 25 )
+      return puts(&quot;You are winner!&quot;);
+  }
+  return result;
+}
+</code></pre>
+
+<p>As you can see, the input when xored with the data at the offset of <code>0x8048858</code> should be equal to the greeting message, in order for the program to print out the flag. We can quickly extract the data at that offset and write a python script to solve the challenge:</p>
+
+<pre><code>$ r2 main
+ -- What has been executed cannot be unexecuted
+[0x080484e0]&gt; ps @ 0x8048858
+)\x06\x16O+50\x1eQ\x1b[\x14K\x08]+S\x10TQCM\\T]
+</code></pre>
+
+<pre><code class="language-python">import string
+
+message = &quot;You have now entered the Duck Web, and you're in for a honkin' good time.\nCan you figure out my trick?&quot;
+key = ')\x06\x16O+50\x1eQ\x1b[\x14K\x08]+S\x10TQCM\T]'  # data extracted from the binary
+
+output = ''
+for i in range(len(key)):
+  v = chr(ord(key[i])^ord(message[i]))
+  if v in string.printable:
+    output += v
+  else:
+    output += '_'
+
+print output  # picoCTF{qu4ckm3_6b15c941}
+</code></pre>
+
+<p>flag: <code>picoCTF{qu4ckm3_6b15c941}</code></p>
+
+<h1 id="assembly-2">assembly-2</h1>
+
+<h2 id="problem-6">Problem</h2>
+
+<p>What does asm2(0x8,0x21) return? Submit the flag as a hexadecimal value (starting with &lsquo;0x&rsquo;). NOTE: Your submission for this question will NOT be in the normal flag format. <a href="picoctf-2018-writeup/reversing/assembly-2/loop_asm_rev.S">Source</a> located in the directory at /problems/assembly-2_1_c1900e7d33989b0191c51ef927b24f37.</p>
+
+<h2 id="solution-6">Solution</h2>
+
+<p>This problem is an introduction to loops in assembly.</p>
+
+<pre><code>.intel_syntax noprefix
+.bits 32
+	
+.global asm2
+
+; asm2(0x8,0x21)
+; flag: 0x78
+asm2:
+	push   	ebp
+	mov    	ebp,esp
+	sub    	esp,0x10
+	mov    	eax,DWORD PTR [ebp+0xc]
+	mov 	  DWORD PTR [ebp-0x4],eax		  ; temp = 0x21
+	mov    	eax,DWORD PTR [ebp+0x8]
+	mov     DWORD PTR [ebp-0x8],eax			; temp2 = 0x8
+	jmp    	part_b
+part_a:	
+	add    	DWORD PTR [ebp-0x4],0x1     ; temp += 1
+	add	    DWORD PTR [ebp+0x8],0xa9		; arg1 += 0xa9
+part_b:	
+	cmp    	DWORD PTR [ebp+0x8],0x3923
+	jle    	part_a
+	mov    	eax,DWORD PTR [ebp-0x4]
+	mov	    esp,ebp
+	pop	    ebp
+	ret
+</code></pre>
+
+<p>As you can see, <code>arg1</code> is incremented by <code>0xa9</code> each time until it reaches <code>0x3923</code> while <code>temp</code> increments by <code>1</code> each time; therefore, the flag is <code>0x21 + ((0x3923-0x8)/0xa9+1)</code> which is <code>0x78</code>.</p>
+
+<p>flag: <code>0x78</code></p>
+
+<h1 id="be-quick-or-be-dead-2">be-quick-or-be-dead-2</h1>
+
+<h2 id="problem-7">Problem</h2>
+
+<p>As you enjoy this <a href="https://www.youtube.com/watch?v=CTt1vk9nM9c">music</a> even more, another executable <a href="/blog/picoctf-2018-writeup/reversing/be-quick-or-be-dead-2/be-quick-or-be-dead-2">be-quick-or-be-dead-2</a> shows up. Can you run this fast enough too? You can also find the executable in /problems/be-quick-or-be-dead-2_1_0e5d7acd1fd33f2f0f6e215637a8d3bd.</p>
+
+<h2 id="solution-7">Solution</h2>
+
+<p>This challenge is similar to <code>be-quick-or-be-dead-1</code> where we have to make the <code>sym.calculate_key</code> function run faster. Let&rsquo;s take a look at the functions first:</p>
+
+<pre><code>__int64 calculate_key()
+{
+  return fib(1067LL);
+}
+</code></pre>
+
+<pre><code>__int64 __fastcall fib(unsigned int a1)
+{
+  int v1; // ebx
+  unsigned int v3; // [rsp+1Ch] [rbp-14h]
+
+  if ( a1 &gt; 1 )
+  {
+    v1 = fib(a1 - 1);
+    v3 = v1 + (unsigned __int64)fib(a1 - 2);
+  }
+  else
+  {
+    v3 = a1;
+  }
+  return v3;
+}
+</code></pre>
+
+<p>As you can see, it is a fibonacci algorithm in assembly. Now, we can just pre-compute the 1067th value of the fibonacci sequence and substitute in the result at runtime.</p>
+
+<p>Step one, we need to find the 1067th value of the fibonacci sequence while keeping in mind that it is a <code>unsigned int</code>:</p>
+
+<pre><code class="language-python">a = 1
+b = 1
+
+for i in range(1, 0x42b):
+  a, b = b, a+b
+  if a &gt;= 4294967296:
+    a -= 4294967296
+  
+  if b &gt;= 4294967296:
+    b -= 4294967296
+
+print hex(a) # 0x2e8e4d99
+</code></pre>
+
+<p>Now, we have to pass in this value at runtime and skip the computing phase. We can do this by changing both the <code>eax</code> and <code>rip</code> register. Here is the process being done with radare2:</p>
+
+<pre><code>[0x004005a0]&gt; aaaa
+[0x004005a0]&gt; ood
+[0x7f797b9f1090]&gt; s sym.calculate_key
+[0x0040074b]&gt; pdf
+/ (fcn) sym.calculate_key 16
+|   sym.calculate_key ();
+|           ; CALL XREF from sym.get_key (0x4007e1)
+|           0x0040074b      55             push rbp
+|           0x0040074c      4889e5         mov rbp, rsp
+|           0x0040074f      bf2b040000     mov edi, 0x42b              ; 1067
+|           0x00400754      e8adffffff     call sym.fib
+|           0x00400759      5d             pop rbp
+\           0x0040075a      c3             ret
+[0x0040074b]&gt; db 0x0040074b
+[0x7f5ca266c090]&gt; dc
+Be Quick Or Be Dead 2
+=====================
+
+Calculating key...
+hit breakpoint at: 40074b
+[0x0040074b]&gt; dr rip=0x0040075a
+0x0040074b -&gt;0x0040075a
+[0x0040074b]&gt; dr eax=0x2e8e4d99
+0x00000000 -&gt;0x2e8e4d99
+[0x0040074b]&gt; dc
+child stopped with signal 14
+[+] SIGNAL 14 errno=0 addr=0x00000000 code=128 ret=0
+Done calculating key
+Printing flag:
+picoCTF{the_fibonacci_sequence_can_be_done_fast_ec58967b}
+[+] signal 14 aka SIGALRM received 0
+</code></pre>
+
+<p>flag: <code>flag: picoCTF{the_fibonacci_sequence_can_be_done_fast_ec58967b}</code></p>
+
+<h1 id="be-quick-or-be-dead-3">be-quick-or-be-dead-3</h1>
+
+<h2 id="problem-8">Problem</h2>
+
+<p>As the <a href="https://www.youtube.com/watch?v=CTt1vk9nM9c">song</a> draws closer to the end, another executable <a href="/blog/picoctf-2018-writeup/reversing/be-quick-or-be-dead-3/be-quick-or-be-dead-3">be-quick-or-be-dead-3</a> suddenly pops up. This one requires even faster machines. Can you run it fast enough too? You can also find the executable in /problems/be-quick-or-be-dead-3_1_036263621db6b07c874d55f1e0bba59d.</p>
+
+<h2 id="solution-8">Solution</h2>
+
+<p>Following the same theme as the first two problems, we still have to speed up the <code>sym.calculate_key</code> function. Let&rsquo;s take a look at the function:</p>
+
+<pre><code>__int64 calculate_key()
+{
+  return calc(0x186B5u);
+}
+</code></pre>
+
+<pre><code>__int64 __fastcall calc(unsigned int a1)
+{
+  int v1; // ebx
+  int v2; // ebx
+  int v3; // er12
+  int v4; // ebx
+  unsigned int v6; // [rsp+1Ch] [rbp-14h]
+
+  if ( a1 &gt; 4 )
+  {
+    v1 = calc(a1 - 1);
+    v2 = v1 - (unsigned __int64)calc(a1 - 2);
+    v3 = calc(a1 - 3);
+    v4 = v3 - (unsigned __int64)calc(a1 - 4) + v2;
+    v6 = v4 + 4660 * (unsigned __int64)calc(a1 - 5);
+  }
+  else
+  {
+    v6 = a1 * a1 + 9029;
+  }
+  return v6;
+}
+</code></pre>
+
+<p>As you can see, this time the <code>sym.calculate_key</code> is using a custom algorithm that is also recursive. Let&rsquo;s try to pre-compute the value again with python. To make the code run faster and prevent stack overflow, we are going to compute and store the return values for <code>calc</code> which is a common tactics in <a href="https://en.wikipedia.org/wiki/Dynamic_programming">dynamic programming</a>:</p>
+
+<pre><code class="language-python">import sys
+
+l = 100030
+mem = [None]*l
+
+
+def calc(a1):
+  if a1 &lt; l and mem[a1] != None:
+    return mem[a1]
+
+  if a1 &gt; 4:
+    v1 = calc(a1 - 1)
+    v2 = v1 - calc(a1 - 2)
+    v3 = calc(a1 - 3)
+    v4 = v3 - calc(a1 - 4) + v2
+    v6 = v4 + 4660 * calc(a1 - 5)
+  else:
+    v6 = a1 * a1 + 9029
+  
+  if v6 &gt;= 4294967296:
+    v6 = v6 % 4294967296
+
+  while v6 &lt; 0:
+    v6 += 4294967296
+
+  if a1 &lt; l and mem[a1] == None:
+    mem[a1] = v6
+
+  return v6
+
+
+for i in range(l):
+  calc(i)
+
+print calc(0x186B5) # 0x221d8eea
+</code></pre>
+
+<p>Now with the output value, we can do the same thing as we did for <code>be-quick-or-be-dead-2</code> and substitute in the values at runtime:</p>
+
+<pre><code>[0x004005a0]&gt; aaaa
+[0x004005a0]&gt; pdf @ sym.calculate_key
+/ (fcn) sym.calculate_key 16
+|   sym.calculate_key ();
+|           ; CALL XREF from sym.get_key (0x400828)
+|           0x00400792      55             push rbp
+|           0x00400793      4889e5         mov rbp, rsp
+|           0x00400796      bfb5860100     mov edi, 0x186b5
+|           0x0040079b      e866ffffff     call sym.calc
+|           0x004007a0      5d             pop rbp
+\           0x004007a1      c3             ret
+[0x004005a0]&gt; ood
+[0x7f977ebb1090]&gt; db 0x00400792
+[0x7f977ebb1090]&gt; dc
+Be Quick Or Be Dead 3
+=====================
+
+Calculating key...
+hit breakpoint at: 400792
+[0x00400792]&gt; dr rip=0x004007a1
+0x00400792 -&gt;0x004007a1
+[0x00400792]&gt; dr eax=0x221d8eea
+0x00000000 -&gt;0x221d8eea
+[0x00400792]&gt; dc
+child stopped with signal 14
+[+] SIGNAL 14 errno=0 addr=0x00000000 code=128 ret=0
+Done calculating key
+Printing flag:
+picoCTF{dynamic_pr0gramming_ftw_a0b0b7f8}
+[+] signal 14 aka SIGALRM received 0
+</code></pre>
+
+<p>flag: <code>picoCTF{dynamic_pr0gramming_ftw_a0b0b7f8}</code></p>
+
+<h1 id="quackme-up">quackme up</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>The duck puns continue. Can you crack, I mean quack this program as well? You can find the <a href="/blog/picoctf-2018-writeup/reversing/quackme up/main">program</a> in /problems/quackme-up_4_5cc9019c8499d6d124cd8e8109a0f95b on the shell server.</p>
+
+<h2 id="solution-9">Solution</h2>
+
+<p>For this challenge, you have to reverse the <code>encrypt</code> function and decrypt the flag. Let&rsquo;s first look at the <code>encrypt</code> function:</p>
+
+<pre><code>int __cdecl encrypt(char *s)
+{
+  char v1; // al
+  signed int i; // [esp+8h] [ebp-10h]
+  signed int v4; // [esp+Ch] [ebp-Ch]
+
+  v4 = strlen(s);
+  for ( i = 0; i &lt; v4; ++i )
+  {
+    v1 = rol4(s[i]);
+    s[i] = ror8((char)(v1 ^ 0x16));
+  }
+  return v4;
+}
+</code></pre>
+
+<p>As you can see, the function performs two actions: <code>rol4</code> and <code>ror8</code>. To decrypt it, we just have to go in the reverse order. There is the decrypt method in python:</p>
+
+<pre><code class="language-python">cipher = '11 80 20 E0 22 53 72 A1 01 41 55 20 A0 C0 25 E3 35 40 55 30 85 55 70 20 C1'.replace(' ', '').decode('hex')
+
+# https://gist.github.com/c633/a7a5cde5ce1b679d3c0a
+rol = lambda val, r_bits, max_bits: \
+    (val &lt;&lt; r_bits%max_bits) &amp; (2**max_bits-1) | \
+    ((val &amp; (2**max_bits-1)) &gt;&gt; (max_bits-(r_bits%max_bits)))
+ 
+ror = lambda val, r_bits, max_bits: \
+    ((val &amp; (2**max_bits-1)) &gt;&gt; r_bits%max_bits) | \
+    (val &lt;&lt; (max_bits-(r_bits%max_bits)) &amp; (2**max_bits-1))
+ 
+
+output = ''
+for e in cipher:
+  output += chr(ror((rol(ord(e), 8, 8) ^ 0x16), 4, 8))
+print output
+</code></pre>
+
+<p>flag: <code>picoCTF{qu4ckm3_2e4b94fc}</code></p>
+
+<h1 id="radix-s-terminal">Radix&rsquo;s Terminal</h1>
+
+<h2 id="problem-10">Problem</h2>
+
+<p>Can you find the password to <a href="/blog/picoctf-2018-writeup/reversing/Radix's Terminal/radix">Radix&rsquo;s login</a>? You can also find the executable in /problems/radix-s-terminal_0_b6b476e9952f39511155a2e64fb75248?</p>
+
+<h2 id="solution-10">Solution</h2>
+
+<p>The hint is super helpful for this challenge. By reversing the program, we can see that it&rsquo;s just an implementation of the base64 encoding in assembly.</p>
+
+<p>Now knowing the encoding algorithm, we can decode the string quite quickly:</p>
+
+<pre><code class="language-python">&gt;&gt;&gt; 'cGljb0NURntiQXNFXzY0X2VOQ29EaU5nX2lTX0VBc1lfNDE3OTk0NTF9'.decode('base64')
+'picoCTF{bAsE_64_eNCoDiNg_iS_EAsY_41799451}'
+</code></pre>
+
+<p>flag: <code>picoCTF{bAsE_64_eNCoDiNg_iS_EAsY_41799451}</code></p>
+
+<h1 id="assembly-3">assembly-3</h1>
+
+<h2 id="problem-11">Problem</h2>
+
+<p>What does asm3(0xb5e8e971,0xc6b58a95,0xe20737e9) return? Submit the flag as a hexadecimal value (starting with &lsquo;0x&rsquo;). NOTE: Your submission for this question will NOT be in the normal flag format. <a href="/blog/picoctf-2018-writeup/reversing/assembly-3/end_asm_rev.S">Source</a> located in the directory at /problems/assembly-3_3_bfab45ee7af9befc86795220ffa362f4.</p>
+
+<h2 id="solution-11">Solution</h2>
+
+<p>For this challenge, you are suppose to learn about the different size accessors in assembly.</p>
+
+
+<figure>
+    
+        <img src="/blog/picoctf-2018-writeup/reversing/assembly-3/img.png" />
+    
+    
+    <figcaption>
+        <p>
+        
+        <a href="https://stackoverflow.com/questions/28429609/why-arent-the-higher-16-bits-in-eax-accessible-by-name-like-ax-ah-and-al"> 
+            Source: stackoverflow
+        </a> 
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<p>However, because I am tired at this point, I decided to let a computer do this one for me.</p>
+
+<p>I used this assembly emulator for python called <a href="https://www.unicorn-engine.org/">unicorn</a>, and here is my code:</p>
+
+<pre><code class="language-python">from __future__ import print_function
+from unicorn import *
+from unicorn.x86_const import *
+from pwn import *
+
+X86_CODE32 = asm('mov eax, 0x19; xor al, al; mov ah, BYTE PTR [ebp+0xa]; sal ax, 0x10; sub al, BYTE PTR [ebp+0xd]; add ah, BYTE PTR [ebp+0xc]; xor ax, WORD PTR [ebp+0x12]', arch = 'i386', os = 'linux')
+
+ADDRESS = 0x1000000
+STACK = 0x2000000
+print(&quot;Emulate i386 code&quot;)
+try:
+  mu = Uc(UC_ARCH_X86, UC_MODE_32)
+
+  mu.mem_map(ADDRESS, 2 * 1024 * 1024)
+  mu.mem_map(STACK, 2 * 1024 * 1024)
+
+  mu.mem_write(ADDRESS, X86_CODE32)
+  mu.mem_write(STACK, '\x0a\x0a\x0a\x0a\x0a\x0a\x0a\x0a'+p32(0xb5e8e971)+p32(0xc6b58a95)+p32(0xe20737e9))
+ 
+  mu.reg_write(UC_X86_REG_EBP, STACK)
+  
+  mu.emu_start(ADDRESS, ADDRESS + len(X86_CODE32))
+
+  print(&quot;Emulation done. Below is the CPU context&quot;)
+
+  r_eax = mu.reg_read(UC_X86_REG_EAX)
+  r_ebx = mu.reg_read(UC_X86_REG_EBX)
+  print(&quot;&gt;&gt;&gt; EAX = 0x%x&quot; % r_eax) # 0x7771
+except UcError as e:
+  print(&quot;ERROR: %s&quot; % e)
+</code></pre>
+
+<p>flag: <code>0x7771</code></p>
+
+<h1 id="keygen-me-1">keygen-me-1</h1>
+
+<h2 id="problem-12">Problem</h2>
+
+<p>Can you generate a valid product key for the validation <a href="/blog/picoctf-2018-writeup/reversing/keygen-me-1/activate">program</a> in /problems/keygen-me-1_1_8eb35cc7858ff1d2f55d30e5428f30a7</p>
+
+<h2 id="solution-12">Solution</h2>
+
+<p>Let&rsquo;s start by looking at the main function:</p>
+
+<pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  int result; // eax
+
+  setvbuf(_bss_start, 0, 2, 0);
+  if ( argc &gt; 1 )
+  {
+    if ( (unsigned __int8)check_valid_key((char *)argv[1]) )// 16 char of uppercase letters or numbers
+    {
+      if ( validate_key((char *)argv[1]) )
+      {
+        printf(&quot;Product Activated Successfully: &quot;);
+        print_flag(&amp;argc);
+        result = 0;
+      }
+      else
+      {
+        puts(&quot;INVALID Product Key.&quot;);
+        result = -1;
+      }
+    }
+    else
+    {
+      puts(&quot;Please Provide a VALID 16 byte Product Key.&quot;);
+      result = -1;
+    }
+  }
+  else
+  {
+    puts(&quot;Usage: ./activate &lt;PRODUCT_KEY&gt;&quot;);
+    result = -1;
+  }
+  return result;
+}
+</code></pre>
+
+<p>As you can see, we need to input a 16 byte key that will make <code>check_valid_key</code> return true. Let&rsquo;s look at <code>check_valid_key</code> then:</p>
+
+<pre><code>signed int __cdecl check_valid_key(char *a1)
+{
+  signed int result; // eax
+  char v2; // [esp+Bh] [ebp-5h]
+  int v3; // [esp+Ch] [ebp-4h]
+
+  if ( !a1 )
+    return 0;
+  v2 = *a1;
+  v3 = 0;
+  while ( v2 )
+  {
+    if ( !(unsigned __int8)check_valid_char(v2) )
+      return 0;
+    v2 = a1[++v3];
+  }
+  if ( v3 == 16 )
+    result = 16;
+  else
+    result = 0;
+  return result;
+}
+</code></pre>
+
+<p>As you can see, it is a pretty easy algorithm. I then translated the function into python:</p>
+
+<pre><code class="language-python">def isValid(key):
+  s = 0
+  for i in range(len(key)-1):
+    s += (o(key[i])+1)*(i+1)
+  print s%0x24
+  return s % 0x24 == o(key[len(key)-1])
+
+def o(c):
+  v = ord(c)
+  if v &gt; 0x2f and v &lt;= 0x39:
+    return v-0x30
+  if v &lt;= 0x40 or v &gt; 0x5a:
+    print 'wrong'
+    exit()
+  return v - 0x37
+</code></pre>
+
+<p>Now it is just about tinkering with the function to get a valid key. In the end, I land on this:</p>
+
+<pre><code class="language-python">key = 'Z'*14+'A'+'L'
+print isValid(key) # True
+print key # ZZZZZZZZZZZZZZAL
+</code></pre>
+
+<p>After this, you just have to input the key to get the flag.</p>
+
+<p>flag: <code>picoCTF{k3yg3n5_4r3_s0_s1mp13_3718231394}</code></p>
+
+<h1 id="assembly-4">assembly-4</h1>
+
+<h2 id="problem-13">Problem</h2>
+
+<p>Can you find the flag using the following assembly <a href="/blog/picoctf-2018-writeup/reversing/assembly-4/comp.nasm">source</a>? WARNING: It is VERY long&hellip;</p>
+
+<h2 id="solution-13">Solution</h2>
+
+<p>Because the source code is so long this time, it becomes easier to just build and run the code compared to read it.</p>
+
+<p>The <code>.nasm</code> extension reveals that it is a <a href="https://www.nasm.us/">nasm</a> assembly file.</p>
+
+<p>Here are the step to build and run it:</p>
+
+<pre><code>$ nasm -f elf32 comp.nasm
+$ gcc -m32 comp.o -o comp
+$ ./comp
+picoCTF{1_h0p3_y0u_c0mP1l3d_tH15_3205858729}
+</code></pre>
+
+<p>flag: <code>picoCTF{1_h0p3_y0u_c0mP1l3d_tH15_3205858729}</code></p>
+
+<h1 id="special-pw">special-pw</h1>
+
+<h2 id="problem-14">Problem</h2>
+
+<p>Can you figure out the right argument to this program to login? We couldn&rsquo;t manage to get a copy of the binary but we did manage to <a href="/blog/picoctf-2018-writeup/reversing/special-pw/special_pw.S">dump</a> some machine code and memory from the running process.</p>
+
+<h2 id="solution-14">Solution</h2>
+
+<p>Again, it is totally possible to reverse the assembly code by hand; however, I am lazy&hellip;</p>
+
+<p>Because I want tools such as radare2 to help me view the code, I need to first build the assembly (remember to remove the memory dump at the end first):</p>
+
+<pre><code>$ gcc -m32 -c original.S -o original.o
+$ gcc -m32 ./original.o -o original
+$ chmod +x ./original
+</code></pre>
+
+<p>Now with a proper elf binary, I can load up the binary in any tool that I prefer. Here is the main function:</p>
+
+<pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  char *character; // ST0C_4
+  signed int ref; // [esp+0h] [ebp-10h]
+  int length; // [esp+4h] [ebp-Ch]
+  int counter; // [esp+8h] [ebp-8h]
+  const char *i; // [esp+Ch] [ebp-4h]
+  const char *input; // [esp+Ch] [ebp-4h]
+
+  length = 0;
+  for ( i = argv[1]; *i; ++i )
+    ++length;
+  for ( counter = 0; length - 3 &gt; counter; ++counter )
+  {
+    character = (char *)&amp;argv[1][counter];
+    *character ^= 0xDEu;
+    *(_WORD *)character = __ROR2__(*(_WORD *)character, 13);
+    *(_DWORD *)character = __ROL4__(*(_DWORD *)character, 15);
+  }
+  input = argv[1];
+  for ( ref = 56212325; *(_BYTE *)ref; ++ref )
+  {
+    if ( *input != *(_BYTE *)ref )
+      return 0;
+    ++input;
+  }
+  return argv[1][ref - 0x359BB65] == 0;
+}
+</code></pre>
+
+<p>Much better. Now, I have to implement the decryption algorithm in python:</p>
+
+<pre><code class="language-python">from struct import unpack, pack
+
+# https://gist.github.com/c633/a7a5cde5ce1b679d3c0a
+rol = lambda val, r_bits, max_bits: \
+    (val &lt;&lt; r_bits%max_bits) &amp; (2**max_bits-1) | \
+    ((val &amp; (2**max_bits-1)) &gt;&gt; (max_bits-(r_bits%max_bits)))
+
+ror = lambda val, r_bits, max_bits: \
+    ((val &amp; (2**max_bits-1)) &gt;&gt; r_bits%max_bits) | \
+    (val &lt;&lt; (max_bits-(r_bits%max_bits)) &amp; (2**max_bits-1))
+
+data = 'b1d3324cfce6ef5eede466cd57f5e17fcd7f55f6e964e7c97f75e954e64df779fcfc5171f93e18d900'.decode('hex')
+data = data[:-1]
+
+
+for i in range(len(data)-3-1, -1, -1):
+  v, = unpack('&lt;I', data[i:i+4])
+  data = data[:i] + pack('&lt;I', ror(v, 15, 4*8)) + data[i+4:]
+
+  v, = unpack('&lt;H', data[i:i+2])
+  data = data[:i] + pack('&lt;H', rol(v, 13, 2*8)) + data[i+2:]
+  
+  v, = unpack('&lt;B', data[i:i+1])
+  data = data[:i] + pack('&lt;B', v ^ 0xde) + data[i+1:]
+
+print data # picoCTF{gEt_y0Ur_sH1fT5_r1gHt_0cb381c60}
+</code></pre>
+
+<p>One thing to note in the code above is that the null byte at the end have to be removed. Also, the <a href="https://en.wikipedia.org/wiki/Endianness">endianness</a> have to be correct.</p>
+
+<p>flag: <code>picoCTF{gEt_y0Ur_sH1fT5_r1gHt_0cb381c60}</code></p>
+
+<h1 id="keygen-me-2">keygen-me-2</h1>
+
+<h2 id="problem-15">Problem</h2>
+
+<p>The software has been updated. Can you find us a new product key for the <a href="/blog/picoctf-2018-writeup/reversing/keygen-me-2/activate">program</a> in /problems/keygen-me-2_0_ac2a45bc27456d666f2bbb6921829203</p>
+
+<h2 id="solution-15">Solution</h2>
+
+<p>This time the <code>validate_key</code> function is a lot more complex:</p>
+
+<pre><code>_BOOL4 __cdecl validate_key(char *key)
+{
+  strlen(key);
+  return key_constraint_01(key)
+      &amp;&amp; key_constraint_02((int)key)
+      &amp;&amp; key_constraint_03((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_04((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_05((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_06((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_07((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_08((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_09((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_10((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_11((unsigned __int8 *)key)
+      &amp;&amp; key_constraint_12((unsigned __int8 *)key);
+}
+</code></pre>
+
+<p>As you can see, 12 different constraints have to be met. This makes the process of generating a valid key by hand basicly impossible. This is when <a href="https://github.com/Z3Prover/z3">z3 prover</a> comes in. z3 is a <a href="https://en.wikipedia.org/wiki/Boolean_satisfiability_problem">SAT solver</a> that outputs possible inputs that meets certain constraints. We can easily use z3 with python:</p>
+
+<pre><code class="language-python">from z3 import *
+
+def m(a, b):
+  return If(a % b &gt;= 0,
+    a % b,
+    a % b + b)
+
+s = Solver()
+
+v = []
+for i in range(16):
+  e = Int('v'+str(i))
+  v.append(e)
+  s.add(e &gt;= 0)
+  s.add(e &lt;= 35)
+
+s.add(m(v[0] + v[1], 36) == 14)
+s.add(m(v[2] + v[3], 36) == 24)
+s.add(m(v[2] - v[0], 36) == 6)
+s.add(m(v[1] + v[3] + v[5], 36) == 4)
+s.add(m(v[2] + v[4] + v[6], 36) == 13)
+s.add(m(v[3] + v[4] + v[5], 36) == 22)
+s.add(m(v[6] + v[8] + v[10], 36) == 31)
+s.add(m(v[1] + v[4] + v[7], 36) == 7)
+s.add(m(v[9] + v[12] + v[15], 36) == 20)
+s.add(m(v[13] + v[14] + v[15], 36) == 12)
+s.add(m(v[8] + v[9] + v[10], 36) == 27)
+s.add(m(v[7] + v[12] + v[13], 36) == 23)
+   
+# print(s.check())
+# m = s.model()
+# print m
+
+values = [31, 19, 1, 23, 1, 34, 11, 23, 8, 7, 12, 0, 16, 20, 31, 33]
+
+output = ''
+for i in range(0, 16):
+  v = values[i]
+  print v
+  if v &lt; 10:
+    output += chr(v+0x30)
+  else:
+    output += chr(v+0x37)
+print output # VJ1N1YBN87C0GKVX
+</code></pre>
+
+<p>Using this script, we can generate a valid key, and by inputing the key, we are able to obtain the flag.</p>
+
+<p>flag: <code>picoCTF{c0n5tr41nt_50lv1nG_15_W4y_f45t3r_783243818}</code></p>
+
+<h1 id="circuit123">circuit123</h1>
+
+<h2 id="problem-16">Problem</h2>
+
+<p>Can you crack the key to <a href="/blog/picoctf-2018-writeup/reversing/circuit123/decrypt.py">decrypt</a> <a href="/blog/picoctf-2018-writeup/reversing/circuit123/map2.txt">map2</a> for us? The key to <a href="/blog/picoctf-2018-writeup/reversing/circuit123/map1.txt">map1</a> is 11443513758266689915.</p>
+
+<h2 id="solution-16">Solution</h2>
+
+<p>Similar to <code>keygen-me-2</code>, we can solve this problem using a SAT solver (z3 in this case).</p>
+
+<pre><code class="language-python">from z3 import *
+
+s = Solver()
+
+with open('./map2.txt', 'r') as f:
+  cipher, chalbox = eval(f.read())
+
+length, gates, check = chalbox
+
+v = []
+for i in range(length):
+  e = Bool('v'+str(i))
+  v.append(e)
+
+for name, args in gates:
+  if name == 'true':
+    v.append(True)
+  else:
+    u1 = Xor(v[args[0][0]], args[0][1])
+    u2 = Xor(v[args[1][0]], args[1][1])
+    if name == 'or':
+      v.append(Or(u1, u2))
+    elif name == 'xor':
+      v.append(Xor(u1, u2))
+
+s.add(Xor(v[check[0]], check[1]) == True)
+
+# print s.check()
+# print s.model()
+
+# values = [1, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 1]
+values = [1, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 1, 0, 1, 0, 0, 1, 0, 1]
+values = values[::-1]
+output = 0
+for i in values:
+  print i
+  if i == 1:
+    output += 1
+  output &lt;&lt;= 1
+print output &gt;&gt; 1 # 219465169949186335766963147192904921805
+</code></pre>
+
+<p>flag: <code>picoCTF{36cc0cc10d273941c34694abdb21580d__aw350m3_ari7hm37ic__}</code></p>
+
+<blockquote>
+<p>Feel free to leave a comment if any of the challenges is not well explained.</p>
+</blockquote>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

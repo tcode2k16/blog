@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pwn on Alan&#39;s Blog</title>
+    <link>https://tcode2k16.github.io/blog/tags/pwn/</link>
+    <description>Recent content in Pwn on Alan&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 13 Oct 2018 08:56:01 +0800</lastBuildDate>
+    
+	<atom:link href="https://tcode2k16.github.io/blog/tags/pwn/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>PicoCTF 2018 Writeup: Binary Exploitation</title>
+      <link>https://tcode2k16.github.io/blog/posts/picoctf-2018-writeup/binary-exploitation/</link>
+      <pubDate>Sat, 13 Oct 2018 08:56:01 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/picoctf-2018-writeup/binary-exploitation/</guid>
+      <description>buffer overflow 0 Problem Let&amp;rsquo;s start off simple, can you overflow the right buffer in this program to get the flag? You can also find it in /problems/buffer-overflow-0_1_316c391426b9319fbdfb523ee15b37db on the shell server. Source.
+Solution Let&amp;rsquo;s first take a look at the source code provided:
+#include &amp;lt;stdio.h&amp;gt; #include &amp;lt;stdlib.h&amp;gt; #include &amp;lt;string.h&amp;gt; #include &amp;lt;signal.h&amp;gt; #define FLAGSIZE_MAX 64 char flag[FLAGSIZE_MAX]; void sigsegv_handler(int sig) { fprintf(stderr, &amp;quot;%s\n&amp;quot;, flag); fflush(stderr); exit(1); } void vuln(char *input){ char buf[16]; strcpy(buf, input); } int main(int argc, char **argv){ FILE *f = fopen(&amp;quot;flag.</description>
+    </item>
+    
+  </channel>
+</rss>
