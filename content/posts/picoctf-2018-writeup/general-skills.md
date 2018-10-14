@@ -1031,3 +1031,5 @@ $ sudo pip install tensorflow keras Pillow numpy ImageHash
 ```
 
 flag: `picoCTF{n0w_th4t3_4_g00d_girl_9ceacf46}`
+
+> Feel free to leave a comment if any of the challenges is not well explained.

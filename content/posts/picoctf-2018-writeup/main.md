@@ -17,8 +17,8 @@ description: solves for picoCTF 2018 challenges
 * [Reversing Challenges](/blog/posts/picoctf-2018-writeup/reversing/)
 * [Binary Exploitation Challenges](/blog/posts/picoctf-2018-writeup/binary-exploitation/)
 * [Forensics Challenges](/blog/posts/picoctf-2018-writeup/forensics/)
+* [Cryptography Challenges](http://localhost:1313/blog/posts/picoctf-2018-writeup/cryptography/)
 * Web Exploitation Challenges - **Coming soon**
-* Cryptography Challenges - **Coming soon**
 
 <!-- * [Web Exploitation Challenges](/blog/posts/picoctf-2018-writeup/web-exploitation/)
 * [Cryptography Challenges](/blog/posts/picoctf-2018-writeup/cryptography/) -->

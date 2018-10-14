@@ -412,3 +412,5 @@ Can you find the flag encoded inside this image? You can also find the file in /
 Ryan Jung on our team solved this challenge. It is about looking at the least significant bit of each pixel value.
 
 flag: `picoCTF{st0r3d_iN_th3_l345t_s1gn1f1c4nT_b1t5_2705826400}`
+
+> Feel free to leave a comment if any of the challenges is not well explained.
