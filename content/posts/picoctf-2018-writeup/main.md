@@ -16,7 +16,7 @@ description: solves for picoCTF 2018 challenges
 * [General Skills Challenges](/blog/posts/picoctf-2018-writeup/general-skills/)
 * [Reversing Challenges](/blog/posts/picoctf-2018-writeup/reversing/)
 * [Binary Exploitation Challenges](/blog/posts/picoctf-2018-writeup/binary-exploitation/)
-* [Forensics Challenges](/blog/posts/picoctf-2018-writeup/forensics/) - **Work in progress**
+* [Forensics Challenges](/blog/posts/picoctf-2018-writeup/forensics/)
 * Web Exploitation Challenges - **Coming soon**
 * Cryptography Challenges - **Coming soon**
 

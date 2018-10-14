@@ -131,7 +131,15 @@ There used to be a bunch of [animals](/blog/picoctf-2018-writeup/Forensics/Recov
 
 ## Solution
 
-TODO
+This problem is about recovering files from a FAT filesystem. It can be done using [TestDisk] (https://www.cgsecurity.org/wiki/TestDisk), a powerful free data recovery software.
+
+You can follow [this guide](https://www.cgsecurity.org/wiki/TestDisk:_undelete_file_for_FAT) to recover the `theflag.jpg` file.
+
+<script src="https://asciinema.org/a/kNPluVGT6AmxVuv0R4XstIm0c.js" id="asciicast-kNPluVGT6AmxVuv0R4XstIm0c" async></script>
+
+{{< figure src="/blog/picoctf-2018-writeup/Forensics/Recovering From the Snap/theflag.jpg" attr="theflag.jpg" >}}
+
+flag: `picoCTF{th3_5n4p_happ3n3d}`
 
 # admin panel
 
@@ -272,11 +280,13 @@ flag: `picoCTF{a7DB29eCf7dB9960f0A19Fdde9d00Af0}`
 
 ## Problem
 
-Some odd [traffic](/blog/picoctf-2018-writeup/Forensics/Lying Out/traffic.png) has been detected on the network, can you identify it? More [info](/blog/picoctf-2018-writeup/Forensics/Lying Out/info.txt) here. Connect with nc 2018shell2.picoctf.com 27108 to help us answer some questions.
+Some odd [traffic](/blog/picoctf-2018-writeup/Forensics/Lying Out/traffic.png) has been detected on the network, can you identify it? More [info](/blog/picoctf-2018-writeup/Forensics/Lying Out/info.txt) here. Connect with `nc 2018shell2.picoctf.com 27108` to help us answer some questions.
 
 ## Solution
 
-TODO
+Just read the graph and do this problem by hand.
+
+flag: `picoCTF{w4y_0ut_de051415}`
 
 # What's My Name?
 
@@ -354,11 +364,42 @@ flag: `picoCTF{e52f4714963eb207ae54fd424ce3c7d4}`
 
 ## Problem
 
-There has been some [malware](/blog/picoctf-2018-writeup/Forensics/Malware Shops/plot.png) detected, can you help with the analysis? More [info](/blog/picoctf-2018-writeup/Forensics/Malware Shops/info.txt) here. Connect with nc 2018shell2.picoctf.com 46168.
+There has been some [malware](/blog/picoctf-2018-writeup/Forensics/Malware Shops/plot.png) detected, can you help with the analysis? More [info](/blog/picoctf-2018-writeup/Forensics/Malware Shops/info.txt) here. Connect with `nc 2018shell2.picoctf.com 46168`.
 
 ## Solution
 
-TODO
+Just read the graph and do this problem by hand.
+
+```
+❯ nc 2018shell2.picoctf.com 46168
+You'll need to consult the file `clusters.png` to answer the following questions.
+
+
+How many attackers created the malware in this dataset?
+5
+Correct!
+
+
+In the following sample of files from the larger dataset, which file was made by the same attacker who made the file 3ce8eb6f? Indicate your answer by entering that file's hash.
+       hash  jmp_count  add_count
+0  3ce8eb6f       33.0       28.0
+1  55489271       40.0        2.0
+2  33d91680       39.0       29.0
+3  ebaf5ccd        9.0       17.0
+4  e9c0ac07       17.0       61.0
+5  628e79cf        9.0       18.0
+6  b3ae7861       41.0       10.0
+7  cc251d4b       16.0       41.0
+8  0c91a83b       17.0       65.0
+9  97a0fc46       10.0       38.0
+33d91680
+Correct!
+
+
+Great job. You've earned the flag: picoCTF{w4y_0ut_dea1794b}
+```
+
+flag: `picoCTF{w4y_0ut_dea1794b}`
 
 # LoadSomeBits
 
@@ -368,4 +409,6 @@ Can you find the flag encoded inside this image? You can also find the file in /
 
 ## Solution
 
-TODO
+Ryan Jung on our team solved this challenge. It is about looking at the least significant bit of each pixel value.
+
+flag: `picoCTF{st0r3d_iN_th3_l345t_s1gn1f1c4nT_b1t5_2705826400}`

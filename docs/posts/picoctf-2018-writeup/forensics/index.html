@@ -50,8 +50,8 @@
                     </h1>
                     <h2 class="headline">
                     Oct 13, 2018 08:56
-                    · 1143 words
-                    · 6 minute read
+                    · 1331 words
+                    · 7 minute read
                       <span class="tags">
                       
                       
@@ -283,7 +283,31 @@ sh.interactive()
 
 <h2 id="solution-4">Solution</h2>
 
-<p>TODO</p>
+<p>This problem is about recovering files from a FAT filesystem. It can be done using <a href="https://www.cgsecurity.org/wiki/TestDisk">TestDisk</a>, a powerful free data recovery software.</p>
+
+<p>You can follow <a href="https://www.cgsecurity.org/wiki/TestDisk:_undelete_file_for_FAT">this guide</a> to recover the <code>theflag.jpg</code> file.</p>
+
+<script src="https://asciinema.org/a/kNPluVGT6AmxVuv0R4XstIm0c.js" id="asciicast-kNPluVGT6AmxVuv0R4XstIm0c" async></script>
+
+
+<figure>
+    
+        <img src="/blog/picoctf-2018-writeup/Forensics/Recovering%20From%20the%20Snap/theflag.jpg" />
+    
+    
+    <figcaption>
+        <p>
+        
+        
+            theflag.jpg
+        
+        </p> 
+    </figcaption>
+    
+</figure>
+
+
+<p>flag: <code>picoCTF{th3_5n4p_happ3n3d}</code></p>
 
 <h1 id="admin-panel">admin panel</h1>
 
@@ -441,11 +465,13 @@ with open('fixed.img', 'wb') as f:
 
 <h2 id="problem-10">Problem</h2>
 
-<p>Some odd <a href="/blog/picoctf-2018-writeup/Forensics/Lying Out/traffic.png">traffic</a> has been detected on the network, can you identify it? More <a href="/blog/picoctf-2018-writeup/Forensics/Lying Out/info.txt">info</a> here. Connect with nc 2018shell2.picoctf.com 27108 to help us answer some questions.</p>
+<p>Some odd <a href="/blog/picoctf-2018-writeup/Forensics/Lying Out/traffic.png">traffic</a> has been detected on the network, can you identify it? More <a href="/blog/picoctf-2018-writeup/Forensics/Lying Out/info.txt">info</a> here. Connect with <code>nc 2018shell2.picoctf.com 27108</code> to help us answer some questions.</p>
 
 <h2 id="solution-10">Solution</h2>
 
-<p>TODO</p>
+<p>Just read the graph and do this problem by hand.</p>
+
+<p>flag: <code>picoCTF{w4y_0ut_de051415}</code></p>
 
 <h1 id="what-s-my-name">What&rsquo;s My Name?</h1>
 
@@ -527,11 +553,41 @@ gef➤  x 0x080610f0
 
 <h2 id="problem-13">Problem</h2>
 
-<p>There has been some <a href="/blog/picoctf-2018-writeup/Forensics/Malware Shops/plot.png">malware</a> detected, can you help with the analysis? More <a href="/blog/picoctf-2018-writeup/Forensics/Malware Shops/info.txt">info</a> here. Connect with nc 2018shell2.picoctf.com 46168.</p>
+<p>There has been some <a href="/blog/picoctf-2018-writeup/Forensics/Malware Shops/plot.png">malware</a> detected, can you help with the analysis? More <a href="/blog/picoctf-2018-writeup/Forensics/Malware Shops/info.txt">info</a> here. Connect with <code>nc 2018shell2.picoctf.com 46168</code>.</p>
 
 <h2 id="solution-13">Solution</h2>
 
-<p>TODO</p>
+<p>Just read the graph and do this problem by hand.</p>
+
+<pre><code>❯ nc 2018shell2.picoctf.com 46168
+You'll need to consult the file `clusters.png` to answer the following questions.
+
+
+How many attackers created the malware in this dataset?
+5
+Correct!
+
+
+In the following sample of files from the larger dataset, which file was made by the same attacker who made the file 3ce8eb6f? Indicate your answer by entering that file's hash.
+       hash  jmp_count  add_count
+0  3ce8eb6f       33.0       28.0
+1  55489271       40.0        2.0
+2  33d91680       39.0       29.0
+3  ebaf5ccd        9.0       17.0
+4  e9c0ac07       17.0       61.0
+5  628e79cf        9.0       18.0
+6  b3ae7861       41.0       10.0
+7  cc251d4b       16.0       41.0
+8  0c91a83b       17.0       65.0
+9  97a0fc46       10.0       38.0
+33d91680
+Correct!
+
+
+Great job. You've earned the flag: picoCTF{w4y_0ut_dea1794b}
+</code></pre>
+
+<p>flag: <code>picoCTF{w4y_0ut_dea1794b}</code></p>
 
 <h1 id="loadsomebits">LoadSomeBits</h1>
 
@@ -541,7 +597,9 @@ gef➤  x 0x080610f0
 
 <h2 id="solution-14">Solution</h2>
 
-<p>TODO</p>
+<p>Ryan Jung on our team solved this challenge. It is about looking at the least significant bit of each pixel value.</p>
+
+<p>flag: <code>picoCTF{st0r3d_iN_th3_l345t_s1gn1f1c4nT_b1t5_2705826400}</code></p>
 
                 </section>
             </article>
