@@ -89,7 +89,10 @@ alanc@pico-2018-shell-2:~$ cd /problems/reversing-warmup-1_0_f99f89de33522c93964
       <pubDate>Sat, 13 Oct 2018 08:56:01 +0800</pubDate>
       
       <guid>https://tcode2k16.github.io/blog/posts/picoctf-2018-writeup/main/</guid>
-      <description> Writeups  General Skills Challenges Reversing Challenges Binary Exploitation Challenges Forensics Challenges Cryptography Challenges Web Exploitation Challenges  </description>
+      <description> Writeups Here are the writeups from my team, SAS Hackers:
+ General Skills Challenges Reversing Challenges Binary Exploitation Challenges Forensics Challenges Cryptography Challenges Web Exploitation Challenges  Ranking Our team ended at No. 46 on the scoreboard.
+Here is an image of the scoreboard at the end of the competition:
+  </description>
     </item>
     
   </channel>
