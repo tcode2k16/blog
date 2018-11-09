@@ -160,7 +160,7 @@ I decided to go with javascript for writing this program because:
 * One, I am quite fluent with the language which is important when you are trying to learn another brand new thing.
 * Two, javascript is very friendly to json objects and the web standard which is a huge plus (I tried python first for this challenge but just can't get the python script to pass the `abi` object correctly).
 
-I written out small pieces of code that interacts with each piece of the API. Here are just a few that are important:
+I have written out small pieces of code that interacts with each piece of the API. Here are just a few that are important:
 
 ```javascript
 // call the subscribe function
@@ -186,17 +186,17 @@ r = await axios.post('http://142.93.103.129:3000/get_flag', {
 });
 ```
 
-One key point in the progress is to correctly compile the application binary interface (ABI) for the smart contract. You can think of ABI as the protocol that dictates how machines talks to each other, and because every smart contract is unique, each have its own ABI that is directly compiled from the solidity source code.
+One key point in the progress is to correctly compile the application binary interface (ABI) for the smart contract. You can think of ABI as the protocol that dictates how machines talk to each other, and because every smart contract is unique, each has its own ABI that is directly compiled from the solidity source code.
 
 I used [solcjs](https://github.com/ethereum/solc-js) to compile the ABI because I am already using javascript for my program, but keep in mind that a web tool such as [Remix](https://remix.ethereum.org/) can do the job just as well.
 
 ## Deeper into the abyss
 
-Now finally, we can start to look at the smart contract itself and find the vulnerability. I relayed heavily on this article: [Solidity Security: Comprehensive list of known attack vectors and common anti-patterns](https://blog.sigmaprime.io/solidity-security.html) as it is both up-to-date ad easy to understand.
+Now finally, we can start to look at the smart contract itself and find the vulnerability. I relayed heavily on this article: [Solidity Security: Comprehensive list of known attack vectors and common anti-patterns](https://blog.sigmaprime.io/solidity-security.html) as it is both up-to-date and easy to understand.
 
-I patiently went through each and everyone of the possible attack vectors and tried to spot them in the smart contract code provided.
+I patiently went through each and every one of the possible attack vectors and tried to spot them in the smart contract code provided.
 
-Finally, my effort paid off as I found the vulnerability that I am looking for: [Unintialised Storage Pointers](https://blog.sigmaprime.io/solidity-security.html#storage).
+Finally, my effort paid off as I found the vulnerability that I am looking for: [Uninitialised Storage Pointers](https://blog.sigmaprime.io/solidity-security.html#storage).
 
 ## Problem with the void
 
@@ -223,7 +223,7 @@ function subscribe(address subscriber, uint subscription) public {
 }  
 ```
 
-To spot this vulnerability, you need to first know how variables are stored in the ethereum virtual machine. In the ethereum VM, there are two types of variables: `storage` and `memory` variables, where `storage` variables are persistent and `memory` variables are not. The two equates to `global` and `local` variables in other programming languages. If not explicitly declared, the variable type when be determined by the the content of that variable. For example, `uint` will default to `memory` and a struct such as `Subscriber` will default to `storage`.
+To spot this vulnerability, you need to first know how variables are stored in the ethereum virtual machine. In the ethereum VM, there are two types of variables: `storage` and `memory` variables, where `storage` variables are persistent and `memory` variables are not. The two equates to `global` and `local` variables in other programming languages. If not explicitly declared, the variable type when be determined by the content of that variable. For example, `uint` will default to `memory` and a struct such as `Subscriber` will default to `storage`.
 
 As you can see above, the Subscriber variable `s` is declared without an explicit type, and in this case, it defaulted to global scope as a `storage` variable. Furthermore, because there's no `Subscriber` initialized for this pointer, the variable `s` will just point to the top two items/slots in the global scope:
 
@@ -311,7 +311,7 @@ flag: `DCTF{49fa9bf37efd8d4b2c4ad4ce8a60f8022945bf1f6334c76cd729f2e029cf178c}`
 
 # Extra
 
-Despite being our first international CTF, my team, [HATS Singapore](https://ctftime.org/team/58574), ended at No. 12 on the scoreboard out of 17 teams, and we were able to beat [duca](https://defcon.org.ua/) :).
+Despite being our first international CTF, my team, [HATS Singapore](https://ctftime.org/team/58574), ended at No. 12 on the scoreboard out of 17 teams, and we were able to beat [duca](https://defcon.org.ua/) :)
 
 
 {{< figure src="/blog/2018/dctf-final-writeup/ranks.png" >}}

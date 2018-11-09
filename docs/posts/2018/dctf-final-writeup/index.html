@@ -50,7 +50,7 @@
                     </h1>
                     <h2 class="headline">
                     Nov 9, 2018 14:22
-                    · 1488 words
+                    · 1489 words
                     · 7 minute read
                       <span class="tags">
                       
@@ -240,7 +240,7 @@ contract DCTF18_Subscribers{
 <li>Two, javascript is very friendly to json objects and the web standard which is a huge plus (I tried python first for this challenge but just can&rsquo;t get the python script to pass the <code>abi</code> object correctly).</li>
 </ul>
 
-<p>I written out small pieces of code that interacts with each piece of the API. Here are just a few that are important:</p>
+<p>I have written out small pieces of code that interacts with each piece of the API. Here are just a few that are important:</p>
 
 <pre><code class="language-javascript">// call the subscribe function
 let r = await axios.post('http://142.93.103.129:3000/call_contract', {
@@ -265,17 +265,17 @@ r = await axios.post('http://142.93.103.129:3000/get_flag', {
 });
 </code></pre>
 
-<p>One key point in the progress is to correctly compile the application binary interface (ABI) for the smart contract. You can think of ABI as the protocol that dictates how machines talks to each other, and because every smart contract is unique, each have its own ABI that is directly compiled from the solidity source code.</p>
+<p>One key point in the progress is to correctly compile the application binary interface (ABI) for the smart contract. You can think of ABI as the protocol that dictates how machines talk to each other, and because every smart contract is unique, each has its own ABI that is directly compiled from the solidity source code.</p>
 
 <p>I used <a href="https://github.com/ethereum/solc-js">solcjs</a> to compile the ABI because I am already using javascript for my program, but keep in mind that a web tool such as <a href="https://remix.ethereum.org/">Remix</a> can do the job just as well.</p>
 
 <h2 id="deeper-into-the-abyss">Deeper into the abyss</h2>
 
-<p>Now finally, we can start to look at the smart contract itself and find the vulnerability. I relayed heavily on this article: <a href="https://blog.sigmaprime.io/solidity-security.html">Solidity Security: Comprehensive list of known attack vectors and common anti-patterns</a> as it is both up-to-date ad easy to understand.</p>
+<p>Now finally, we can start to look at the smart contract itself and find the vulnerability. I relayed heavily on this article: <a href="https://blog.sigmaprime.io/solidity-security.html">Solidity Security: Comprehensive list of known attack vectors and common anti-patterns</a> as it is both up-to-date and easy to understand.</p>
 
-<p>I patiently went through each and everyone of the possible attack vectors and tried to spot them in the smart contract code provided.</p>
+<p>I patiently went through each and every one of the possible attack vectors and tried to spot them in the smart contract code provided.</p>
 
-<p>Finally, my effort paid off as I found the vulnerability that I am looking for: <a href="https://blog.sigmaprime.io/solidity-security.html#storage">Unintialised Storage Pointers</a>.</p>
+<p>Finally, my effort paid off as I found the vulnerability that I am looking for: <a href="https://blog.sigmaprime.io/solidity-security.html#storage">Uninitialised Storage Pointers</a>.</p>
 
 <h2 id="problem-with-the-void">Problem with the void</h2>
 
@@ -301,7 +301,7 @@ r = await axios.post('http://142.93.103.129:3000/get_flag', {
 }  
 </code></pre>
 
-<p>To spot this vulnerability, you need to first know how variables are stored in the ethereum virtual machine. In the ethereum VM, there are two types of variables: <code>storage</code> and <code>memory</code> variables, where <code>storage</code> variables are persistent and <code>memory</code> variables are not. The two equates to <code>global</code> and <code>local</code> variables in other programming languages. If not explicitly declared, the variable type when be determined by the the content of that variable. For example, <code>uint</code> will default to <code>memory</code> and a struct such as <code>Subscriber</code> will default to <code>storage</code>.</p>
+<p>To spot this vulnerability, you need to first know how variables are stored in the ethereum virtual machine. In the ethereum VM, there are two types of variables: <code>storage</code> and <code>memory</code> variables, where <code>storage</code> variables are persistent and <code>memory</code> variables are not. The two equates to <code>global</code> and <code>local</code> variables in other programming languages. If not explicitly declared, the variable type when be determined by the content of that variable. For example, <code>uint</code> will default to <code>memory</code> and a struct such as <code>Subscriber</code> will default to <code>storage</code>.</p>
 
 <p>As you can see above, the Subscriber variable <code>s</code> is declared without an explicit type, and in this case, it defaulted to global scope as a <code>storage</code> variable. Furthermore, because there&rsquo;s no <code>Subscriber</code> initialized for this pointer, the variable <code>s</code> will just point to the top two items/slots in the global scope:</p>
 
@@ -389,7 +389,7 @@ target = '0x30dF4556Af0a2103475c92881d5E07B59cFa69cC';
 
 <h1 id="extra">Extra</h1>
 
-<p>Despite being our first international CTF, my team, <a href="https://ctftime.org/team/58574">HATS Singapore</a>, ended at No. 12 on the scoreboard out of 17 teams, and we were able to beat <a href="https://defcon.org.ua/">duca</a> :).</p>
+<p>Despite being our first international CTF, my team, <a href="https://ctftime.org/team/58574">HATS Singapore</a>, ended at No. 12 on the scoreboard out of 17 teams, and we were able to beat <a href="https://defcon.org.ua/">duca</a> :)</p>
 
 
 <figure>
