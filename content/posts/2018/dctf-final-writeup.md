@@ -311,7 +311,7 @@ flag: `DCTF{49fa9bf37efd8d4b2c4ad4ce8a60f8022945bf1f6334c76cd729f2e029cf178c}`
 
 # Extra
 
-Despite being our first international CTF, my team, [HATS Singapore](https://ctftime.org/team/58574), ended at No. 12 on the scoreboard out of 17 teams, and we were able to beat [duca](https://defcon.org.ua/) :)
+Despite being our first international CTF, my team, [HATS Singapore](https://ctftime.org/team/58574), ended at No. 12 on the scoreboard out of 17 teams, and we were able to beat [dcua](https://defcon.org.ua/) :)
 
 
 {{< figure src="/blog/2018/dctf-final-writeup/ranks.png" >}}
