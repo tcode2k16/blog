@@ -7,7 +7,7 @@
 		
 		<meta name="author" content="Alan Chang">
 		<meta name="description" content="a random blog about cybersecurity and programming">
-		<meta name="generator" content="Hugo 0.49.2" />
+		<meta name="generator" content="Hugo 0.51" />
 		<title>TJCTF 2018 Writeup &middot; Alan&#39;s Blog</title>
 		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
 		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
@@ -778,39 +778,19 @@ print(''.join([ hex(x)[2:] for x in message ]))
 
 <p>The zip file contains two png images with the same dimension.</p>
 
-
 <figure>
-    
-        <img src="/blog/tjctf-2018-writeup/Interference/v1.png" alt="v1.png" />
-    
-    
-    <figcaption>
-        <p>
-        v1.png
-        
-            
-        
-        </p> 
-    </figcaption>
-    
+    <img src="/blog/tjctf-2018-writeup/Interference/v1.png"
+         alt="v1.png"/> <figcaption>
+            <p>v1.png</p>
+        </figcaption>
 </figure>
 
 
-
 <figure>
-    
-        <img src="/blog/tjctf-2018-writeup/Interference/v2.png" alt="v2.png" />
-    
-    
-    <figcaption>
-        <p>
-        v2.png
-        
-            
-        
-        </p> 
-    </figcaption>
-    
+    <img src="/blog/tjctf-2018-writeup/Interference/v2.png"
+         alt="v2.png"/> <figcaption>
+            <p>v2.png</p>
+        </figcaption>
 </figure>
 
 
@@ -819,21 +799,11 @@ print(''.join([ hex(x)[2:] for x in message ]))
 <pre><code>&gt; compare v1.png v2.png diff.png
 </code></pre>
 
-
 <figure>
-    
-        <img src="/blog/tjctf-2018-writeup/Interference/diff.png" alt="diff.png" />
-    
-    
-    <figcaption>
-        <p>
-        diff.png
-        
-            
-        
-        </p> 
-    </figcaption>
-    
+    <img src="/blog/tjctf-2018-writeup/Interference/diff.png"
+         alt="diff.png"/> <figcaption>
+            <p>diff.png</p>
+        </figcaption>
 </figure>
 
 
@@ -885,21 +855,11 @@ print(''.join([ hex(x)[2:] for x in message ]))
 
 <p>By inspecting the traffic dump using wireshark, we can see that there are two types of protocals: <code>ftp</code> and <code>https</code>. Because <code>https</code> is encrypted, we start by looking at the <code>ftp</code> traffics:</p>
 
-
 <figure>
-    
-        <img src="/blog/tjctf-2018-writeup/Ssleepy/screen.png" alt="A zip file was transfered" />
-    
-    
-    <figcaption>
-        <p>
-        A zip file was transfered
-        
-            
-        
-        </p> 
-    </figcaption>
-    
+    <img src="/blog/tjctf-2018-writeup/Ssleepy/screen.png"
+         alt="A zip file was transfered"/> <figcaption>
+            <p>A zip file was transfered</p>
+        </figcaption>
 </figure>
 
 
@@ -907,23 +867,15 @@ print(''.join([ hex(x)[2:] for x in message ]))
 
 <p>Using this key, we can then decrypt the https traffic:</p>
 
-
 <figure>
-    
-        <img src="/blog/tjctf-2018-writeup/Ssleepy/screen2.png" />
-    
-    
+    <img src="/blog/tjctf-2018-writeup/Ssleepy/screen2.png"/> 
 </figure>
 
 
 <p>Extracing an image from the traffic, we are able to get the flag:</p>
 
-
 <figure>
-    
-        <img src="/blog/tjctf-2018-writeup/Ssleepy/flag.jpg" />
-    
-    
+    <img src="/blog/tjctf-2018-writeup/Ssleepy/flag.jpg"/> 
 </figure>
 
 
