@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.51" />
+		<title>35c3ctf 2018 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        35c3ctf 2018 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Dec 30, 2018 11:17
+                    · 1363 words
+                    · 7 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#box-of-blink">box of blink</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#juggle">juggle</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="box-of-blink">box of blink</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>As every year, can you please decode <a href="/blog/2018/35c3ctf-writeup/box of blink/blink.csv.gz">this</a> for me?</p>
+
+<figure>
+    <img src="/blog/2018/35c3ctf-writeup/box%20of%20blink/image.jpg"/> 
+</figure>
+
+
+<h2 id="solution">Solution</h2>
+
+<p>For this challenge, we are given a huge csv file that seems to consist of electronic signals collected by an oscilloscope:</p>
+
+<pre><code>❯ cat blink.csv | sed 30q
+#Model,MDO3014
+#Firmware Version,1.26
+#
+#Waveform Type,DIGITAL,,,,,,,,,,,,,
+#Point Format,Y,,,,,,,,,,,,,
+#Horizontal Units,s,,,,,,,,,,,,,
+#Horizontal Scale,0.004,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,
+#Sample Interval,4e-09,,,,,,,,,,,,,
+#Record Length,1e+07,,,,,,,,,,,,,
+#Gating,0.0% to 100.0%,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,
+#Vertical Units,V,V,V,V,V,V,V,V,V,V,V,V,V,V
+#Threshold Used,1.65,1.65,1.65,1.65,1.65,1.65,1.65,1.65,1.65,1.65,1.65,1.65,1.65,1.65
+#,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,
+#,,,,,,,,,,,,,,
+#Label,OE,LAT,CLK,E,D,C,B,A,B2,B1,G2,G1,R2,R1
+#TIME,D13,D12,D11,D10,D9,D8,D7,D6,D5,D4,D3,D2,D1,D0
+-1.0000000e-03,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9999600e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9999200e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9998800e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9998400e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9998000e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9997600e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9997200e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+-9.9996800e-04,0,0,0,0,1,0,0,0,0,0,0,1,0,1
+</code></pre>
+
+<p>The image also shows the setup that generated the data, and suggests that the signals might be from a rgb dot matrix controlled by a raspberry pi.</p>
+
+<p>I jumped into research about how a rgb dot matrix actually works. I found these articles that are really helpful:</p>
+
+<ul>
+<li><a href="http://www.rayslogic.com/propeller/Programming/AdafruitRGB/AdafruitRGB.htm">Adafruit RGB LED Matrix</a></li>
+<li><a href="https://www.sparkfun.com/sparkx/blog/2650">Everything You Didn&rsquo;t Want to Know About RGB Matrix Panels</a></li>
+</ul>
+
+<p>In a brief summary, a rgb dot matrix doesn&rsquo;t update on all the pixels at once, instead, it goes through each line and update the display one line at a time.</p>
+
+<p>The wiring consist of a clock signal or <code>clk</code> that is responsible for defining time intervals. Basically, the micro-controller only read data from the wires when the <code>clk</code> signal goes from low (0) to high (1).</p>
+
+<p>Then, there are the A, B, C, D, E signals that work together to denote the row that is going to be updated. The display needs more wires if it has more rows. For example, a 8 row display will only need the A, B, C wires. Also, the A wire is always the least significant bit. For example, if A=0, B=1, C=1, then row <code>0b110</code> or <code>6</code> will be updated.</p>
+
+<p>Also, there are the color wires: R1, R2, G1, G2, B1, B2. The dot matrix can only display 64 different colors which means that the red, green, blue values each range from 0-3 which can each be encoded by two bits or two wires; therefore, in total, the color of one pixel can be expressed by six wires. The display will clock in the color for each pixel in a row one at a time. For this challenge, there&rsquo;s 128 pixels per line, so the <code>clk</code> signal goes from 0 to 1 128 times for each row, and each time the clock signal changes the color value will be recorded for one of the pixels. The color values for that row is then stored inside a shift register, and will be updated to the display when the <code>LAT</code> or the latch signal is turned on. In addition, there&rsquo;s the <code>OE</code> or output enable signal that turns the display on and off.</p>
+
+<p>Now knowing what each wire is doing and the value for each one (the <code>#Label,OE,LAT,CLK,E,D,C,B,A,B2,B1,G2,G1,R2,R1</code> comment in the csv file is quite helpful in telling you which signal corresponds to a certain wire), we can now write a program to reconstruct the image.</p>
+
+<p>Here are just a few key points when writing the program:</p>
+
+<ul>
+<li>only look at data when <code>clk</code> goes from <code>0</code> to <code>1</code> because that is when the micro-controller read data</li>
+<li>render the canvas once it updated all the rows</li>
+<li>check which signal is the least significant bit and which is the most</li>
+</ul>
+
+<p>Here is the final script:</p>
+
+<pre><code class="language-python">from PIL import Image
+
+w = 128
+h = 32
+pixels = [(256,256,256)]*(w*h)
+count = 0
+
+img = Image.new(&quot;RGB&quot;, (w, h))
+
+last_addr = 0
+col_count = 0
+count = 0
+
+isOn = False
+with open('./blink.test.csv') as f:
+  for line in f:
+    data = line.strip().split(',')[1:]
+    clk = int(data[2],2)
+    row_addr = int(''.join(data[3:8]),2)
+    rgb = [int(''.join(data[12:14]),2), int(''.join(data[8:10]),2),int(''.join(data[10:12]),2)]
+    
+    if clk == 1 and isOn or clk == 0 and not isOn:
+      continue
+    
+    isOn = not isOn
+
+    if clk == 0:
+      continue
+    
+    if last_addr != row_addr:
+      
+      last_addr = row_addr
+      col_count = 0
+      if row_addr == 0:
+        img.putdata(pixels)
+        img.save(str(count)+&quot;.jpg&quot;)
+        count += 1
+
+    if rgb != [0,0,0]:
+      pixels[row_addr*w+col_count] =(0,0,0)
+    else:
+      pixels[row_addr*w+col_count] = (256,256,256)
+    
+    col_count += 1
+    
+
+img.putdata(pixels)
+
+img.save(&quot;flag.jpg&quot;)
+</code></pre>
+
+<p>And this is the final image:</p>
+
+<figure>
+    <img src="/blog/2018/35c3ctf-writeup/box%20of%20blink/flag.png"/> 
+</figure>
+
+
+<p>flag: <code>35C3_D4s_blInk3nL1cht3n_1st_so_wund3rb4r</code></p>
+
+<h1 id="juggle">juggle</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Can you help this restaurant Stack the right amount of Eggs in their ML algorithms?</p>
+
+<p>Guest challenge by Tethys.</p>
+
+<p>Note that you need to send a shutdown(2) after you sent your solution. The nmap netcat will do so for you, e.g.: <code>ncat 35.246.237.11 1 &lt; solution.xml</code></p>
+
+<blockquote>
+<p>/usr/bin/ncat &ndash;help | grep -n 1 Ncat 7.60 ( <a href="https://nmap.org/ncat">https://nmap.org/ncat</a> )</p>
+</blockquote>
+
+<p>Files <a href="/blog/2018/35c3ctf-writeup/juggle/juggle.tar">here</a></p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>This is a ML challenge as in XML.</p>
+
+<p>You are given a <code>xslt</code> file which is basically a templating language for XML. The xslt file processor takes in a xml file and spits out another one according to the xslt file.</p>
+
+<p>In this case, the xslt implements a virtual machine using food and drinks. Here is a list of the available instructions and their corresponding food name:</p>
+
+<pre><code>宫保鸡丁
+--&gt; print chef-drinks and drink
+paella
+--&gt; pre-pend drinks
+불고기
+--&gt; get $drinks[$arg0 + 2] + 0
+Борщ
+--&gt; remove first chef-drinks if it is the same as drinks
+दाल
+--&gt; give flag if not chef-drinks left
+ラーメン
+--&gt; 1 if first drink larger than first chef-drink, 0 otherwise
+stroopwafels
+--&gt; compare the first two items
+--&gt; return 1 if arg1 &gt; arg0
+köttbullar
+--&gt; insert arg0 at arg1
+γύρος
+--&gt; remove at index arg0
+rösti
+--&gt; arg0 + arg1
+לאַטקעס
+--&gt; arg0 - arg1
+poutine
+--&gt; arg0 * arg1
+ُمُّص
+--&gt; arg0 // arg1
+æblegrød
+--&gt; if arg0 jump to arg1
+</code></pre>
+
+<p>As you might be able to tell, the virtual machine operates values on a stack of drinks. All the instructions either push or pop values/drinks from the stack.</p>
+
+<p>The objective of the challenge is to write a program using the food instructions and guess five random numbers that range from 0 to 4294967296, and the program have to be done in less than 30000 instructions.</p>
+
+<p>First, brute force is out of the window because of the limited number of instructions, but we do have the <code>ラーメン</code> instruction. This instruction allows us to make a less than or more than comparison between the random value and another value that we can specify. Using this one simple instruction, we can build out a binary search algorithm that can guess the numbers efficiently. Also, the <code>æblegrød</code> instruction aka the jump instruction makes loops possible.</p>
+
+<p>Here is the final food list that gives us the flag:</p>
+
+<pre><code class="language-xml">&lt;meal&gt;
+  &lt;state&gt;
+    &lt;drinks&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+      &lt;value&gt;0&lt;/value&gt;
+    &lt;/drinks&gt;
+  &lt;/state&gt;
+  &lt;course&gt;
+    &lt;plate&gt;
+      &lt;!-- try_flag --&gt;
+      &lt;दाल&gt;&lt;/दाल&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;9&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;0&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;10&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;γύρος&gt;&lt;/γύρος&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+    &lt;paella&gt;10&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;4294967296&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;11&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;γύρος&gt;&lt;/γύρος&gt;
+    &lt;/plate&gt;
+
+    &lt;!-- &lt;plate&gt;
+      &lt;宫保鸡丁&gt;&lt;/宫保鸡丁&gt;
+    &lt;/plate&gt; --&gt;
+
+    &lt;plate&gt;
+      &lt;!-- jump to loop --&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;æblegrød&gt;&lt;/æblegrød&gt;
+    &lt;/plate&gt; 
+  &lt;/course&gt;
+  &lt;course&gt;
+
+    &lt;!-- check if A &lt; B --&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;9&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;불고기&gt;&lt;/불고기&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;11&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;불고기&gt;&lt;/불고기&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;stroopwafels&gt;&lt;/stroopwafels&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;!-- more than case --&gt;
+      &lt;paella&gt;0&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;宫保鸡丁&gt;&lt;/宫保鸡丁&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;æblegrød&gt;&lt;/æblegrød&gt;
+    &lt;/plate&gt;
+
+    &lt;!-- loop (8) --&gt;
+
+    &lt;plate&gt;
+      &lt;!-- div 2 --&gt;
+      &lt;paella&gt;2&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;11&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;불고기&gt;&lt;/불고기&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;11&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;불고기&gt;&lt;/불고기&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;!-- + --&gt;
+      &lt;rösti&gt;&lt;/rösti&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;!-- //2 --&gt;
+      &lt;حُمُّص&gt;&lt;/حُمُّص&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;0&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;불고기&gt;&lt;/불고기&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;!-- try_remove --&gt;
+      &lt;Борщ&gt;&lt;/Борщ&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;0&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;불고기&gt;&lt;/불고기&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;ラーメン&gt;&lt;/ラーメン&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;!-- more than case --&gt;
+      &lt;paella&gt;2&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;æblegrød&gt;&lt;/æblegrød&gt;
+    &lt;/plate&gt;
+
+    &lt;!-- arg &lt; chef --&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;rösti&gt;&lt;/rösti&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;9&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+    
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;10&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;γύρος&gt;&lt;/γύρος&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;!-- jump to loop --&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;æblegrød&gt;&lt;/æblegrød&gt;
+    &lt;/plate&gt;
+  &lt;/course&gt;
+  &lt;course&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;לאַטקעס&gt;&lt;/לאַטקעס&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;10&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+    
+    &lt;plate&gt;
+      &lt;köttbullar&gt;&lt;/köttbullar&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;paella&gt;11&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;γύρος&gt;&lt;/γύρος&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;!-- jump to loop --&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+    &lt;plate&gt;
+      &lt;paella&gt;1&lt;/paella&gt;
+    &lt;/plate&gt;
+
+    &lt;plate&gt;
+      &lt;æblegrød&gt;&lt;/æblegrød&gt;
+    &lt;/plate&gt;
+  &lt;/course&gt;
+&lt;/meal&gt;
+</code></pre>
+
+<p>In conclusion, this is a fun challenge that I enjoyed a lot as I got to practice my programming skill with something that is out of the ordinary.</p>
+
+<p>flag: <code>35C3_The_chef_gives_you_his_compliments</code></p>
+
+                </section>
+            </article>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2018 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>
