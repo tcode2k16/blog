@@ -21,7 +21,7 @@ Decode it :
 
 ## Solution
 
-The text is encoded with base85, and you can decode it using tools such as [CyberChef](https://gchq.github.io/CyberChef/#recipe=From_Base85('!-u')&input=OVAmO2dGRCw1LkJPUENkQmw3UStAVicxZERLP3FM).
+The text is encoded with base85, and you can decode it using tools such as [CyberChef](https://gchq.github.io/CyberChef).
 
 flag: `Let the hacking begins ~`
 
@@ -98,7 +98,7 @@ signed __int64 __fastcall main(__int64 a1, char **a2, char **a3)
 }
 ```
 
-At this point, I started analyzing the 20000 `.so` libraries. There are three symbols that are present in the binaries: `test`, `filter1`, and `filter2`. `test` is the function the main program is going to invoke, it is either a empty shell with only a read function or a function that reads input, filters it with `filter1` and `filter2` from two other binaries, and call system with the input if it passes the filters. `filter1` and `filter2`, on the other hand, are similar as they each detect the use of certain characters/words.
+At this point, I started analyzing the 20000 `.so` libraries. There are three symbols that are present in the binaries: `test`, `filter1`, and `filter2`. `test` is the function the main program is going to invoke, it is either a empty shell with only a read function or a function that reads input, filters it with `filter1` and `filter2` from two other binaries, and call system with the input if it passes the filters. `filter1` and `filter2`, on the other hand, are similar as they each detect a certain set of characters/words.
 
 I decided to generate a list of the binaries that contain each symbol using r2pipe:
 
@@ -258,9 +258,9 @@ nc 110.10.147.104 15712
 
 ## Solution
 
-This is a classic programming problem where you have to find the least cost path from the left column to the the right column.
+This is a classic programming problem where you have to find the least cost path from the left column to the the right column of a 7x7 matrix.
 
-Because of the time limitation of the CTF, I decided to search for existing solutions instead of writing one on the the spot. I quickly found [this article](https://www.geeksforgeeks.org/minimum-cost-path-left-right-bottom-moves-allowed/) describing the same problem with only slight variations.
+Because of the time limitation, I decided to search for existing solutions instead of writing one on the the spot. I quickly found [this article](https://www.geeksforgeeks.org/minimum-cost-path-left-right-bottom-moves-allowed/) describing the same problem with only slight variations.
 
 I took the code and altered it a bit to fit my need, and here is the final version:
 
@@ -424,7 +424,7 @@ print answers
 r.interactive()
 ```
 
-After completing all 100 stages, you are told that the answers for all 100 matrixes forms the flag. It turns out to be a simple base64 encoded string and here is a python snippet to decode it:
+After completing all 100 stages, you are told that the answers for all 100 matrixes form the flag. It turns out to be a simple base64 encoded string, and here is a python snippet to decode it:
 
 ```python
 code = [82, 107, 120, 66, 82, 121, 65, 54, 73, 71, 99, 119, 77, 71, 57, 118, 84, 48, 57, 107, 88, 50, 111, 119, 81, 105, 69, 104, 73, 86, 57, 102, 88, 51, 86, 117, 89, 50, 57, 116, 90, 109, 57, 121, 100, 68, 82, 105, 98, 71, 86, 102, 88, 51, 77, 122, 89, 51, 86, 121, 97, 88, 82, 53, 88, 49, 57, 112, 99, 49, 57, 102, 98, 106, 66, 48, 88, 49, 56, 48, 88, 49, 57, 122, 90, 87, 78, 49, 99, 109, 108, 48, 101, 83, 69, 104, 73, 83, 69, 104]
@@ -475,11 +475,11 @@ _BYTE *__fastcall xor(_BYTE *start_addr, int end_addr, const char *key)
 }
 ```
 
-I am able to crack the xor key by knowing that almost all 64 bit binary function start with `push rbp; mov rbp, rsp;` which is `554889e5` in hex. Using the same method, I am able to get the keys for the first two stages which both have a key length of 4.
+I am able to crack the first four bytes of the xor key by knowing that almost all 64 bit binary functions start with `push rbp; mov rbp, rsp;` which is `554889e5` in hex. Using this method, I am able to get the keys for the first two stages which both have a key length of 4.
 
-For the last three stage, I have to use the fact that the first function of each stage always print out `SYSTEM : We will start test NUMBER\n`. Knowing that plus the location of the string, I am able to recover all ten bytes of the xor key.
+For the last three stage, I have to use another fact that the first function of each stage always print out `SYSTEM : We will start test NUMBER\n`. Knowing that plus the location of the string, I am able to recover all ten bytes of the xor key.
 
-Now with all 5 keys, I can now patch the binary. For this CTF, I did all the patching manually with a python script although better solutions definitely exist. Here is the patching script:
+With all 5 keys, I can now patch the binary. For this CTF, I did all the patching manually with a python script although better solutions definitely exist (put your suggestions in the comment section below). Here is the patching script:
 
 ```python
 import string
@@ -607,7 +607,7 @@ for e1 in t1:
 # 20100 02000 11000 11112 0x200 10001 01120 01000 00022
 ```
 
-In addition, the challenge also includes a cipher text to decrypt. I reversed the decryption function and recovered the plain text. Here is the script for that:
+In addition, the challenge also includes a cipher text to decrypt. I reversed the verification function and recovered the plain text. Here is the script for that:
 
 ```python
 from pwn import *
@@ -643,7 +643,7 @@ print text
 # ALICEALLOFMYPROPERTYISYOURS
 ```
 
-Now with both the sequence generated above and the plain text decrypted, I wrote another script that interacts with the server:
+Now with both the sequence generated above and the plain text decrypted, I wrote another script to interact with the server and retrieve the flag:
 
 ```python
 import string
@@ -667,13 +667,6 @@ if len(argv) > 1:
 else:
   sh = remote('110.10.147.104', 13152)
 
-# for i in string.printable:
-#   sh = remote('110.10.147.104', 13152)
-
-#   sh.sendlineafter('around\n', '1')
-#   sh.sendlineafter('1\n', 'lOv3')
-#   print sh.recvall()
-#   sh.close()
 sh.sendlineafter('around\n', '1')
 
 sh.sendlineafter('1\n', 'lOv3')

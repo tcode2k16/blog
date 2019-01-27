@@ -19,7 +19,7 @@
       <guid>https://tcode2k16.github.io/blog/posts/2019-01-27-codegate-qualifier-writeup/</guid>
       <description>MIC check Problem Let the hacking begins ~
 Decode it : 9P&amp;;gFD,5.BOPCdBl7Q+@V&amp;rsquo;1dDK?qL
-Solution The text is encoded with base85, and you can decode it using tools such as CyberChef&amp;amp;input=OVAmO2dGRCw1LkJPUENkQmw3UStAVicxZERLP3FM).
+Solution The text is encoded with base85, and you can decode it using tools such as CyberChef.
 flag: Let the hacking begins ~
 20000 Problem nc 110.10.147.106 15959
 Download
