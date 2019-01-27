@@ -3,6 +3,11 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>https://tcode2k16.github.io/blog/posts/2019-01-27-codegate-qualifier-writeup/</loc>
+    <lastmod>2019-01-27T10:32:13+09:00</lastmod>
+  </url>
+  
+  <url>
     <loc>https://tcode2k16.github.io/blog/posts/2018/35c3ctf-writeup/</loc>
     <lastmod>2018-12-30T11:17:12+08:00</lastmod>
   </url>
@@ -124,7 +129,7 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/</loc>
-    <lastmod>2018-12-30T11:17:12+08:00</lastmod>
+    <lastmod>2019-01-27T10:32:13+09:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -147,13 +152,13 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/ctf/</loc>
-    <lastmod>2018-12-30T11:17:12+08:00</lastmod>
+    <lastmod>2019-01-27T10:32:13+09:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/cyber-security/</loc>
-    <lastmod>2018-12-30T11:17:12+08:00</lastmod>
+    <lastmod>2019-01-27T10:32:13+09:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -213,7 +218,7 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/posts/</loc>
-    <lastmod>2018-12-30T11:17:12+08:00</lastmod>
+    <lastmod>2019-01-27T10:32:13+09:00</lastmod>
     <priority>0</priority>
   </url>
   
@@ -267,7 +272,7 @@
   
   <url>
     <loc>https://tcode2k16.github.io/blog/tags/write-up/</loc>
-    <lastmod>2018-12-30T11:17:12+08:00</lastmod>
+    <lastmod>2019-01-27T10:32:13+09:00</lastmod>
     <priority>0</priority>
   </url>
   
