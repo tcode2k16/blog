@@ -6,10 +6,24 @@
     <description>Recent content on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 27 Jan 2019 10:32:13 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 03 Feb 2019 11:58:13 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>nullcon HackIM 2019 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/2019-02-03-nullcon-hackim-writeup/</link>
+      <pubDate>Sun, 03 Feb 2019 11:58:13 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2019-02-03-nullcon-hackim-writeup/</guid>
+      <description>Captcha Forest Problem A baby captcha just for you.
+nc misc.ctf.nullcon.net 6001
+Solution For this challenge, we need to solve 200 captchas that are using the Bill Cipher mappings.
+Here is an example captcha:
+The first step is to find out which symbol corresponds to which letter in the alphabet. I did a quick google search and found this:
+  Now with a one-to-one mapping, we can move on to solve the captchas.</description>
+    </item>
     
     <item>
       <title>Codegate CTF Qualifier 2019 Writeup</title>
