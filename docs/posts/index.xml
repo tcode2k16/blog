@@ -6,10 +6,26 @@
     <description>Recent content in Posts on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 03 Feb 2019 12:35:13 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 11 Mar 2019 08:28:09 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>UTCTF 2019 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/2019-03-11-utctf-writeup/</link>
+      <pubDate>Mon, 11 Mar 2019 08:28:09 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2019-03-11-utctf-writeup/</guid>
+      <description>[basics] re - 100pts Problem I know there&amp;rsquo;s a string in this binary somewhere&amp;hellip;. Now where did I leave it?
+by balex
+calculator
+Solution ❯ strings calculator | grep flag utflag{str1ng5_15_4_h4ndy_t00l}  flag: utflag{str1ng5_15_4_h4ndy_t00l}
+simple python script - 750pts Problem simple python script I wrote while not paying attention in graphics
+by asper
+wtf.py
+Solution inputs contains five sha1 hashes. You can get the hashes by adding a print statement in the source code.</description>
+    </item>
     
     <item>
       <title>nullcon HackIM 2019 Writeup</title>
