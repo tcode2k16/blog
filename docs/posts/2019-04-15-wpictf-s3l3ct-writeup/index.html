@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 
+			
+  
+    <meta name="twitter:card" content="summary"/>
+    
+      <meta name="twitter:image" content="https://tcode2k16.github.io/blog/images/avatar.png" />
+    
+  
+  
+  <meta name="twitter:title" content="WPICTF 2019 S3L3CT Writeup"/>
+  <meta name="twitter:description" content="Solution for the &#34;S3L3CT&#34; challenge in WPICTF 2019"/>
+  
+    <meta name="twitter:site" content="@tcode2k16"/>
+  
+  
+  
+  
+    <meta name="twitter:creator" content="@Alan Chang"/>
+  
+
+
+
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.54.0" />
+		<title>WPICTF 2019 S3L3CT Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        WPICTF 2019 S3L3CT Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Apr 15, 2019 14:29
+                    · 491 words
+                    · 3 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/machine-learning">machine-learning</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a>
+<ul>
+<li><a href="#getting-started">Getting started</a></li>
+<li><a href="#making-a-convolutional-neural-network">Making a convolutional neural network</a></li>
+<li><a href="#striking-gold">Striking gold</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="problem">Problem</h1>
+
+<p><strong>Points</strong>: 400</p>
+
+<p><strong>Solves</strong>: 3</p>
+
+<p>Are you smarter than an AI?</p>
+
+<p><a href="https://drive.google.com/open?id=1Inoxm1Wyiq6keSVwBt9zU5aRbRaScuTq">https://drive.google.com/open?id=1Inoxm1Wyiq6keSVwBt9zU5aRbRaScuTq</a></p>
+
+<p>made by calper-pq</p>
+
+<h1 id="solution">Solution</h1>
+
+<h2 id="getting-started">Getting started</h2>
+
+<p>For this challenge, you are given three npy files: <code>X.npy</code>, <code>Y.npy</code>, and <code>key.npy</code>.</p>
+
+<p>With some googling, I found that npy files can be loaded with numpy:</p>
+
+<pre><code class="language-python">import numpy as np
+
+data_x = np.load('./X.npy')
+data_y = np.load('./Y.npy')
+data_key = np.load('./key.npy')
+
+print data_x.shape
+print data_y.shape
+print data_key.shape
+</code></pre>
+
+<pre><code class="language-bash">❯ python main.py
+(10000, 50, 50, 3)
+(10000,)
+(296, 50, 50, 3)
+</code></pre>
+
+<p>Judging from the shape of the data, I made an educated guess that <code>X.npy</code> and <code>Y.npy</code> are the training inputs and training outputs, and our goal is to make a machine learning algorithm that can predict the outputs for the data stored in the <code>key.npy</code> file.</p>
+
+<p>Since the outputs in <code>Y.npy</code> are either 0 or 1, we can expect to get a binary string with the length of 296 that would likely be the flag.</p>
+
+<h2 id="making-a-convolutional-neural-network">Making a convolutional neural network</h2>
+
+<p>Now our task becomes making a neural network that can classify the data for us.</p>
+
+<p>The shape of the data helped again as (50, 50, 3)  hinted at the fact that the input could be seen as a 50x50 pixel RGB image, and we can use a neural network that is best optimized for image recognition - <a href="https://en.wikipedia.org/wiki/Convolutional_neural_network">a convolutional neural network</a>.</p>
+
+<p>I won&rsquo;t go into the details about how a convolutional neural network works because there are already quite a lot of good resources out there. Here are just a few that I used:</p>
+
+<ul>
+<li><a href="https://medium.com/@ageitgey/machine-learning-is-fun-part-3-deep-learning-and-convolutional-neural-networks-f40359318721">Machine Learning is Fun! Part 3: Deep Learning and Convolutional Neural Networks</a></li>
+<li><a href="https://adeshpande3.github.io/adeshpande3.github.io/A-Beginner's-Guide-To-Understanding-Convolutional-Neural-Networks/">A Beginner&rsquo;s Guide To Understanding Convolutional Neural Networks</a></li>
+</ul>
+
+<p>I picked <a href="https://keras.io/">Keras</a> as my library of choice simply because I have used it before for a few other CTF challenges (<a href="/blog/posts/2019-03-11-utctf-writeup/#facesafe-1400pts">this</a> and <a href="/blog/posts/2019-02-03-nullcon-hackim-writeup/#mlauth">this</a>).</p>
+
+<p>Now I have a scope that is narrow enough: I need to build a <strong>convolutional neural network</strong> using <strong>Keras</strong> to do <strong>binary image classification</strong>. Let the google rampage begin.</p>
+
+<h2 id="striking-gold">Striking gold</h2>
+
+<p>After reading around 20 articles online and experimenting with a few different models, I finally found one that works.</p>
+
+<p>Using the model described in this <a href="https://towardsdatascience.com/image-classification-python-keras-tutorial-kaggle-challenge-45a6332a58b8">great article</a>, here&rsquo;s my final code:</p>
+
+<pre><code class="language-python">import keras
+from keras.models import Sequential
+from keras.layers import Dense, Flatten, Conv2D, Activation, MaxPooling2D, BatchNormalization, Dropout
+from keras.utils import to_categorical
+
+import numpy as np
+
+model = Sequential()
+
+data_x = np.load('./X.npy')
+data_y = np.load('./Y.npy')
+data_key = np.load('./key.npy')
+
+data_y = to_categorical(data_y)
+
+x_train = data_x[:len(data_x)//2]
+x_test = data_x[len(data_x)//2:]
+
+y_train = data_y[:len(data_x)//2]
+y_test = data_y[len(data_x)//2:]
+
+
+model = Sequential()
+model.add(Conv2D(32, kernel_size = (3, 3), activation='relu', input_shape=(50, 50, 3),data_format=&quot;channels_last&quot;,))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(BatchNormalization())
+model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(BatchNormalization())
+model.add(Conv2D(64, kernel_size=(3,3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(BatchNormalization())
+model.add(Conv2D(96, kernel_size=(3,3), activation='relu'))
+model.add(MaxPooling2D(pool_size=(2,2)))
+model.add(BatchNormalization())
+# model.add(Conv2D(32, kernel_size=(3,3), activation='relu'))
+# model.add(MaxPooling2D(pool_size=(2,2)))
+# model.add(BatchNormalization())
+model.add(Dropout(0.2))
+model.add(Flatten())
+model.add(Dense(128, activation='relu'))
+#model.add(Dropout(0.3))
+model.add(Dense(2, activation = 'softmax'))
+model.compile(loss=keras.losses.categorical_crossentropy,
+              optimizer=keras.optimizers.SGD(lr=0.01),
+              metrics=['accuracy'])
+
+print model.summary()
+
+model.fit(x_train, y_train, epochs=20, batch_size=50,  verbose=1, validation_data=(x_test, y_test),)
+
+model.save('my_model.h5')
+
+v = model.predict(data_key)
+print v
+
+flag = ''
+for i in range(len(v)):
+    k = v[i]
+    if k[0] &gt; k[1]:
+            flag+='0'
+    else:
+            flag+='1'
+print flag
+</code></pre>
+
+<p>flag: <code>WPI{+++#(((--ELON_IS_SKYNET--)))#+++}</code></p>
+
+                </section>
+            </article>
+
+            
+                <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2ftcode2k16.github.io%2fblog%2fposts%2f2019-04-15-wpictf-s3l3ct-writeup%2f - WPICTF%202019%20S3L3CT%20Writeup by @tcode2k16"><span class="icon-twitter"> tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+    <a class="symbol" href="https://twitter.com/tcode2k16">
+        <i class="fa fa-twitter-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>
