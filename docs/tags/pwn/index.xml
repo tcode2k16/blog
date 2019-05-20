@@ -6,10 +6,21 @@
     <description>Recent content in Pwn on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 13 Oct 2018 08:56:01 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 19 May 2019 21:29:39 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/tags/pwn/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>RCTF 2019 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/2019-05-19-rctf-writeup/</link>
+      <pubDate>Sun, 19 May 2019 21:29:39 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2019-05-19-rctf-writeup/</guid>
+      <description>draw - misc Problem I&amp;rsquo;m god&amp;rsquo;s child.
+Flag format: RCTF_[A-Za-z]
+cs pu lt 90 fd 500 rt 90 pd fd 100 rt 90 repeat 18[fd 5 rt 10] lt 135 fd 50 lt 135 pu bk 100 pd setcolor pick [ red orange yellow green blue violet ] repeat 18[fd 5 rt 10] rt 90 fd 60 rt 90 bk 30 rt 90 fd 60 pu lt 90 fd 100 pd rt 90 fd 50 bk 50 setcolor pick [ red orange yellow green blue violet ] lt 90 fd 50 rt 90 fd 50 pu fd 50 pd fd 25 bk 50 fd 25 rt 90 fd 50 pu setcolor pick [ red orange yellow green blue violet ] fd 100 rt 90 fd 30 rt 45 pd fd 50 bk 50 rt 90 fd 50 bk 100 fd 50 rt 45 pu fd 50 lt 90 pd fd 50 bk 50 rt 90 setcolor pick [ red orange yellow green blue violet ] fd 50 pu lt 90 fd 100 pd fd 50 rt 90 fd 25 bk 25 lt 90 bk 25 rt 90 fd 25 setcolor pick [ red orange yellow green blue violet ] pu fd 25 lt 90 bk 30 pd rt 90 fd 25 pu fd 25 lt 90 pd fd 50 bk 25 rt 90 fd 25 lt 90 fd 25 bk 50 pu bk 100 lt 90 setcolor pick [ red orange yellow green blue violet ] fd 100 pd rt 90 arc 360 20 pu rt 90 fd 50 pd arc 360 15 pu fd 15 setcolor pick [ red orange yellow green blue violet ] lt 90 pd bk 50 lt 90 fd 25 pu home bk 100 lt 90 fd 100 pd arc 360 20 pu home</description>
+    </item>
     
     <item>
       <title>PicoCTF 2018 Writeup: Binary Exploitation</title>
