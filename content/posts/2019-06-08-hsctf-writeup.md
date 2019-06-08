@@ -9,7 +9,7 @@ tags: [
   "pwn",
   "hsctf"
 ]
-description: My solves for HSCTF 2019 challenges
+description: My solves for HSCTF 2019 Binary Exploitation challenges
 ---
 
 # Intro to Netcat

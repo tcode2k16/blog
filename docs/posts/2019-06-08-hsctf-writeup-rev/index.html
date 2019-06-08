@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 
+			
+  
+    <meta name="twitter:card" content="summary"/>
+    
+      <meta name="twitter:image" content="https://tcode2k16.github.io/blog/images/avatar.png" />
+    
+  
+  
+  <meta name="twitter:title" content="HSCTF 2019 Writeup: Reversal"/>
+  <meta name="twitter:description" content="My solves for HSCTF 2019 Reversal challenges"/>
+  
+    <meta name="twitter:site" content="@tcode2k16"/>
+  
+  
+  
+  
+    <meta name="twitter:creator" content="@Alan Chang"/>
+  
+
+
+
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.54.0" />
+		<title>HSCTF 2019 Writeup: Reversal &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        HSCTF 2019 Writeup: Reversal
+                    </h1>
+                    <h2 class="headline">
+                    Jun 8, 2019 11:00
+                    · 1839 words
+                    · 9 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/reversing">reversing</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/hsctf">hsctf</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#a-byte">A Byte</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#license">License</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#daheck">DaHeck</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#virtualjava">VirtualJava</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#tux-talk-show-2019">Tux Talk Show 2019</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#paint">Paint</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="a-byte">A Byte</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>Written by: ItzSomebody</p>
+
+<p>Just one byte makes all the difference.</p>
+
+<p><a href="/blog/2019-06-08-hsctf-writeup-rev/A Byte/a-byte">a-byte</a></p>
+
+<h2 id="solution">Solution</h2>
+
+<p>Looking at the code, we see that the flag has a length of 35:</p>
+
+<pre><code class="language-c">if ( (unsigned int)strlen(argv[1]) != 35 )
+    goto LABEL_11;
+...
+LABEL_11:
+    puts(&quot;u do not know da wae&quot;);
+    result = 0xFFFFFFFFLL;
+</code></pre>
+
+<p>If the length is correct, the user input will be xored with 1 and then compared with a string loaded on the stack.</p>
+
+<p>We can extract out the string on the stack and xor it with 1 to get the flag:</p>
+
+<pre><code class="language-python">&gt;&gt;&gt; a = [105, 114, 98, 117, 103, 122, 118, 49, 118, 94, 120, 49, 116, 94, 106, 111, 49, 118, 94, 101, 53, 94, 118, 64, 50, 94, 57, 105, 51, 99, 64, 49, 51, 56, 124, 0]
+&gt;&gt;&gt; map(lambda x: chr(x^1),a)
+['h', 's', 'c', 't', 'f', '{', 'w', '0', 'w', '_', 'y', '0', 'u', '_', 'k', 'n', '0', 'w', '_', 'd', '4', '_', 'w', 'A', '3', '_', '8', 'h', '2', 'b', 'A', '0', '2', '9', '}', '\x01']
+&gt;&gt;&gt; ''.join(_)
+'hsctf{w0w_y0u_kn0w_d4_wA3_8h2bA029}\x01'
+</code></pre>
+
+<p>flag: <code>hsctf{w0w_y0u_kn0w_d4_wA3_8h2bA029}</code></p>
+
+<h1 id="license">License</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Written by: ItzSomebody</p>
+
+<p>Description: Keith made a cool license-checking program but he forgot the flag he used to create the key! To make matters worse, he lost the source code and stripped the binary for his license-generator program. Can you help Keith recover his flag? All he knows is:</p>
+
+<p>The license key is 4-EZF2M-7O5F4-V9P7O-EVFDP-E4VDO-O
+He put his name (in the form of &lsquo;k3ith&rsquo;) as the first part of the flag
+There are 3 underscores
+The flag is in the format hsctf{}
+The flag doesn&rsquo;t have random character sequences (you should be able to read the entire flag easily).
+The flag only contains lowercase English letters and numbers.
+The generator might produce the same keys for different inputs because Keith was too lazy to write the algorithm properly.</p>
+
+<p><a href="/blog/2019-06-08-hsctf-writeup-rev/License/license">license</a></p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>I am too lazy to reverse this one&hellip; I found out that there&rsquo;s a one-to-one match between the input and output of the program, so I just repeatedly ran the program to guess the flag one character at a time.</p>
+
+<p>Here is the script:</p>
+
+<pre><code class="language-python">from pwn import *
+import string
+context.log_level='error'
+char_set = string.letters+string.digits+'_'
+flag = 'hsctf{'
+
+real = '4-EZF2M-7O5F4-V9P7O-EVFDP-E4VDO-O'.replace('-','')
+
+l = len(flag)
+
+def check(real, out):
+  return out in real
+
+def try_input(flag):
+  sh = process('./license')
+  sh.sendlineafter(': ', flag)
+  out = sh.recvall().strip().split('\n')[-1].replace('-','')
+  sh.close()
+  return check(real, out)
+
+while l &lt;= len(real):
+  for c in char_set:
+    if try_input(flag+c):
+      l += 1
+      flag += c
+      break
+  print flag
+</code></pre>
+
+<p>flag: <code>hsctf{k3ith_m4k3s_tr4sh_r3}</code></p>
+
+<h1 id="daheck">DaHeck</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>Written by: ItzSomebody</p>
+
+<p>Unicode? &hellip;da heck?</p>
+
+<p><a href="2019-06-08-hsctf-writeup-rev/DaHeck/DaHeck.java">DaHeck.java</a></p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>Simple reversing challenge. Just reverse the algo.</p>
+
+<pre><code class="language-python">output = [65480, 65469, 65486, 65468, 65482, 65463, 65477, 65483, 5, 65477, 65493, 65473, 65535, 65473, 65496, 65489, 65476, 65483, 16, 65491, 65476, 1, 65471, 65471, 65489, 65472, 65477, 65467, 65493, 65470, 3, 65482, 65535, 65498, 65475, 7, 65474, 1, 65492, 65472, 4, 65470, 65535, 65470, 65473, 65533, 65461]
+start = '001002939948347799120432047441372907443274204020958757273'
+temp = []
+for e in start:
+  temp.append(ord(e))
+start = temp
+print output
+print start
+print len(output)
+print len(start)
+
+flag = ''
+
+i = 0
+for each in output:
+  flag += chr((start[i]+(0x10000-each))%256)
+  i += 1
+print flag
+</code></pre>
+
+<p>flag: <code>hsctf{th4t_w4s_fun!_l3ts_try_s0m3_m0r3_r3v3rs3}</code></p>
+
+<h1 id="virtualjava">VirtualJava</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>Written by: ItzSomebody</p>
+
+<p>There&rsquo;s nothing like executing my own code in Java in my own special way.</p>
+
+<p><a href="2019-06-08-hsctf-writeup-rev/VirtualJava/VirtualJava.java">VirtualJava.java</a></p>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>This is a stack-based vm implemented in Java. I edited the source code to dump both the instructions and the stack:</p>
+
+<pre><code class="language-java">public class VirtualJava {
+    private static final String[] owo = {&quot;ur too pro for this&quot;, &quot;Hmmmm... I don't think so ;D&quot;};
+    private int[] regs;
+    private int[] stack;
+    private int sp;
+    private int ip;
+    private boolean running;
+    private int[] instructions;
+
+    private VirtualJava(int[] instructions) {
+        this.regs = new int[10];
+        this.stack = new int[10];
+        this.sp = 0;
+        this.ip = 0;
+        this.running = true;
+        this.instructions = instructions;
+    }
+
+    private void push(int n) {
+        this.stack[this.sp++] = n;
+    }
+
+    private int pop() {
+        return this.stack[--this.sp];
+    }
+
+    private int run(int... params) {
+        if (params != null) for (int i = 0; i &lt; params.length; i++) this.regs[i] = params[i];
+        while (this.running) {
+            int opc = readByte();
+            int opn = readByte();
+            switch (opc) {
+                case 0x0: {
+                    int y = pop();
+                    int x = pop();
+                    System.out.println(&quot;add: &quot;+x+&quot; + &quot;+y);
+                    push(x+y);
+                    break;
+                } case 0x1: {
+                    int y = pop();
+                    int x = pop();
+                    System.out.println(&quot;sub: &quot;+x+&quot; - &quot;+y);
+                    push(x - y);
+                    break;
+                } case 0x2: {
+                    int y = pop();
+                    int x = pop();
+                    System.out.println(&quot;mul: &quot;+x+&quot; * &quot;+y);
+                    push(x*y);
+                    break;
+                } case 0x3: {
+                    int y = pop();
+                    int x = pop();
+                    System.out.println(&quot;div: &quot;+x+&quot; / &quot;+y);
+                    push(x / y);
+                    break;
+                } case 0x4: {
+                    int x = pop();
+                    if (x == 0) {
+                        System.out.println(&quot;je: &quot;+x+&quot; (taken)&quot;);
+                        this.ip = opn;
+                    } else {
+                        System.out.println(&quot;je: &quot;+x+&quot; (NOT taken)&quot;);
+                    }
+                    break;
+                } case 0x5:{
+                    int x = pop();
+                    if (x != 0) {
+                        System.out.println(&quot;jne: &quot;+x+&quot; (taken)&quot;);
+                        this.ip = opn;
+                    } else {
+                        System.out.println(&quot;jne: &quot;+x+&quot; (NOT taken)&quot;);
+                    }
+                    break;
+                } case 0x6: {
+                    System.out.println(&quot;push: &quot;+opn);
+                    push(opn);
+                    break;
+                } case 0x7: {
+                    int y = pop();
+                    int x = pop();
+                    System.out.println(&quot;and: &quot;+x+&quot; &amp; &quot;+y);
+                    push(x &amp; y);
+                    break;
+                } case 0x8: {
+                    int y = pop();
+                    int x = pop();
+                    System.out.println(&quot;or: &quot;+x+&quot; | &quot;+y);
+                    push(x | y);
+                    break;
+                } case 0x9: {
+                    int y = pop();
+                    int x = pop();
+                    System.out.println(&quot;xor: &quot;+x+&quot; ^ &quot;+y);
+                    push(x ^ y);
+                    break;
+                } case 0xa: {
+                    int a = pop();
+                    System.out.println(&quot;dup: &quot;+a);
+                    push(a);
+                    push(a);
+                    break;
+                } case 0xb: {
+                    System.out.println(&quot;push: regs[&quot;+opn+&quot;] = &quot;+this.regs[opn]);
+                    push(this.regs[opn]);
+                    break;
+                } case 0xc: {
+                    System.out.println(&quot;exit&quot;);
+                    this.running = false;
+                    break;
+                }
+            }
+            printStack();
+        }
+        System.out.println(&quot;call ended&quot;);
+        this.running = true;
+        return this.stack[--this.sp];
+    }
+
+    private void printStack() {
+        String output = &quot;[ &quot;;
+        for (int i : this.stack) {
+            output += i+&quot;, &quot;;
+        }
+
+        System.out.println(output+&quot;]&quot;);
+    }
+
+    private int readByte() {
+        return this.instructions[this.ip++] &amp; 0xFF;
+    }
+
+    private static String getOutput(int n) {
+        return n == 0 ? owo[n] : owo[1];
+    }
+
+    public static void main(String... args) {
+        if (args.length != 1 || args[0].toCharArray().length != 31) {
+            System.out.println(getOutput(1));
+            System.exit(0);
+        }
+        VirtualJava java = new VirtualJava(new int[]{0xb, 0x0, 0x6, 0x0, 0x1, 0x64, 0x5, 0x14, 0xb, 0x1, 0x6,
+                0x65, 0x9, -0xf3, 0x6, 0xd, 0x1, -0xdd, 0xc, -0x70, 0xb, 0x0, 0x6, 0x1, 0x1, -0xed, 0x5, 0x28,
+                0xb, 0x1, 0x6, -0xee, 0x9, 0x89, 0x6, -0x9f, 0x1, -0xc5, 0xc, 0xd8, 0xb, 0x0, 0x6, 0x2, 0x1,
+                0xe, 0x5, 0x3c, 0xb, 0x1, 0x6, -0x7d, 0x9, 0xb8, 0x6, -0x20, 0x1, 0x50, 0xc, -0x9f, 0xb, 0x0,
+                0x6, 0x3, 0x1, 0x23, 0x5, 0x50, 0xb, 0x1, 0x6, -0x48, 0x9, -0xc0, 0x6, -0x34, 0x1, -0x52, 0xc,
+                -0x6c, 0xb, 0x0, 0x6, 0x4, 0x1, -0xb7, 0x5, 0x64, 0xb, 0x1, 0x6, 0x73, 0x9, 0x6d, 0x6, 0x15,
+                0x1, -0x48, 0xc, -0x5e, 0xb, 0x0, 0x6, 0x5, 0x1, 0xe, 0x5, 0x78, 0xb, 0x1, 0x6, 0x7, 0x9,
+                -0x3e, 0x6, 0x7c, 0x1, 0x98, 0xc, 0x7a, 0xb, 0x0, 0x6, 0x6, 0x1, -0xa3, 0x5, 0x8c, 0xb,
+                0x1, 0x6, -0x22, 0x9, 0x4, 0x6, -0x59, 0x1, -0xda, 0xc, -0x47, 0xb, 0x0, 0x6, 0x7, 0x1,
+                -0xc6, 0x5, 0xa0, 0xb, 0x1, 0x6, 0x2c, 0x9, -0xee, 0x6, 0x1c, 0x1, -0x8e, 0xc, -0x90, 0xb,
+                0x0, 0x6, 0x8, 0x1, -0x6f, 0x5, 0xb4, 0xb, 0x1, 0x6, -0x63, 0x9, -0x4a, 0x6, -0x18, 0x1, 0x3c,
+                0xc, 0x9b, 0xb, 0x0, 0x6, 0x9, 0x1, -0x89, 0x5, 0xc8, 0xb, 0x1, 0x6, 0x93, 0x9, 0x3f, 0x6, 0xcc,
+                0x1, -0xd7, 0xc, -0x61, 0xb, 0x0, 0x6, 0xa, 0x1, 0x7f, 0x5, 0xdc, 0xb, 0x1, 0x6, 0x5b, 0x9, 0x27,
+                0x6, 0x3f, 0x1, 0xc2, 0xc, -0x5c, 0xb, 0x0, 0x6, 0xb, 0x1, -0x29, 0x5, 0xf0, 0xb, 0x1, 0x6,
+                0x2e, 0x9, 0xf8, 0x6, 0x1d, 0x1, 0xae, 0xc, -0xb6, 0xb, 0x0, 0x6, 0xc, 0x1, 0x7a, 0x5, 0x104,
+                0xb, 0x1, 0x6, 0x30, 0x9, -0xb8, 0x6, 0x56, 0x1, 0xed, 0xc, -0x23, 0xb, 0x0, 0x6, 0xd, 0x1,
+                0xee, 0x5, 0x118, 0xb, 0x1, 0x6, -0x52, 0x9, -0x72, 0x6, -0x63, 0x1, 0xcf, 0xc, -0xae, 0xb,
+                0x0, 0x6, 0xe, 0x1, 0x4d, 0x5, 0x12c, 0xb, 0x1, 0x6, -0xae, 0x9, 0xc8, 0x6, -0x9a, 0x1, -0xc8,
+                0xc, -0xc3, 0xb, 0x0, 0x6, 0xf, 0x1, 0x1, 0x5, 0x140, 0xb, 0x1, 0x6, -0xae, 0x9, -0xc8, 0x6,
+                -0xda, 0x1, 0xdb, 0xc, 0xc3, 0xb, 0x0, 0x6, 0x10, 0x1, 0xf6, 0x5, 0x154, 0xb, 0x1, 0x6, 0x3d,
+                0x9, -0x48, 0x6, 0xe, 0x1, 0xea, 0xc, 0xda, 0xb, 0x0, 0x6, 0x11, 0x1, 0x5e, 0x5, 0x168, 0xb,
+                0x1, 0x6, -0x10, 0x9, 0xcc, 0x6, -0x6c, 0x1, 0x1d, 0xc, -0x4c, 0xb, 0x0, 0x6, 0x12, 0x1, 0x5b,
+                0x5, 0x17c, 0xb, 0x1, 0x6, 0xd3, 0x9, -0xfa, 0x6, 0x8c, 0x1, 0x6a, 0xc, -0x9e, 0xb, 0x0, 0x6,
+                0x13, 0x1, 0x7d, 0x5, 0x190, 0xb, 0x1, 0x6, -0x22, 0x9, -0x6b, 0x6, -0x56, 0x1, -0xc6, 0xc,
+                0xba, 0xb, 0x0, 0x6, 0x14, 0x1, -0x45, 0x5, 0x1a4, 0xb, 0x1, 0x6, -0xe8, 0x9, 0x69, 0x6, -0x90,
+                0x1, 0x44, 0xc, 0x29, 0xb, 0x0, 0x6, 0x15, 0x1, -0x3c, 0x5, 0x1b8, 0xb, 0x1, 0x6, -0x8e, 0x9,
+                0xa, 0x6, -0xbf, 0x1, 0xaf, 0xc, 0x38, 0xb, 0x0, 0x6, 0x16, 0x1, 0x5d, 0x5, 0x1cc, 0xb, 0x1,
+                0x6, -0x93, 0x9, -0x62, 0x6, -0xce, 0x1, -0x20, 0xc, 0x2f, 0xb, 0x0, 0x6, 0x17, 0x1, -0x8a,
+                0x5, 0x1e0, 0xb, 0x1, 0x6, 0x11, 0x9, 0xeb, 0x6, 0x73, 0x1, -0xc1, 0xc, 0x4e, 0xb, 0x0, 0x6,
+                0x18, 0x1, 0x9b, 0x5, 0x1f4, 0xb, 0x1, 0x6, -0x7a, 0x9, 0x59, 0x6, -0x4e, 0x1, 0xc, 0xc,
+                -0x5f, 0xb, 0x0, 0x6, 0x19, 0x1, -0xf6, 0x5, 0x208, 0xb, 0x1, 0x6, 0x93, 0x9, 0x76, 0x6,
+                0xf1, 0x1, -0x74, 0xc, 0xfb, 0xb, 0x0, 0x6, 0x1a, 0x1, 0xdb, 0x5, 0x21c, 0xb, 0x1, 0x6,
+                0x77, 0x9, -0x69, 0x6, 0xe, 0x1, 0x14, 0xc, -0x81, 0xb, 0x0, 0x6, 0x1b, 0x1, -0xfa, 0x5,
+                0x230, 0xb, 0x1, 0x6, 0xdf, 0x9, -0x4b, 0x6, 0x80, 0x1, -0xc9, 0xc, -0xc8, 0xb, 0x0, 0x6, 0x1c,
+                0x1, -0xbd, 0x5, 0x244, 0xb, 0x1, 0x6, 0xd6, 0x9, 0x47, 0x6, 0xa0, 0x1, 0xb9, 0xc, 0xb5, 0xb,
+                0x0, 0x6, 0x1d, 0x1, 0xe2, 0x5, 0x258, 0xb, 0x1, 0x6, -0x50, 0x9, -0xe0, 0x6, -0x23, 0x1, 0xfa,
+                0xc, 0xb8, 0xb, 0x0, 0x6, 0x1e, 0x1, 0xd6, 0x5, 0x26c, 0xb, 0x1, 0x6, 0x7e, 0x9, 0xf4, 0x6,
+                0x3, 0x1, -0xec, 0xc, 0xf5, 0x6, 0x88, 0xc, 0xae,});
+        char[] c = args[0].toCharArray();
+        for (int i = 0; i &lt; c.length; i++) {
+            String s = getOutput(Math.abs(java.run(i, (int) c[i])));
+            if (s.equals(owo[1])) {
+                System.out.println(s);
+                System.exit(0);
+            }
+        }
+        System.out.println(getOutput(Math.abs(java.run(0, (int) c[0]) % 2)));
+    }
+}
+</code></pre>
+
+<p>Then when running the program, we can see each character is xored with a number and then compared with another one. If the two numbers are not equal, the program terminates. To find the flag, you can xor the two numbers together to get one character of the flag, and just keep on doing that until you end up with the complete flag.</p>
+
+<p>flag: <code>hsctf{y0u_d3f34t3d_th3_b4by_vm}</code></p>
+
+<h1 id="tux-talk-show-2019">Tux Talk Show 2019</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>Written by: Tux</p>
+
+<p>Tux Talk Show 2019. Yes, this is trash.</p>
+
+<p><code>nc rev.hsctf.com 6767</code></p>
+
+<p><a href="/blog/2019-06-08-hsctf-writeup-rev/Tux Talk Show 2019/trash">trash</a></p>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>This is a classic guess-the-random-number challenge:</p>
+
+<pre><code class="language-python">from pwn import *
+import ctypes
+LIBC = ctypes.cdll.LoadLibrary('/lib/x86_64-linux-gnu/libc-2.27.so')
+LIBC.srand(LIBC.time(0))
+
+sh = remote('rev.hsctf.com', 6767)
+
+number = sum([121, 1231231, 20312312, 122342342, 90988878, -30])
+for i in range(6):
+  number -= LIBC.rand() % 10 -1
+
+print number
+sh.interactive()
+</code></pre>
+
+<p>flag: <code>hsctf{n1ce_j0b_w4th_r4ndom_gue33ing}</code></p>
+
+<h1 id="paint">Paint</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>Written by: dwang</p>
+
+<p>Windows? :thonk:</p>
+
+<p><a href="/blog/2019-06-08-hsctf-writeup-rev/Paint/paint.dll">paint.dll</a></p>
+
+<h2 id="solution-5">Solution</h2>
+
+<p>I looked at all the xref to <code>strcmp</code> and found the <code>StartAddress</code> function where the flag is generated.</p>
+
+<p>The flag is generated from data stored in two xmm 128 bit registers. I <a href="https://gchq.github.io/CyberChef/#recipe=From_Hex('Auto')XOR_Brute_Force(1,100,0,'Standard',false,true,false,'ftc')Reverse('Character')&input=NjE1RjYxNTA1NzYxNEQ0OTUxNUE1MDU3NDk2MTUwNUI1QjRENjE0QTUwNUI0ODVGNTY0NTU4NEE1RDRENTYzRQo">played around</a> with the values for a bit and got <code>hsctf{havent_seen_windows_in_a_</code>. Then I just guessed the last part and got the flag.</p>
+
+<p>flag: <code>hsctf{havent_seen_windows_in_a_while}</code></p>
+
+                </section>
+            </article>
+
+            
+                <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2ftcode2k16.github.io%2fblog%2fposts%2f2019-06-08-hsctf-writeup-rev%2f - HSCTF%202019%20Writeup%3a%20Reversal by @tcode2k16"><span class="icon-twitter"> tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+    <a class="symbol" href="https://twitter.com/tcode2k16">
+        <i class="fa fa-twitter-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

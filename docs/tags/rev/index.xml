@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Rev on Alan&#39;s Blog</title>
+    <link>https://tcode2k16.github.io/blog/tags/rev/</link>
+    <description>Recent content in Rev on Alan&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sat, 08 Jun 2019 11:00:08 +0800</lastBuildDate>
+    
+	<atom:link href="https://tcode2k16.github.io/blog/tags/rev/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>HSCTF 2019 Writeup: Reversal</title>
+      <link>https://tcode2k16.github.io/blog/posts/2019-06-08-hsctf-writeup-rev/</link>
+      <pubDate>Sat, 08 Jun 2019 11:00:08 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2019-06-08-hsctf-writeup-rev/</guid>
+      <description>A Byte Problem Written by: ItzSomebody
+Just one byte makes all the difference.
+a-byte
+Solution Looking at the code, we see that the flag has a length of 35:
+if ( (unsigned int)strlen(argv[1]) != 35 ) goto LABEL_11; ... LABEL_11: puts(&amp;quot;u do not know da wae&amp;quot;); result = 0xFFFFFFFFLL;  If the length is correct, the user input will be xored with 1 and then compared with a string loaded on the stack.</description>
+    </item>
+    
+  </channel>
+</rss>
