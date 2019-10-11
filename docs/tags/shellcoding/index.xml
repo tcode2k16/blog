@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Shellcoding on Alan&#39;s Blog</title>
+    <title>shellcoding on Alan&#39;s Blog</title>
     <link>https://tcode2k16.github.io/blog/tags/shellcoding/</link>
-    <description>Recent content in Shellcoding on Alan&#39;s Blog</description>
+    <description>Recent content in shellcoding on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Sun, 19 May 2019 21:29:39 +0800</lastBuildDate>
