@@ -6,10 +6,24 @@
     <description>Recent content on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 08 Jun 2019 11:00:08 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 12 Oct 2019 00:00:01 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>PicoCTF 2019 Writeup: Binary Exploitation</title>
+      <link>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/binary-exploitation/</link>
+      <pubDate>Sat, 12 Oct 2019 00:00:01 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/binary-exploitation/</guid>
+      <description>handy-shellcode Problem This program executes any shellcode that you give it. Can you spawn a shell and use that to read the flag.txt? You can find the program in /problems/handy-shellcode_4_037bd47611d842b565cfa1f378bfd8d9 on the shell server. Source.
+Binary
+Source
+Solution The solution is basically the same as the shellcode challenge from last year (click the link for my writeup on that).
+Here&amp;rsquo;s the exploit script that I used:
+from pwn import * import sys argv = sys.</description>
+    </item>
     
     <item>
       <title>HSCTF 2019 Writeup: Reversal</title>
@@ -388,20 +402,6 @@ Method The script first pulls all the events from an existing calendar given a c
       <description>Introduction When I was doing the DEF CON CTF Qualifier last weekend, I came across an interesting question where you need to create two pdf files with the same SHA1 hash.
 Research I know SHA1 hash was already broken when google blogged about creating the first SHA1 collision, but I was not sure that I can reproduce the process with limited hardware.
 Result In the end, I came across this website that is able to generate two PDF files with the same SHA1 hash using two JPG images based on this paper.</description>
-    </item>
-    
-    <item>
-      <title>PicoCTF 2019 Writeup: Binary Exploitation</title>
-      <link>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/binary-exploitation/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/binary-exploitation/</guid>
-      <description>handy-shellcode Problem This program executes any shellcode that you give it. Can you spawn a shell and use that to read the flag.txt? You can find the program in /problems/handy-shellcode_4_037bd47611d842b565cfa1f378bfd8d9 on the shell server. Source.
-Binary
-Source
-Solution The solution is basically the same as the shellcode challenge from last year (click the link for my writeup on that).
-Here&amp;rsquo;s the exploit script that I used:
-from pwn import * import sys argv = sys.</description>
     </item>
     
   </channel>
