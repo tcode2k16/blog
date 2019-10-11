@@ -6,10 +6,25 @@
     <description>Recent content in Posts on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 12 Oct 2019 00:00:01 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 12 Oct 2019 00:00:05 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>PicoCTF 2019 Writeup: Forensics</title>
+      <link>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/forensics/</link>
+      <pubDate>Sat, 12 Oct 2019 00:00:05 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/forensics/</guid>
+      <description>Glory of the Garden Problem This garden contains more than it seems. You can also find the file in /problems/glory-of-the-garden_5_eeb712a9a3bc1998ffcd626af9d63f98 on the shell server.
+file
+Solution There&amp;rsquo;s addition text in the file that can be extracted with strings.
+$ strings garden.jpg | grep pico Here is a flag &amp;quot;picoCTF{more_than_m33ts_the_3y3cD8bA96C}&amp;quot;  flag: picoCTF{more_than_m33ts_the_3y3cD8bA96C}
+unzip Problem Can you unzip this file and get the flag?
+file
+Solution just unzip the file to get flag.</description>
+    </item>
     
     <item>
       <title>PicoCTF 2019 Writeup: Binary Exploitation</title>

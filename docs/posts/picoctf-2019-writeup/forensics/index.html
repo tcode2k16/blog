@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 
+			
+  
+    <meta name="twitter:card" content="summary"/>
+    
+      <meta name="twitter:image" content="https://tcode2k16.github.io/blog/images/avatar.png" />
+    
+  
+  
+  <meta name="twitter:title" content="PicoCTF 2019 Writeup: Forensics"/>
+  <meta name="twitter:description" content="solves for picoCTF 2019 Forensics challenges"/>
+  
+    <meta name="twitter:site" content="@tcode2k16"/>
+  
+  
+  
+  
+    <meta name="twitter:creator" content="@Alan Chang"/>
+  
+
+
+
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.58.2" />
+		<title>PicoCTF 2019 Writeup: Forensics &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        PicoCTF 2019 Writeup: Forensics
+                    </h1>
+                    <h2 class="headline">
+                    Oct 12, 2019 00:00
+                    · 1765 words
+                    · 9 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/picoctf">picoctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/forensics">forensics</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#glory-of-the-garden">Glory of the Garden</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#unzip">unzip</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a></li>
+</ul></li>
+<li><a href="#so-meta">So Meta</a>
+<ul>
+<li><a href="#problem-2">Problem</a></li>
+<li><a href="#solution-2">Solution</a></li>
+</ul></li>
+<li><a href="#what-lies-within">What Lies Within</a>
+<ul>
+<li><a href="#problem-3">Problem</a></li>
+<li><a href="#solution-3">Solution</a></li>
+</ul></li>
+<li><a href="#extensions">extensions</a>
+<ul>
+<li><a href="#problem-4">Problem</a></li>
+<li><a href="#solution-4">Solution</a></li>
+</ul></li>
+<li><a href="#shark-on-wire-1">shark on wire 1</a>
+<ul>
+<li><a href="#problem-5">Problem</a></li>
+<li><a href="#solution-5">Solution</a></li>
+</ul></li>
+<li><a href="#whitepages">WhitePages</a>
+<ul>
+<li><a href="#problem-6">Problem</a></li>
+<li><a href="#solution-6">Solution</a></li>
+</ul></li>
+<li><a href="#like1000">like1000</a>
+<ul>
+<li><a href="#problem-7">Problem</a></li>
+<li><a href="#solution-7">Solution</a></li>
+</ul></li>
+<li><a href="#investigative-reversing-0">Investigative Reversing 0</a>
+<ul>
+<li><a href="#problem-8">Problem</a></li>
+<li><a href="#solution-8">Solution</a></li>
+</ul></li>
+<li><a href="#investigative-reversing-1">Investigative Reversing 1</a>
+<ul>
+<li><a href="#problem-9">Problem</a></li>
+<li><a href="#solution-9">Solution</a></li>
+</ul></li>
+<li><a href="#investigative-reversing-2">Investigative Reversing 2</a>
+<ul>
+<li><a href="#problem-10">Problem</a></li>
+<li><a href="#solution-10">Solution</a></li>
+</ul></li>
+<li><a href="#pastaaaa">pastaAAA</a>
+<ul>
+<li><a href="#problem-11">Problem</a></li>
+<li><a href="#solution-11">Solution</a></li>
+</ul></li>
+<li><a href="#investigative-reversing-3">Investigative Reversing 3</a>
+<ul>
+<li><a href="#problem-12">Problem</a></li>
+<li><a href="#solution-12">Solution</a></li>
+</ul></li>
+<li><a href="#investigative-reversing-4">Investigative Reversing 4</a>
+<ul>
+<li><a href="#problem-13">Problem</a></li>
+<li><a href="#solution-13">Solution</a></li>
+</ul></li>
+<li><a href="#investigation-encoded-1">investigation_encoded_1</a>
+<ul>
+<li><a href="#problem-14">Problem</a></li>
+<li><a href="#solution-14">Solution</a></li>
+</ul></li>
+<li><a href="#investigation-encoded-2">investigation_encoded_2</a>
+<ul>
+<li><a href="#problem-15">Problem</a></li>
+<li><a href="#solution-15">Solution</a></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="glory-of-the-garden">Glory of the Garden</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>This garden contains more than it seems. You can also find the file in /problems/glory-of-the-garden_5_eeb712a9a3bc1998ffcd626af9d63f98 on the shell server.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Glory of the Garden/garden.jpg">file</a></p>
+
+<h2 id="solution">Solution</h2>
+
+<p>There&rsquo;s addition text in the file that can be extracted with <code>strings</code>.</p>
+
+<pre><code>$ strings garden.jpg | grep pico
+Here is a flag &quot;picoCTF{more_than_m33ts_the_3y3cD8bA96C}&quot;
+</code></pre>
+
+<p>flag: <code>picoCTF{more_than_m33ts_the_3y3cD8bA96C}</code></p>
+
+<h1 id="unzip">unzip</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Can you unzip this file and get the flag?</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/unzip/flag.zip">file</a></p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>just unzip the file to get <a href="/blog/picoctf-2019-writeup/forensics/unzip/flag.png">flag.png</a></p>
+
+<figure>
+    <img src="/blog/picoctf-2019-writeup/forensics/unzip/flag.png"/> 
+</figure>
+
+
+<p>flag: <code>unz1pp1ng_1s_3a5y</code></p>
+
+<h1 id="so-meta">So Meta</h1>
+
+<h2 id="problem-2">Problem</h2>
+
+<p>Find the flag in this picture. You can also find the file in /problems/so-meta_1_ab9d99603935344b81d7f07973e70155.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/So Meta/pico_img.png">file</a></p>
+
+<h2 id="solution-2">Solution</h2>
+
+<p>The flag is hidden in the EXIF data of the image. It can be extracted with the <code>exiftool</code>:</p>
+
+<pre><code>$ exiftool pico_img.png | grep Artist
+Artist                          : picoCTF{s0_m3ta_368a0341}
+</code></pre>
+
+<p>flag: <code>picoCTF{s0_m3ta_368a0341}</code></p>
+
+<h1 id="what-lies-within">What Lies Within</h1>
+
+<h2 id="problem-3">Problem</h2>
+
+<p>Theres something in the building. Can you retrieve the flag?</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/What Lies Within/buildings.png">file</a></p>
+
+<h2 id="solution-3">Solution</h2>
+
+<p>This is a challenge where <a href="https://www.boiteaklou.fr/Steganography-Least-Significant-Bit.html">the flag is hidden in the least significant bit of each pixel value</a>. It can be extracted with <code>zsteg</code>:</p>
+
+<pre><code>$ zsteg buildings.png 
+b1,r,lsb,xy         .. text: &quot;^5&gt;R5YZrG&quot;
+b1,rgb,lsb,xy       .. text: &quot;picoCTF{h1d1ng_1n_th3_b1t5}&quot;
+b1,abgr,msb,xy      .. file: PGP\011Secret Sub-key -
+b2,b,lsb,xy         .. text: &quot;XuH}p#8Iy=&quot;
+b3,abgr,msb,xy      .. text: &quot;t@Wp-_tH_v\r&quot;
+b4,r,lsb,xy         .. text: &quot;fdD\&quot;\&quot;\&quot;\&quot; &quot;
+b4,r,msb,xy         .. text: &quot;%Q#gpSv0c05&quot;
+b4,g,lsb,xy         .. text: &quot;fDfffDD\&quot;\&quot;&quot;
+b4,g,msb,xy         .. text: &quot;f\&quot;fff\&quot;\&quot;DD&quot;
+b4,b,lsb,xy         .. text: &quot;\&quot;$BDDDDf&quot;
+b4,b,msb,xy         .. text: &quot;wwBDDDfUU53w&quot;
+b4,rgb,msb,xy       .. text: &quot;dUcv%F#A`&quot;
+b4,bgr,msb,xy       .. text: &quot; V\&quot;c7Ga4&quot;
+b4,abgr,msb,xy      .. text: &quot;gOC_$_@o&quot;
+</code></pre>
+
+<p>flag: <code>picoCTF{h1d1ng_1n_th3_b1t5}</code></p>
+
+<h1 id="extensions">extensions</h1>
+
+<h2 id="problem-4">Problem</h2>
+
+<p>This is a really weird text file TXT? Can you find the flag?</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/extensions/flag.txt">file</a></p>
+
+<h2 id="solution-4">Solution</h2>
+
+<p>A quick file type check with <code>file</code> reveals that we have a PNG file instead of a TXT file:</p>
+
+<pre><code>$ file flag.txt 
+flag.txt: PNG image data, 1697 x 608, 8-bit/color RGB, non-interlaced
+</code></pre>
+
+<p>Simply changing the filename to <a href="/blog/picoctf-2019-writeup/forensics/extensions/flag.png">flag.png</a> yields the flag.</p>
+
+<figure>
+    <img src="/blog/picoctf-2019-writeup/forensics/extensions/flag.png"/> 
+</figure>
+
+
+<p>flag: <code>picoCTF{now_you_know_about_extensions}</code></p>
+
+<h1 id="shark-on-wire-1">shark on wire 1</h1>
+
+<h2 id="problem-5">Problem</h2>
+
+<p>We found this packet capture. Recover the flag. You can also find the file in /problems/shark-on-wire-1_0_13d709ec13952807e477ba1b5404e620.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/shark on wire 1/capture.pcap">file</a></p>
+
+<h2 id="solution-5">Solution</h2>
+
+<p>We are given a pcap network capture that can be opened in wireshark. When we ope the file, we see many udp packets. By following udp streams, we can obtain the flag. Specifically, apply the filter <code>udp.stream eq 6</code> and then right-click the follow udp option:</p>
+
+<figure>
+    <img src="/blog/picoctf-2019-writeup/forensics/shark%20on%20wire%201/screen.png"/> 
+</figure>
+
+
+<p>flag: <code>picoCTF{StaT31355_636f6e6e}</code></p>
+
+<h1 id="whitepages">WhitePages</h1>
+
+<h2 id="problem-6">Problem</h2>
+
+<p>I stopped using YellowPages and moved onto WhitePages&hellip; but the page they gave me is all blank!</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/WhitePages/whitepages.txt">file</a></p>
+
+<h2 id="solution-6">Solution</h2>
+
+<p>A quick hexdump with <code>xxd</code> shows that there are two different patterns: <code>e28083</code> and <code>20</code>:</p>
+
+<pre><code>s$ xxd whitepages.txt 
+00000000: e280 83e2 8083 e280 83e2 8083 20e2 8083  ............ ...
+00000010: 20e2 8083 e280 83e2 8083 e280 83e2 8083   ...............
+00000020: 20e2 8083 e280 8320 e280 83e2 8083 e280   ...... ........
+00000030: 83e2 8083 20e2 8083 e280 8320 e280 8320  .... ...... ... 
+00000040: 2020 e280 83e2 8083 e280 83e2 8083 e280    ..............
+00000050: 8320 20e2 8083 20e2 8083 e280 8320 e280  .  ... ...... ..
+...
+</code></pre>
+
+<p>Treating <code>e28083</code> as <code>0</code> and <code>20</code> as <code>1</code> gives us the flag in binary:</p>
+
+<pre><code class="language-python">from pwn import *
+
+with open('./whitepages.txt', 'rb') as f:
+  data = f.read()
+
+data  = data.replace('e28083'.decode('hex'), '0').replace(' ', '1')
+
+print unbits(data)
+</code></pre>
+
+<pre><code>$ python main.py 
+
+        picoCTF
+
+        SEE PUBLIC RECORDS &amp; BACKGROUND REPORT
+        5000 Forbes Ave, Pittsburgh, PA 15213
+        picoCTF{not_all_spaces_are_created_equal_dd5c2e2f77f89f3051c82bfee7d996ef}
+        
+</code></pre>
+
+<p>flag: <code>picoCTF{not_all_spaces_are_created_equal_dd5c2e2f77f89f3051c82bfee7d996ef}</code></p>
+
+<h1 id="like1000">like1000</h1>
+
+<h2 id="problem-7">Problem</h2>
+
+<p>This .tar file got tarred alot. Also available at /problems/like1000_0_369bbdba2af17750ddf10cc415672f1c.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/like1000/1000.tar">file</a></p>
+
+<h2 id="solution-7">Solution</h2>
+
+<p>I solved this with a short python script and the unzipping utility <a href="https://theunarchiver.com/command-line">unar</a>:</p>
+
+<pre><code class="language-python">from os import system
+
+system('unar ./1000.tar')
+for i in range(999, -1, -1):
+  system('unar ./{}/{}.tar'.format(i+1, i))
+</code></pre>
+
+<p>We obtain the <a href="/blog/picoctf-2019-writeup/forensics/like1000/flag.png">flag.png</a> nested in 1000 tar file which has the flag.</p>
+
+<figure>
+    <img src="/blog/picoctf-2019-writeup/forensics/like1000/flag.png"/> 
+</figure>
+
+
+<p>flag: <code>picoCTF{l0t5_0f_TAR5}</code></p>
+
+<h1 id="investigative-reversing-0">Investigative Reversing 0</h1>
+
+<h2 id="problem-8">Problem</h2>
+
+<p>We have recovered a binary and an image. See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-0_6_2d92ee3bac4838493cb68ec16e086ac6 on the shell server.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 0/mystery.png">image</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 0/mystery">binary</a></p>
+
+<h2 id="solution-8">Solution</h2>
+
+<p>Reversing the binary shows that the flag is encoded and then appended to the image:</p>
+
+<pre><code class="language-c">int __cdecl main(int argc, const char **argv, const char **envp)
+{
+  signed int i; // [rsp+4h] [rbp-4Ch]
+  signed int j; // [rsp+8h] [rbp-48h]
+  FILE *stream; // [rsp+10h] [rbp-40h]
+  FILE *v7; // [rsp+18h] [rbp-38h]
+  char ptr; // [rsp+20h] [rbp-30h]
+  char v9; // [rsp+21h] [rbp-2Fh]
+  char v10; // [rsp+22h] [rbp-2Eh]
+  char v11; // [rsp+23h] [rbp-2Dh]
+  char v12; // [rsp+24h] [rbp-2Ch]
+  char v13; // [rsp+25h] [rbp-2Bh]
+  char v14; // [rsp+2Fh] [rbp-21h]
+  unsigned __int64 v15; // [rsp+48h] [rbp-8h]
+
+  v15 = __readfsqword(0x28u);
+  stream = fopen(&quot;flag.txt&quot;, &quot;r&quot;);
+  v7 = fopen(&quot;mystery.png&quot;, &quot;a&quot;);
+  if ( !stream )
+    puts(&quot;No flag found, please make sure this is run on the server&quot;);
+  if ( !v7 )
+    puts(&quot;mystery.png is missing, please run this on the server&quot;);
+  if ( (signed int)fread(&amp;ptr, 0x1AuLL, 1uLL, stream) &lt;= 0 )
+    exit(0);
+  puts(&quot;at insert&quot;);
+  fputc(ptr, v7);
+  fputc(v9, v7);
+  fputc(v10, v7);
+  fputc(v11, v7);
+  fputc(v12, v7);
+  fputc(v13, v7);
+  for ( i = 6; i &lt;= 14; ++i )
+    fputc((char)(*(&amp;ptr + i) + 5), v7);
+  fputc((char)(v14 - 3), v7);
+  for ( j = 16; j &lt;= 25; ++j )
+    fputc(*(&amp;ptr + j), v7);
+  fclose(v7);
+  fclose(stream);
+  return __readfsqword(0x28u) ^ v15;
+}
+</code></pre>
+
+<p>As shown above, the 6th to 14th byte are added by 5 and the 15th byte is subtracted by 3. We can used <code>xxd</code> to extract the encoded hex and decode it with a short python script:</p>
+
+<pre><code class="language-python">data = '7069636f43544b806b357a73696436715f65656165633438627d'.decode('hex')
+data = bytearray(data)
+
+for i in range(6, 15):
+  data[i] -= 5
+
+data[15] += 3
+
+print data
+</code></pre>
+
+<p>flag: <code>picoCTF{f0und_1t_eeaec48b}</code></p>
+
+<h1 id="investigative-reversing-1">Investigative Reversing 1</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>We have recovered a binary and a few images: image, image2, image3. See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-1_0_329e7a12e90f3f127c8ab2489b08bcf1 on the shell server.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 1/mystery">binary</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 1/mystery.png">image1</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 1/mystery2.png">image2</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 1/mystery3.png">image3</a></p>
+
+<h2 id="solution-9">Solution</h2>
+
+<p>Similar to <a href="#investigative-reversing-0">Investigative Reversing 0</a>, we need to reverse the binary and decode the flag:</p>
+
+<pre><code class="language-python">from pwn import *
+s1 = unhex('43467b416e315f62313739313135657d')
+s2 = unhex('8573')
+s3 = unhex('696354307468615f')
+
+out = bytearray('0'*0x1a)
+
+out[1] = s3[0]
+out[21] = s2[0]
+out[2] = s3[1]
+out[5] = s3[2]
+out[4] = s1[0]
+
+for i in range(6,10):
+  out[i] = s1[i-5]
+
+out[3] = chr(ord(s2[1])-4)
+
+for i in range(10, 15):
+  out[i] = s3[i-7]
+
+for i in range(15,26):
+  out[i] = s1[i-10]
+
+print out
+</code></pre>
+
+<p>flag: <code>picoCTF{An0tha_1_b179115e}</code></p>
+
+<h1 id="investigative-reversing-2">Investigative Reversing 2</h1>
+
+<h2 id="problem-10">Problem</h2>
+
+<p>We have recovered a binary and an image See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-2_5_b294e24c9063edbf722b9554e7750d19 on the shell server.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 2/mystery">binary</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 2/encoded.bmp">image</a></p>
+
+<h2 id="solution-10">Solution</h2>
+
+<p>Same concept as before, we need to reverse the binary and decode the flag:</p>
+
+<pre><code class="language-python">with open('./encoded.bmp', 'rb') as f:
+  data = f.read()
+
+data = data[2000:2000+(50*8)]
+
+out = ''
+
+for i in range(50):
+  c = 0
+  for j in range(8):
+    c = c | (ord(data[i*8+(7-j)])&amp;1)
+    c = c &lt;&lt; 1
+  c = c &gt;&gt; 1
+  out += chr(c+5)
+  print c
+  print out
+
+</code></pre>
+
+<p>flag: <code>picoCTF{n3xt_0n30000000000000000000000000f69eb8c8}</code></p>
+
+<h1 id="pastaaaa">pastaAAA</h1>
+
+<h2 id="problem-11">Problem</h2>
+
+<p>This pasta is up to no good. There MUST be something behind it.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/pastaAAA/ctf.png">file</a></p>
+
+<h2 id="solution-11">Solution</h2>
+
+<p>Flag is hidden in one of the RGB planes and can be extracted with stegsolve:</p>
+
+<figure>
+    <img src="/blog/picoctf-2019-writeup/forensics/pastaAAA/screen.png"/> 
+</figure>
+
+
+<p>flag: <code>picoCTF{pa$ta_1s_lyf3}</code></p>
+
+<h1 id="investigative-reversing-3">Investigative Reversing 3</h1>
+
+<h2 id="problem-12">Problem</h2>
+
+<p>We have recovered a binary and an image See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-3_5_bb1b39c0e6a6ea43ea4f44c5b6f44200 on the shell server.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 3/mystery">binary</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 2/encoded.bmp">image</a></p>
+
+<h2 id="solution-12">Solution</h2>
+
+<p>This challenge is building on top of <a href="#investigative-reversing-2">Investigative Reversing 2</a>. Here is the decode script:</p>
+
+<pre><code class="language-python">with open('./encoded.bmp', 'rb') as f:
+  data = f.read()
+
+data = data[723:723+(50*9)]
+
+out = ''
+
+for i in range(50):
+  c = 0
+  for j in range(8):
+    c = c | (ord(data[i*9+(7-j)])&amp;1)
+    c = c &lt;&lt; 1
+  c = c &gt;&gt; 1
+  out += chr(c)
+  print c
+  print out
+</code></pre>
+
+<p>flag: <code>picoCTF{4n0th3r_L5b_pr0bl3m_0000000000000aa9faea3}</code></p>
+
+<h1 id="investigative-reversing-4">Investigative Reversing 4</h1>
+
+<h2 id="problem-13">Problem</h2>
+
+<p>We have recovered a binary and 5 images: image01, image02, image03, image04, image05. See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-4_5_908aeadf9411ff79b32829c8651b185a on the shell server.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 4/mystery">binary</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 4/Iterm01_cp.bmp">image01</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 4/Iterm02_cp.bmp">image02</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 4/Iterm03_cp.bmp">image03</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 4/Iterm04_cp.bmp">image04</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 4/Iterm05_cp.bmp">image05</a></p>
+
+<h2 id="solution-13">Solution</h2>
+
+<p>LSB but with different images. Here is decode script:</p>
+
+<pre><code class="language-python">arr = []
+for i in range(5, 0, -1):
+  with open('./Item0{}_cp.bmp'.format(i), 'rb') as f:
+    data = f.read()[2019:2019+10*8+40*1]
+    arr.extend(data)
+
+out = ''
+
+for i in range(50):
+  c = 0
+  for j in range(8):
+    c = c | (ord(arr[i*12+(7-j)])&amp;1)
+    c = c &lt;&lt; 1
+  c = c &gt;&gt; 1
+  out += chr(c)
+  print c
+  print out
+ 
+</code></pre>
+
+<p>flag: <code>picoCTF{N1c3_R3ver51ng_5k1115_00000000000ade0499b}</code></p>
+
+<h1 id="investigation-encoded-1">investigation_encoded_1</h1>
+
+<h2 id="problem-14">Problem</h2>
+
+<p>We have recovered a binary and 1 file: image01. See what you can make of it. Its also found in /problems/investigation-encoded-1_6_172edc378b5282150ec24be19ff8342b on the shell server. NOTE: The flag is not in the normal picoCTF{XXX} format.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/investigation_encoded_1/mystery">binary</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/investigation_encoded_1/output">image</a></p>
+
+<h2 id="solution-14">Solution</h2>
+
+<p>The program maps each character to a stream of n bits. By reversing the program, we can recover this mapping, therefore, obtain the flag:</p>
+
+<pre><code class="language-python">import string
+from pwn import *
+
+context.log_level = 'error'
+
+v1 = '000000000C000000080000000E000000140000000A00000022000000040000002C0000000C000000300000000C0000003C0000000A00000048000000060000005200000010000000580000000C000000680000000C000000740000000A00000080000000080000008A0000000E000000920000000E000000A000000010000000AE0000000A000000BE00000008000000C800000006000000D00000000A000000D60000000C000000E00000000C000000EC0000000E000000F800000010000000060100000E000000160100000400000024010000'
+v1 = unhex(v1)
+temp = []
+for i in range(0, len(v1), 4):
+  temp.append(u32(v1[i:i+4]))
+temp = temp[::2]
+print len(temp)
+v1 = temp
+
+v2 = '08000000000000000C000000080000000E000000140000000A00000022000000040000002C0000000C000000300000000C0000003C0000000A00000048000000060000005200000010000000580000000C000000680000000C000000740000000A00000080000000080000008A0000000E000000920000000E000000A000000010000000AE0000000A000000BE00000008000000C800000006000000D00000000A000000D60000000C000000E00000000C000000EC0000000E000000F800000010000000060100000E000000160100000400000024010000'
+v2 = unhex(v2)
+temp = []
+for i in range(0, len(v2), 4):
+  temp.append(u32(v2[i:i+4]))
+temp = temp[::2]
+print len(temp)
+v2 = temp
+print v2
+
+secret = 'B8EA8EBA3A88AE8EE8AA28BBB8EB8BA8EE3A3BB8BBA3BAE2E8A8E2B8AB8BB8EAE3AEE3BA8000000000000000000000000000000000000000000000000000000008'
+secret = unhex(secret)
+
+def getValue(a1):
+  return (ord(secret[a1 // 8]) &gt;&gt; (7 - a1 % 8)) &amp; 1;
+
+d = []
+
+for each in range(27):
+  out = []
+  for i in range(v1[each], v2[each]+v1[each]):
+    out.append(getValue(i))
+  d.append([each, ''.join(map(str, out))])
+
+d.sort(key=lambda x: len(x[1]), reverse=True)
+
+print d
+
+with open('./output', 'rb') as f:
+  data = ''.join(map(str,bits(f.read())))
+
+i = 0
+flag = ''
+while i &lt; len(data):
+  for index, enc in d:
+    
+    if data[i:i+len(enc)] == enc:
+      flag += chr(ord('a')+index)
+      i += len(enc)
+      print flag
+print flag
+</code></pre>
+
+<p>flag: <code>encodedgxmurhtuou</code></p>
+
+<h1 id="investigation-encoded-2">investigation_encoded_2</h1>
+
+<h2 id="problem-15">Problem</h2>
+
+<p>We have recovered a binary and 1 file: image01. See what you can make of it. Its also found in /problems/investigation-encoded-2_2_4d97294fc1696ff16af8ce3c0e6b3b95 on the shell server. NOTE: The flag is not in the normal picoCTF{XXX} format.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/investigation_encoded_12mystery">binary</a></p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/investigation_encoded_2/output">image</a></p>
+
+<h2 id="solution-15">Solution</h2>
+
+<p>Similar to <a href="#investigation_encoded_1">investigation_encoded_1</a> but with more characters.</p>
+
+<pre><code class="language-python">import string
+from pwn import *
+
+context.log_level = 'error'
+
+v1 = '000000000400000012000000280000003C0000005200000064000000780000008E0000009E000000B4000000C8000000DA000000EA000000FC0000000E0100001E01000034010000480100005A0100006A01000072010000800100008C0100009A010000AA010000BC010000C8010000D6010000E0010000EA010000F0010000000200000A02000016020000220200003002000034020000'
+v1 = unhex(v1)
+print len(v1)
+temp = []
+for i in range(0, len(v1), 4):
+  temp.append(u32(v1[i:i+4]))
+# temp = temp[::2]
+print len(temp)
+v1 = temp
+print v1
+
+secret = '8BAA2EEEE8BBAE8EBBAE3AEE8EEEA8EEAEE3AAE3AEBB8BAEB8EAAE2EBA2EAE8AEEA3ABA3BBBB8BBBB8AEEE2AEE2E2AB8AA8EAA3BAA3BBA8EA8EBA3A8AA28BBB8AE2AE2EE3AB80000000000000000000000000000000000000000000000000000'
+secret = unhex(secret)
+
+def getValue(a1):
+  return (ord(secret[a1 // 8]) &gt;&gt; (7 - a1 % 8)) &amp; 1;
+
+def enc(v):
+  v = ord(v)
+  if v == 32:
+    v = 133
+  if v &gt; 47 and v &lt;= 57:
+    v += 75
+  v -= 97
+  if v != 36:
+    v = (v+18)%36
+  out = []
+  for i in range(v1[v], v1[v+1]):
+    out.append(getValue(i))
+  return out
+
+d = []
+
+str_list = string.lowercase+' '+string.digits
+print 'start'
+for each in str_list:
+  out = enc(each)
+  print 'expect {}'.format(out)
+  # print '       {}'.format(test(str_list[each]))
+  d.append([each, ''.join(map(str, out))])
+print 'end'
+
+d.sort(key=lambda x: len(x[1]), reverse=True)
+
+print d
+
+with open('./real_output', 'rb') as f:
+  data = ''.join(map(str,bits(f.read())))
+print data
+i = 0
+flag = ''
+while i &lt; len(data):
+  for char, enc in d:
+    # print index
+    # print enc
+    if data[i:i+len(enc)] == enc:
+      flag += char
+      i += len(enc)
+      print flag
+print flag
+
+</code></pre>
+
+<p>flag: <code>t1m3f1i3500000000000501af001</code></p>
+
+                </section>
+            </article>
+
+            
+                <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2ftcode2k16.github.io%2fblog%2fposts%2fpicoctf-2019-writeup%2fforensics%2f - PicoCTF%202019%20Writeup%3a%20Forensics by @tcode2k16"><span class="icon-twitter"> tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+    <a class="symbol" href="https://twitter.com/tcode2k16">
+        <i class="fa fa-twitter-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2019 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

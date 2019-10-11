@@ -1,7 +1,7 @@
 ---
 title: "PicoCTF 2019 Writeup: Forensics"
-date: 2019-10-11T22:00:01+08:00
-draft: true
+date: 2019-10-12T00:00:05+08:00
+draft: false
 tags: [
   "ctf",
   "cyber-security",
@@ -133,7 +133,7 @@ We found this packet capture. Recover the flag. You can also find the file in /p
 
 ## Solution
 
-We are given a pcap network capture that can be opened in wireshark. When we ope the file, we see many udp packets. By following udp streams, we can obtain the flag. Specifically, apply the filter `udp.stream eq 6` and then right click the follow udp option:
+We are given a pcap network capture that can be opened in wireshark. When we ope the file, we see many udp packets. By following udp streams, we can obtain the flag. Specifically, apply the filter `udp.stream eq 6` and then right-click the follow udp option:
 
 {{< figure src="/blog/picoctf-2019-writeup/forensics/shark on wire 1/screen.png" >}}
 
@@ -562,6 +562,8 @@ We have recovered a binary and 1 file: image01. See what you can make of it. Its
 
 
 ## Solution
+
+Similar to [investigation_encoded_1](#investigation_encoded_1) but with more characters.
 
 ```python
 import string
