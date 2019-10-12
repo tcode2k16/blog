@@ -6,10 +6,24 @@
     <description>Recent content in picoctf on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 12 Oct 2019 00:00:05 +0800</lastBuildDate>
+    <lastBuildDate>Sat, 12 Oct 2019 13:06:10 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/tags/picoctf/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>PicoCTF 2019 Writeup: General Skills</title>
+      <link>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/general-skills/</link>
+      <pubDate>Sat, 12 Oct 2019 13:06:10 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/picoctf-2019-writeup/general-skills/</guid>
+      <description>2Warm Problem Can you convert the number 42 (base 10) to binary (base 2)?
+Solution $ python &amp;gt;&amp;gt;&amp;gt; bin(42) &#39;0b101010&#39;  flag: picoCTF{101010}
+Lets Warm Up Problem If I told you a word started with 0x70 in hexadecimal, what would it start with in ASCII?
+Solution $ python &amp;gt;&amp;gt;&amp;gt; chr(0x70) &#39;p&#39;  flag: picoCTF{p}
+Warmed Up Problem What is 0x3D (base 16) in decimal (base 10).
+Solution $ python &amp;gt;&amp;gt;&amp;gt; 0x3d 61  flag: picoCTF{61}</description>
+    </item>
     
     <item>
       <title>PicoCTF 2019 Writeup: Forensics</title>
