@@ -11,6 +11,19 @@ tags: [
 description: solves for picoCTF 2019 General Skills challenges
 ---
 
+# The Factory's Secret
+
+## Problem
+
+There appear to be some mysterious glyphs hidden inside this abandoned factory... I wonder what would happen if you collected them all?
+
+## Solution
+
+> This writeup is by my teammate **Andrew Chang**
+
+{{< youtube 0xHVydWvzcE >}}
+
+
 # 2Warm
 
 ## Problem

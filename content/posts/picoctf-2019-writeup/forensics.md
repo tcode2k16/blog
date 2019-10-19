@@ -189,6 +189,111 @@ $ python main.py
 
 flag: `picoCTF{not_all_spaces_are_created_equal_dd5c2e2f77f89f3051c82bfee7d996ef}`
 
+# c0rrupt
+
+## Problem
+
+We found this file. Recover the flag. You can also find the file in /problems/c0rrupt_0_1fcad1344c25a122a00721e4af86de13.
+
+[file](/blog/picoctf-2019-writeup/forensics/c0rrupt/mystery)
+
+## Solution
+
+> This writeup is by my teammate **Theo Lee**
+
+Opening the file in a hex edior, we see that the file header is very simillar to a PNG signature. We used [this website](https://www.w3.org/TR/2003/REC-PNG-20031110/) to understand the hex values.
+
+A brief overview of PNG datastream structure:
+(This covers all knowledge needed to complete the problem.)
+
+```none
+5.2 PNG Signature
+89 50 4E 47 0D 0A 1A 0A (translated to hex)
+This signature indicates that the remainder of the datastream contains a single PNG image, consisting of a series of chunks beginning with an IHDR chunk and ending with an IEND chunk.
+
+5.3 PNG Chunk Layout
+Each chunk consists of three or four fields.
+LENGTH-CHUNKTYPE-CHUNKDATA-CRC
+or
+LENGTH(=0)-CHUNKTYPE-CRC
+The length field is a four byte integer giving the length of the chunkdata field.
+Chunktype is a four byte sequence defining the chunk type.
+Chunkdata gives data for the image.
+crc is a four byte sequence which uses an algorithm on the preceding bytes to check for corruption in the data.
+
+5.6 Chunk Ordering
+Critical chunks
+(shall appear in this order, except PLTE is optional)
+Chunk name    Multiple allowed        Ordering constraints
+IHDR          No                      Shall be first
+PLTE          No                      Before first IDAT
+IDAT          Yes                     Multiple IDAT chunks shall be consecutive
+IEND          No                      Shall be last
+
+Ancillary chunks
+(need not appear in this order)
+Chunk name    Multiple allowed        Ordering constraints
+cHRM          No                      Before PLTE and IDAT
+gAMA          No                      Before PLTE and IDAT
+iCCP          No                      Before PLTE and IDAT. If the iCCP chunk is present, the sRGB chunk should not be present.
+sBIT          No                      Before PLTE and IDAT
+sRGB          No                      Before PLTE and IDAT. If the sRGB chunk is present, the iCCP chunk should not be present.
+bKGD          No                      After PLTE; before IDAT
+hIST          No                      After PLTE; before IDAT
+tRNS          No                      After PLTE; before IDAT
+pHYs          No                      Before IDAT
+sPLT          Yes                     Before IDAT
+tIME          No                      None
+iTXt          Yes                     None
+tEXt          Yes                     None
+zTXt          Yes                     None
+```
+
+We've now mastered PNG chunks. 
+
+The first 8 bytes of the mystery file can be fixed to the correct PNG signature.
+
+Now running command in terminal
+
+```none
+$ pngcheck mystery
+mystery: invalid chunk name "C"DR" (43 22 44 52)
+```
+
+We see the bytes `43 22 44 52` are in the first chunk's chunktype field, after the 8-byte PNG signature and the 4-byte length field. Refering to the 5.6 chunk ordering table, we see that the IHDR chunk must be the first in the file. Traversing to section 11.2.2 IHDR Image Header, we see the chunk type field must contain the hex values 49 48 44 52. 
+
+Now running command in terminal
+
+```none
+$ pngcheck mystery
+mystery CRC error in chunk pHYs (computed 38d82c82, expected 495224f0)
+```
+
+This tells us the calculated CRC value from the data field, and the current CRC(expected). We can simply try replacing the expected hex values with the computed CRC.
+
+Now running command in terminal
+
+```none
+$ pngcheck mystery
+mystery invalid chunk length (too large)
+```
+
+Since this does not specify a chunk, we must begin at the start and check each chunk, with the knowledge of the format of chunks and each field's length: 4bytes(length)-4bytes(chunk type)-lengthbytes(data)-4bytes(crc). IHDR is length 13. sRGB is length 1. gAMA is length 4. pHYs is length 9. The next chunk with chunktype AB 44 45 54 is corrupt with name �DET. The name is very simmilar to IDAT, and IDAT complies the chunk ordering rules in the 5.6 table. We replace the chunktype with hex values 49 44 41 54. The other obvious problem is this chunk's length: AA AA FF A5. Way too big. Since we cannot identify CRCs, to find the end of the chunk, we must look for the next chunktype field. It is most likely IDAT as they must be consecutive. We find the next IDAT at offset 10008. The first IDAT was at offset 57. The difference is FFB1. We must subtract 4 bytes for the length field of the second IDAT, subtract 4 bytes for the CRC of the first IDAT, and subtract 4 bytes again for the chunktype of the first IDAT. Subtracting 12 in total, we get FFA5. Replace the length field with 00 00 FF A5.
+
+Now running command in terminal
+
+```none
+$ pngcheck mystery
+OK: mystery (1642x1095, 24-bit RGB, non-interlaced, 96.3%).
+```
+
+Success! Opening the file on any PNG viewer gives the flag.
+
+{{< figure src="/blog/picoctf-2019-writeup/forensics/c0rrupt/flag.png" >}}
+
+
+flag: `picoCTF{c0rrupt10n_1847995}`
+
 # like1000
 
 ## Problem
@@ -215,6 +320,23 @@ We obtain the [flag.png](/blog/picoctf-2019-writeup/forensics/like1000/flag.png)
 
 
 flag: `picoCTF{l0t5_0f_TAR5}`
+
+# m00nwalk
+
+## Problem
+
+Decode this [message](https://2019shell1.picoctf.com/static/6effddc9e024cc28a533b736e46f6d03/message.wav) from the moon. You can also find the file in /problems/m00nwalk_2_ddfd37932ded29f58963e8d9c526c2fa.
+
+## Solution
+
+> This writeup is by my teammate **Theo Lee**
+
+This audio file was encoded by slow-scan television(SSTV), which was the method used in the moon landing. To decode this, we downloaded [this program](http://users.belgacom.net/hamradio/rxsstv.htm). The program automatically detects the RX option and produces an image with the flag upside down.
+
+{{< figure src="/blog/picoctf-2019-writeup/forensics/m00nwalk/flag.jpg" >}}
+
+
+flag: `picoCTF{beep_boop_im_in_space}`
 
 # Investigative Reversing 0
 
@@ -288,6 +410,34 @@ print data
 ```
 
 flag: `picoCTF{f0und_1t_eeaec48b}`
+
+# m00nwalk2
+
+## Problem
+
+Revisit the last transmission. We think [this transmission](https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/message.wav) contains a hidden message. There are also some clues [clue 1](https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/clue1.wav), [clue 2](https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/clue2.wav), [clue 3](https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/clue3.wav). You can also find the files in /problems/m00nwalk2_4_db2f361610e04b41a70a92cd8b7b2533.
+
+## Solution
+
+> This writeup is by my teammate **Theo Lee**
+
+Use [the same program](http://users.belgacom.net/hamradio/rxsstv.htm) as the [first m00nwalk problem](#m00nwalk).
+
+Each give an image with text
+Clue 1: `Password hidden_stegosaurus`
+Clue 2: `The quieter you are the more you can HEAR`
+Clue 3: `Alan Eliasen the FutureBoy`
+
+Clue 3 leads us to [this website](https://futureboy.us/) and reading the description, it looks like a message was encoded using steganography.
+
+Write in console:
+
+```
+$ steghide extract -sf message.wav -p hidden_stegosaurus
+wrote extracted data to "steganopayload12154.txt"
+```
+
+flag: `picoCTF{the_answer_lies_hidden_in_plain_sight}`
 
 # Investigative Reversing 1
 

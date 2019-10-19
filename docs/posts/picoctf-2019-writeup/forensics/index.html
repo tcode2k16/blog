@@ -72,8 +72,8 @@
                     </h1>
                     <h2 class="headline">
                     Oct 12, 2019 00:00
-                    · 1765 words
-                    · 9 minute read
+                    · 2680 words
+                    · 13 minute read
                       <span class="tags">
                       
                       
@@ -133,50 +133,65 @@
 <li><a href="#problem-6">Problem</a></li>
 <li><a href="#solution-6">Solution</a></li>
 </ul></li>
-<li><a href="#like1000">like1000</a>
+<li><a href="#c0rrupt">c0rrupt</a>
 <ul>
 <li><a href="#problem-7">Problem</a></li>
 <li><a href="#solution-7">Solution</a></li>
 </ul></li>
-<li><a href="#investigative-reversing-0">Investigative Reversing 0</a>
+<li><a href="#like1000">like1000</a>
 <ul>
 <li><a href="#problem-8">Problem</a></li>
 <li><a href="#solution-8">Solution</a></li>
 </ul></li>
-<li><a href="#investigative-reversing-1">Investigative Reversing 1</a>
+<li><a href="#m00nwalk">m00nwalk</a>
 <ul>
 <li><a href="#problem-9">Problem</a></li>
 <li><a href="#solution-9">Solution</a></li>
 </ul></li>
-<li><a href="#investigative-reversing-2">Investigative Reversing 2</a>
+<li><a href="#investigative-reversing-0">Investigative Reversing 0</a>
 <ul>
 <li><a href="#problem-10">Problem</a></li>
 <li><a href="#solution-10">Solution</a></li>
 </ul></li>
-<li><a href="#pastaaaa">pastaAAA</a>
+<li><a href="#m00nwalk2">m00nwalk2</a>
 <ul>
 <li><a href="#problem-11">Problem</a></li>
 <li><a href="#solution-11">Solution</a></li>
 </ul></li>
-<li><a href="#investigative-reversing-3">Investigative Reversing 3</a>
+<li><a href="#investigative-reversing-1">Investigative Reversing 1</a>
 <ul>
 <li><a href="#problem-12">Problem</a></li>
 <li><a href="#solution-12">Solution</a></li>
 </ul></li>
-<li><a href="#investigative-reversing-4">Investigative Reversing 4</a>
+<li><a href="#investigative-reversing-2">Investigative Reversing 2</a>
 <ul>
 <li><a href="#problem-13">Problem</a></li>
 <li><a href="#solution-13">Solution</a></li>
 </ul></li>
-<li><a href="#investigation-encoded-1">investigation_encoded_1</a>
+<li><a href="#pastaaaa">pastaAAA</a>
 <ul>
 <li><a href="#problem-14">Problem</a></li>
 <li><a href="#solution-14">Solution</a></li>
 </ul></li>
-<li><a href="#investigation-encoded-2">investigation_encoded_2</a>
+<li><a href="#investigative-reversing-3">Investigative Reversing 3</a>
 <ul>
 <li><a href="#problem-15">Problem</a></li>
 <li><a href="#solution-15">Solution</a></li>
+</ul></li>
+<li><a href="#investigative-reversing-4">Investigative Reversing 4</a>
+<ul>
+<li><a href="#problem-16">Problem</a></li>
+<li><a href="#solution-16">Solution</a></li>
+</ul></li>
+<li><a href="#investigation-encoded-1">investigation_encoded_1</a>
+<ul>
+<li><a href="#problem-17">Problem</a></li>
+<li><a href="#solution-17">Solution</a></li>
+</ul></li>
+<li><a href="#investigation-encoded-2">investigation_encoded_2</a>
+<ul>
+<li><a href="#problem-18">Problem</a></li>
+<li><a href="#solution-18">Solution</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -362,15 +377,119 @@ print unbits(data)
 
 <p>flag: <code>picoCTF{not_all_spaces_are_created_equal_dd5c2e2f77f89f3051c82bfee7d996ef}</code></p>
 
-<h1 id="like1000">like1000</h1>
+<h1 id="c0rrupt">c0rrupt</h1>
 
 <h2 id="problem-7">Problem</h2>
+
+<p>We found this file. Recover the flag. You can also find the file in /problems/c0rrupt_0_1fcad1344c25a122a00721e4af86de13.</p>
+
+<p><a href="/blog/picoctf-2019-writeup/forensics/c0rrupt/mystery">file</a></p>
+
+<h2 id="solution-7">Solution</h2>
+
+<blockquote>
+<p>This writeup is by my teammate <strong>Theo Lee</strong></p>
+</blockquote>
+
+<p>Opening the file in a hex edior, we see that the file header is very simillar to a PNG signature. We used <a href="https://www.w3.org/TR/2003/REC-PNG-20031110/">this website</a> to understand the hex values.</p>
+
+<p>A brief overview of PNG datastream structure:
+(This covers all knowledge needed to complete the problem.)</p>
+
+<pre><code class="language-none">5.2 PNG Signature
+89 50 4E 47 0D 0A 1A 0A (translated to hex)
+This signature indicates that the remainder of the datastream contains a single PNG image, consisting of a series of chunks beginning with an IHDR chunk and ending with an IEND chunk.
+
+5.3 PNG Chunk Layout
+Each chunk consists of three or four fields.
+LENGTH-CHUNKTYPE-CHUNKDATA-CRC
+or
+LENGTH(=0)-CHUNKTYPE-CRC
+The length field is a four byte integer giving the length of the chunkdata field.
+Chunktype is a four byte sequence defining the chunk type.
+Chunkdata gives data for the image.
+crc is a four byte sequence which uses an algorithm on the preceding bytes to check for corruption in the data.
+
+5.6 Chunk Ordering
+Critical chunks
+(shall appear in this order, except PLTE is optional)
+Chunk name    Multiple allowed        Ordering constraints
+IHDR          No                      Shall be first
+PLTE          No                      Before first IDAT
+IDAT          Yes                     Multiple IDAT chunks shall be consecutive
+IEND          No                      Shall be last
+
+Ancillary chunks
+(need not appear in this order)
+Chunk name    Multiple allowed        Ordering constraints
+cHRM          No                      Before PLTE and IDAT
+gAMA          No                      Before PLTE and IDAT
+iCCP          No                      Before PLTE and IDAT. If the iCCP chunk is present, the sRGB chunk should not be present.
+sBIT          No                      Before PLTE and IDAT
+sRGB          No                      Before PLTE and IDAT. If the sRGB chunk is present, the iCCP chunk should not be present.
+bKGD          No                      After PLTE; before IDAT
+hIST          No                      After PLTE; before IDAT
+tRNS          No                      After PLTE; before IDAT
+pHYs          No                      Before IDAT
+sPLT          Yes                     Before IDAT
+tIME          No                      None
+iTXt          Yes                     None
+tEXt          Yes                     None
+zTXt          Yes                     None
+</code></pre>
+
+<p>We&rsquo;ve now mastered PNG chunks.</p>
+
+<p>The first 8 bytes of the mystery file can be fixed to the correct PNG signature.</p>
+
+<p>Now running command in terminal</p>
+
+<pre><code class="language-none">$ pngcheck mystery
+mystery: invalid chunk name &quot;C&quot;DR&quot; (43 22 44 52)
+</code></pre>
+
+<p>We see the bytes <code>43 22 44 52</code> are in the first chunk&rsquo;s chunktype field, after the 8-byte PNG signature and the 4-byte length field. Refering to the 5.6 chunk ordering table, we see that the IHDR chunk must be the first in the file. Traversing to section 11.2.2 IHDR Image Header, we see the chunk type field must contain the hex values 49 48 44 52.</p>
+
+<p>Now running command in terminal</p>
+
+<pre><code class="language-none">$ pngcheck mystery
+mystery CRC error in chunk pHYs (computed 38d82c82, expected 495224f0)
+</code></pre>
+
+<p>This tells us the calculated CRC value from the data field, and the current CRC(expected). We can simply try replacing the expected hex values with the computed CRC.</p>
+
+<p>Now running command in terminal</p>
+
+<pre><code class="language-none">$ pngcheck mystery
+mystery invalid chunk length (too large)
+</code></pre>
+
+<p>Since this does not specify a chunk, we must begin at the start and check each chunk, with the knowledge of the format of chunks and each field&rsquo;s length: 4bytes(length)-4bytes(chunk type)-lengthbytes(data)-4bytes(crc). IHDR is length 13. sRGB is length 1. gAMA is length 4. pHYs is length 9. The next chunk with chunktype AB 44 45 54 is corrupt with name �DET. The name is very simmilar to IDAT, and IDAT complies the chunk ordering rules in the 5.6 table. We replace the chunktype with hex values 49 44 41 54. The other obvious problem is this chunk&rsquo;s length: AA AA FF A5. Way too big. Since we cannot identify CRCs, to find the end of the chunk, we must look for the next chunktype field. It is most likely IDAT as they must be consecutive. We find the next IDAT at offset 10008. The first IDAT was at offset 57. The difference is FFB1. We must subtract 4 bytes for the length field of the second IDAT, subtract 4 bytes for the CRC of the first IDAT, and subtract 4 bytes again for the chunktype of the first IDAT. Subtracting 12 in total, we get FFA5. Replace the length field with 00 00 FF A5.</p>
+
+<p>Now running command in terminal</p>
+
+<pre><code class="language-none">$ pngcheck mystery
+OK: mystery (1642x1095, 24-bit RGB, non-interlaced, 96.3%).
+</code></pre>
+
+<p>Success! Opening the file on any PNG viewer gives the flag.</p>
+
+<figure>
+    <img src="/blog/picoctf-2019-writeup/forensics/c0rrupt/flag.png"/> 
+</figure>
+
+
+<p>flag: <code>picoCTF{c0rrupt10n_1847995}</code></p>
+
+<h1 id="like1000">like1000</h1>
+
+<h2 id="problem-8">Problem</h2>
 
 <p>This .tar file got tarred alot. Also available at /problems/like1000_0_369bbdba2af17750ddf10cc415672f1c.</p>
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/like1000/1000.tar">file</a></p>
 
-<h2 id="solution-7">Solution</h2>
+<h2 id="solution-8">Solution</h2>
 
 <p>I solved this with a short python script and the unzipping utility <a href="https://theunarchiver.com/command-line">unar</a>:</p>
 
@@ -390,9 +509,30 @@ for i in range(999, -1, -1):
 
 <p>flag: <code>picoCTF{l0t5_0f_TAR5}</code></p>
 
+<h1 id="m00nwalk">m00nwalk</h1>
+
+<h2 id="problem-9">Problem</h2>
+
+<p>Decode this <a href="https://2019shell1.picoctf.com/static/6effddc9e024cc28a533b736e46f6d03/message.wav">message</a> from the moon. You can also find the file in /problems/m00nwalk_2_ddfd37932ded29f58963e8d9c526c2fa.</p>
+
+<h2 id="solution-9">Solution</h2>
+
+<blockquote>
+<p>This writeup is by my teammate <strong>Theo Lee</strong></p>
+</blockquote>
+
+<p>This audio file was encoded by slow-scan television(SSTV), which was the method used in the moon landing. To decode this, we downloaded <a href="http://users.belgacom.net/hamradio/rxsstv.htm">this program</a>. The program automatically detects the RX option and produces an image with the flag upside down.</p>
+
+<figure>
+    <img src="/blog/picoctf-2019-writeup/forensics/m00nwalk/flag.jpg"/> 
+</figure>
+
+
+<p>flag: <code>picoCTF{beep_boop_im_in_space}</code></p>
+
 <h1 id="investigative-reversing-0">Investigative Reversing 0</h1>
 
-<h2 id="problem-8">Problem</h2>
+<h2 id="problem-10">Problem</h2>
 
 <p>We have recovered a binary and an image. See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-0_6_2d92ee3bac4838493cb68ec16e086ac6 on the shell server.</p>
 
@@ -400,7 +540,7 @@ for i in range(999, -1, -1):
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 0/mystery">binary</a></p>
 
-<h2 id="solution-8">Solution</h2>
+<h2 id="solution-10">Solution</h2>
 
 <p>Reversing the binary shows that the flag is encoded and then appended to the image:</p>
 
@@ -461,9 +601,38 @@ print data
 
 <p>flag: <code>picoCTF{f0und_1t_eeaec48b}</code></p>
 
+<h1 id="m00nwalk2">m00nwalk2</h1>
+
+<h2 id="problem-11">Problem</h2>
+
+<p>Revisit the last transmission. We think <a href="https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/message.wav">this transmission</a> contains a hidden message. There are also some clues <a href="https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/clue1.wav">clue 1</a>, <a href="https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/clue2.wav">clue 2</a>, <a href="https://2019shell1.picoctf.com/static/c7e988106c3ee63b68f181cc5098915e/clue3.wav">clue 3</a>. You can also find the files in /problems/m00nwalk2_4_db2f361610e04b41a70a92cd8b7b2533.</p>
+
+<h2 id="solution-11">Solution</h2>
+
+<blockquote>
+<p>This writeup is by my teammate <strong>Theo Lee</strong></p>
+</blockquote>
+
+<p>Use <a href="http://users.belgacom.net/hamradio/rxsstv.htm">the same program</a> as the <a href="#m00nwalk">first m00nwalk problem</a>.</p>
+
+<p>Each give an image with text
+Clue 1: <code>Password hidden_stegosaurus</code>
+Clue 2: <code>The quieter you are the more you can HEAR</code>
+Clue 3: <code>Alan Eliasen the FutureBoy</code></p>
+
+<p>Clue 3 leads us to <a href="https://futureboy.us/">this website</a> and reading the description, it looks like a message was encoded using steganography.</p>
+
+<p>Write in console:</p>
+
+<pre><code>$ steghide extract -sf message.wav -p hidden_stegosaurus
+wrote extracted data to &quot;steganopayload12154.txt&quot;
+</code></pre>
+
+<p>flag: <code>picoCTF{the_answer_lies_hidden_in_plain_sight}</code></p>
+
 <h1 id="investigative-reversing-1">Investigative Reversing 1</h1>
 
-<h2 id="problem-9">Problem</h2>
+<h2 id="problem-12">Problem</h2>
 
 <p>We have recovered a binary and a few images: image, image2, image3. See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-1_0_329e7a12e90f3f127c8ab2489b08bcf1 on the shell server.</p>
 
@@ -475,7 +644,7 @@ print data
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 1/mystery3.png">image3</a></p>
 
-<h2 id="solution-9">Solution</h2>
+<h2 id="solution-12">Solution</h2>
 
 <p>Similar to <a href="#investigative-reversing-0">Investigative Reversing 0</a>, we need to reverse the binary and decode the flag:</p>
 
@@ -510,7 +679,7 @@ print out
 
 <h1 id="investigative-reversing-2">Investigative Reversing 2</h1>
 
-<h2 id="problem-10">Problem</h2>
+<h2 id="problem-13">Problem</h2>
 
 <p>We have recovered a binary and an image See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-2_5_b294e24c9063edbf722b9554e7750d19 on the shell server.</p>
 
@@ -518,7 +687,7 @@ print out
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 2/encoded.bmp">image</a></p>
 
-<h2 id="solution-10">Solution</h2>
+<h2 id="solution-13">Solution</h2>
 
 <p>Same concept as before, we need to reverse the binary and decode the flag:</p>
 
@@ -545,13 +714,13 @@ for i in range(50):
 
 <h1 id="pastaaaa">pastaAAA</h1>
 
-<h2 id="problem-11">Problem</h2>
+<h2 id="problem-14">Problem</h2>
 
 <p>This pasta is up to no good. There MUST be something behind it.</p>
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/pastaAAA/ctf.png">file</a></p>
 
-<h2 id="solution-11">Solution</h2>
+<h2 id="solution-14">Solution</h2>
 
 <p>Flag is hidden in one of the RGB planes and can be extracted with stegsolve:</p>
 
@@ -564,7 +733,7 @@ for i in range(50):
 
 <h1 id="investigative-reversing-3">Investigative Reversing 3</h1>
 
-<h2 id="problem-12">Problem</h2>
+<h2 id="problem-15">Problem</h2>
 
 <p>We have recovered a binary and an image See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-3_5_bb1b39c0e6a6ea43ea4f44c5b6f44200 on the shell server.</p>
 
@@ -572,7 +741,7 @@ for i in range(50):
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 2/encoded.bmp">image</a></p>
 
-<h2 id="solution-12">Solution</h2>
+<h2 id="solution-15">Solution</h2>
 
 <p>This challenge is building on top of <a href="#investigative-reversing-2">Investigative Reversing 2</a>. Here is the decode script:</p>
 
@@ -598,7 +767,7 @@ for i in range(50):
 
 <h1 id="investigative-reversing-4">Investigative Reversing 4</h1>
 
-<h2 id="problem-13">Problem</h2>
+<h2 id="problem-16">Problem</h2>
 
 <p>We have recovered a binary and 5 images: image01, image02, image03, image04, image05. See what you can make of it. There should be a flag somewhere. Its also found in /problems/investigative-reversing-4_5_908aeadf9411ff79b32829c8651b185a on the shell server.</p>
 
@@ -614,7 +783,7 @@ for i in range(50):
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/Investigative Reversing 4/Iterm05_cp.bmp">image05</a></p>
 
-<h2 id="solution-13">Solution</h2>
+<h2 id="solution-16">Solution</h2>
 
 <p>LSB but with different images. Here is decode script:</p>
 
@@ -642,7 +811,7 @@ for i in range(50):
 
 <h1 id="investigation-encoded-1">investigation_encoded_1</h1>
 
-<h2 id="problem-14">Problem</h2>
+<h2 id="problem-17">Problem</h2>
 
 <p>We have recovered a binary and 1 file: image01. See what you can make of it. Its also found in /problems/investigation-encoded-1_6_172edc378b5282150ec24be19ff8342b on the shell server. NOTE: The flag is not in the normal picoCTF{XXX} format.</p>
 
@@ -650,7 +819,7 @@ for i in range(50):
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/investigation_encoded_1/output">image</a></p>
 
-<h2 id="solution-14">Solution</h2>
+<h2 id="solution-17">Solution</h2>
 
 <p>The program maps each character to a stream of n bits. By reversing the program, we can recover this mapping, therefore, obtain the flag:</p>
 
@@ -715,7 +884,7 @@ print flag
 
 <h1 id="investigation-encoded-2">investigation_encoded_2</h1>
 
-<h2 id="problem-15">Problem</h2>
+<h2 id="problem-18">Problem</h2>
 
 <p>We have recovered a binary and 1 file: image01. See what you can make of it. Its also found in /problems/investigation-encoded-2_2_4d97294fc1696ff16af8ce3c0e6b3b95 on the shell server. NOTE: The flag is not in the normal picoCTF{XXX} format.</p>
 
@@ -723,7 +892,7 @@ print flag
 
 <p><a href="/blog/picoctf-2019-writeup/forensics/investigation_encoded_2/output">image</a></p>
 
-<h2 id="solution-15">Solution</h2>
+<h2 id="solution-18">Solution</h2>
 
 <p>Similar to <a href="#investigation_encoded_1">investigation_encoded_1</a> but with more characters.</p>
 
