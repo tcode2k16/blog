@@ -6,15 +6,24 @@
     <description>Recent content in Tags on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sat, 12 Oct 2019 13:06:10 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 15 Mar 2020 21:33:41 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/tags/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
+      <title>chrome</title>
+      <link>https://tcode2k16.github.io/blog/tags/chrome/</link>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/tags/chrome/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>ctf</title>
       <link>https://tcode2k16.github.io/blog/tags/ctf/</link>
-      <pubDate>Sat, 12 Oct 2019 13:06:10 +0800</pubDate>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
       
       <guid>https://tcode2k16.github.io/blog/tags/ctf/</guid>
       <description></description>
@@ -23,9 +32,45 @@
     <item>
       <title>cyber-security</title>
       <link>https://tcode2k16.github.io/blog/tags/cyber-security/</link>
-      <pubDate>Sat, 12 Oct 2019 13:06:10 +0800</pubDate>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
       
       <guid>https://tcode2k16.github.io/blog/tags/cyber-security/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>hardware</title>
+      <link>https://tcode2k16.github.io/blog/tags/hardware/</link>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/tags/hardware/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>pwn</title>
+      <link>https://tcode2k16.github.io/blog/tags/pwn/</link>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/tags/pwn/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>v8</title>
+      <link>https://tcode2k16.github.io/blog/tags/v8/</link>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/tags/v8/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>write-up</title>
+      <link>https://tcode2k16.github.io/blog/tags/write-up/</link>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/tags/write-up/</guid>
       <description></description>
     </item>
     
@@ -39,29 +84,11 @@
     </item>
     
     <item>
-      <title>write-up</title>
-      <link>https://tcode2k16.github.io/blog/tags/write-up/</link>
-      <pubDate>Sat, 12 Oct 2019 13:06:10 +0800</pubDate>
-      
-      <guid>https://tcode2k16.github.io/blog/tags/write-up/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>forensics</title>
       <link>https://tcode2k16.github.io/blog/tags/forensics/</link>
       <pubDate>Sat, 12 Oct 2019 00:00:05 +0800</pubDate>
       
       <guid>https://tcode2k16.github.io/blog/tags/forensics/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>pwn</title>
-      <link>https://tcode2k16.github.io/blog/tags/pwn/</link>
-      <pubDate>Sat, 12 Oct 2019 00:00:01 +0800</pubDate>
-      
-      <guid>https://tcode2k16.github.io/blog/tags/pwn/</guid>
       <description></description>
     </item>
     
@@ -125,15 +152,6 @@
       <pubDate>Sun, 14 Oct 2018 11:38:43 +0800</pubDate>
       
       <guid>https://tcode2k16.github.io/blog/tags/cryptography/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>chrome</title>
-      <link>https://tcode2k16.github.io/blog/tags/chrome/</link>
-      <pubDate>Mon, 23 Jul 2018 16:55:46 +0800</pubDate>
-      
-      <guid>https://tcode2k16.github.io/blog/tags/chrome/</guid>
       <description></description>
     </item>
     

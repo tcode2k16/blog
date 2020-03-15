@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>hardware on Alan&#39;s Blog</title>
+    <link>https://tcode2k16.github.io/blog/tags/hardware/</link>
+    <description>Recent content in hardware on Alan&#39;s Blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 15 Mar 2020 21:33:41 +0800</lastBuildDate>
+    
+	<atom:link href="https://tcode2k16.github.io/blog/tags/hardware/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>CONFidence CTF 2020 Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/2020-03-15-confidence-ctf/</link>
+      <pubDate>Sun, 15 Mar 2020 21:33:41 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2020-03-15-confidence-ctf/</guid>
+      <description>GPIO Tap Problem We managed to intercept some traffic on the GPIOs, can you find out what was transmitted?
+c247763a9af9c6cd281b54b61c07957b800cfa1a8b9102eee95b2887b3626f36_gpio_tap.tar 332K
+Solution   From the given image, we can deduce two important information:
+ A HD44780 LCD display and a raspberry pi are used. The pin semantics are as the following:  GPIO 23 → D4 GPIO 17 → D5 GPIO 18 → D6 GPIO 22 → D7 GPIO 24 → ENABLE GPIO 25 → RS   We can use this knowledge along with the source code from the LiquidCrystal library to parse the tap.</description>
+    </item>
+    
+  </channel>
+</rss>
