@@ -6,10 +6,25 @@
     <description>Recent content on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Sun, 26 Jul 2020 22:15:56 +0800</lastBuildDate>
+    <lastBuildDate>Mon, 27 Jul 2020 19:23:51 +0800</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>CyBRICS CTF 2020 Crcrcr Writeup</title>
+      <link>https://tcode2k16.github.io/blog/posts/2020-07-27-cybrics-writeup/</link>
+      <pubDate>Mon, 27 Jul 2020 19:23:51 +0800</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2020-07-27-cybrics-writeup/</guid>
+      <description>Problem (rebyC, Hard, 406 pts)
+Author: Egor Zaytsev (@groke)
+I created a simple service that encrypts flag (and your data) with RC4! I bet you can&amp;rsquo;t the extract flag from there :)
+crcrcr-cybrics2020.ctf.su/
+Source code: crcrcr.tar.gz
+Hint at 20:00 — When I wanna know how Python objects are stored in memory, I can do:
+terminal1: python3 &amp;gt;&amp;gt;&amp;gt; s = b&amp;quot;qweqweqweqwe&amp;quot;; terminal2: gcore `pidof python3`  And then look at resulting core file, get xref to qweqweqeqwe, and try to find out how Python objects are stored in memory.</description>
+    </item>
     
     <item>
       <title>3kCTF 2020 Writeup</title>
