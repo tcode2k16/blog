@@ -6,10 +6,20 @@
     <description>Recent content in Posts on Alan&#39;s Blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Mon, 27 Jul 2020 19:23:51 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 22 Nov 2020 21:00:41 +0000</lastBuildDate>
     
 	<atom:link href="https://tcode2k16.github.io/blog/posts/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>A Hands-on Introduction to Coq</title>
+      <link>https://tcode2k16.github.io/blog/posts/2020-11-22-a-hands-on-introduction-to-coq/</link>
+      <pubDate>Sun, 22 Nov 2020 21:00:41 +0000</pubDate>
+      
+      <guid>https://tcode2k16.github.io/blog/posts/2020-11-22-a-hands-on-introduction-to-coq/</guid>
+      <description>Introduction I have been doing quite a bit of functional programming in haskell for the past few months as a part of my university study. That&amp;rsquo;s why I am delighted to see a relevant challenge come up in this year&amp;rsquo;s DragonCTF.
+The challenge involves proving a few mathematical theorems using Coq, a functional programming language / interactive theorem prover. I have heard of Coq before but have never got the time to learn it.</description>
+    </item>
     
     <item>
       <title>CyBRICS CTF 2020 Crcrcr Writeup</title>

@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 
+			
+  
+    <meta name="twitter:card" content="summary"/>
+    
+      <meta name="twitter:image" content="https://tcode2k16.github.io/blog/images/avatar.png" />
+    
+  
+  
+  <meta name="twitter:title" content="A Hands-on Introduction to Coq"/>
+  <meta name="twitter:description" content="My journey in learning coq and solving the DragonCTF 2020 challenge &#34;babykok&#34;"/>
+  
+    <meta name="twitter:site" content="@tcode2k16"/>
+  
+  
+  
+  
+    <meta name="twitter:creator" content="@Alan Chang"/>
+  
+
+
+
+		
+		<meta name="author" content="Alan Chang">
+		<meta name="description" content="a random blog about cybersecurity and programming">
+		<meta name="generator" content="Hugo 0.58.3" />
+		<title>A Hands-on Introduction to Coq &middot; Alan&#39;s Blog</title>
+		<link rel="shortcut icon" href="https://tcode2k16.github.io/blog/images/favicon.ico">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/style.css">
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/highlight.css">
+
+		
+		<link rel="stylesheet" href="https://tcode2k16.github.io/blog/css/font-awesome.min.css">
+		
+
+		
+		<link href="https://tcode2k16.github.io/blog/index.xml" rel="alternate" type="application/rss+xml" title="Alan&#39;s Blog" />
+		
+
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='https://tcode2k16.github.io/blog/'> <span class="arrow">←</span>Home</a>
+	
+	<a href='https://tcode2k16.github.io/blog/posts'>Archive</a>
+	<a href='https://tcode2k16.github.io/blog/tags'>Tags</a>
+	<a href='https://tcode2k16.github.io/blog/about'>About</a>
+
+	
+
+	
+	<a class="cta" href="https://tcode2k16.github.io/blog/index.xml">Subscribe</a>
+	
+</nav>
+
+
+        <section id="wrapper" class="post">
+            <article>
+                <header>
+                    <h1>
+                        A Hands-on Introduction to Coq
+                    </h1>
+                    <h2 class="headline">
+                    Nov 22, 2020 21:00
+                    · 3262 words
+                    · 16 minute read
+                      <span class="tags">
+                      
+                      
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/ctf">ctf</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/cyber-security">cyber-security</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/write-up">write-up</a>
+                          
+                              <a href="https://tcode2k16.github.io/blog/tags/coq">coq</a>
+                          
+                      
+                      
+                      </span>
+                    </h2>
+                </header>
+                
+                  
+                    <div id="toc">
+                      <nav id="TableOfContents">
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#warmup">Warmup</a></li>
+<li><a href="#fun-with-math">Fun with Math</a></li>
+<li><a href="#proof-on-lists">Proof on Lists</a></li>
+<li><a href="#summary">Summary</a></li>
+<li><a href="#exploit-flag">Exploit + Flag</a></li>
+</ul>
+</nav>
+                    </div>
+                  
+                
+                <section id="post-body">
+                    
+
+<h1 id="introduction">Introduction</h1>
+
+<p>I have been doing quite a bit of functional programming in haskell for the past few months as a part of my university study. That&rsquo;s why I am delighted to see a relevant challenge come up in this year&rsquo;s DragonCTF.</p>
+
+<p>The challenge involves proving a few mathematical theorems using <a href="https://coq.inria.fr/">Coq</a>, a functional programming language / interactive theorem prover. I have heard of Coq before but have never got the time to learn it. This challenge became the perfect opportunity for me to get to know it and write a hands-on introduction about it :)</p>
+
+<h1 id="warmup">Warmup</h1>
+
+<p>The challenge starts out with a few easy proofs for us to first get a hang of Coq.</p>
+
+<pre><code class="language-coq">Theorem problem0: forall A B, A \/ B -&gt; B \/ A.
+
+1 subgoal (ID 3)
+  
+  ============================
+  forall A B : Prop, A \/ B -&gt; B \/ A
+</code></pre>
+
+<p>In this proof, we are asked to prove that for two propositions, (A or B) is the same as (B or A) which is quite trivial.</p>
+
+<p>We can try it first in our local environment using the Coq interactive session <code>coqtop</code> in the terminal:</p>
+
+<pre><code class="language-coq">$ coqtop
+Welcome to Coq 8.12.1 (November 2020)
+
+Coq &lt; Theorem problem0: forall A B, A \/ B -&gt; B \/ A.
+1 subgoal
+  
+  ============================
+  forall A B : Prop, A \/ B -&gt; B \/ A
+
+problem0 &lt; 
+</code></pre>
+
+<p>As you can see we are greeted with a list of subgoals that we need to validate once we input the theorem that we are trying to prove.</p>
+
+<p>We can first introduce A, B and move them into our context using the <code>intros</code> command:</p>
+
+<pre><code class="language-coq">problem0 &lt; intros A B.
+1 subgoal
+  
+  A, B : Prop
+  ============================
+  A \/ B -&gt; B \/ A
+</code></pre>
+
+<p>What this does is effectively give a name to A and B and add that to the context. We can certainly use other names for the two propositions as well. Another point to note is that all coq commands need to end with a <code>.</code> just like how every line in C needs to end with <code>;</code>.</p>
+
+<p>The next step would be to again introduce our hypothesis that <code>A \/ B</code>:</p>
+
+<pre><code class="language-coq">problem0 &lt; intros H.
+1 subgoal
+  
+  A, B : Prop
+  H : A \/ B
+  ============================
+  B \/ A
+</code></pre>
+
+<p>Now with our named propositions A and B and hypothesis H, we can start proving our goal that <code>B \/ A</code>.</p>
+
+<p>We can use the <code>destruct</code> keyword or tactic as it&rsquo;s commonly called in Coq. What it does is that it breaks down hypothesis <code>H : A \/ B</code> into two cases: one with <code>H: A</code> and one with <code>H : B</code> and we can prove those two separately as two subgoals:</p>
+
+<pre><code class="language-coq">problem0 &lt; destruct H.
+2 subgoals
+  
+  A, B : Prop
+  H : A
+  ============================
+  B \/ A
+
+subgoal 2 is:
+ B \/ A
+
+problem0 &lt; 
+</code></pre>
+
+<p>Next, we use <code>right</code> to suggest that we want to prove that the right-hand side of <code>B \/ A</code> is true. Because it is an OR statement, we only need to show that one of the two is true, not both. Similarly, <code>left</code> is another valid tactic as well.</p>
+
+<pre><code class="language-coq">problem0 &lt; right.
+2 subgoals
+  
+  A, B : Prop
+  H : A
+  ============================
+  A
+
+subgoal 2 is:
+ B \/ A
+</code></pre>
+
+<p>Now, we can see that our hypothesis H matches the statement we are trying to prove exactly. We can use <code>exact H</code> to finish this sub-proof:</p>
+
+<pre><code class="language-coq">problem0 &lt; exact H.
+1 subgoal
+  
+  A, B : Prop
+  H : B
+  ============================
+  B \/ A
+</code></pre>
+
+<p>Now, we only have 1 subgoal left which is when <code>H: B</code>. As you can already tell, this is very similar to our last case. To not repeat ourselves, we can use the <code>auto</code> tactic to solve this case automatically:</p>
+
+<pre><code class="language-coq">problem0 &lt; auto.
+No more subgoals.
+</code></pre>
+
+<p>Just like that, we finished our first proof in Coq! 🎉🎉🎉</p>
+
+<p>The next few proofs are similar in difficulty:</p>
+
+<pre><code class="language-coq">Coq &lt; Theorem problem0: forall A B,  ((((A -&gt; B) -&gt; A) -&gt; A) -&gt; B) -&gt; B.
+1 subgoal
+  
+  ============================
+  forall A B : Type, ((((A -&gt; B) -&gt; A) -&gt; A) -&gt; B) -&gt; B
+
+problem0 &lt; intros A B.
+1 subgoal
+  
+  A : Type
+  B : Type
+  ============================
+  ((((A -&gt; B) -&gt; A) -&gt; A) -&gt; B) -&gt; B
+
+problem0 &lt; auto.
+No more subgoals.
+</code></pre>
+
+<blockquote>
+<p>This proof is so simple that <code>auto</code> can just handle it by itself.</p>
+</blockquote>
+
+<pre><code class="language-coq">Coq &lt; Theorem problem0: forall (m n: nat),  m + n = n + m.
+1 subgoal
+  
+  ============================
+  forall m n : nat, m + n = n + m
+
+problem0 &lt; intros m n.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  m + n = n + m
+
+problem0 &lt; induction m.
+2 subgoals
+  
+  n : nat
+  ============================
+  0 + n = n + 0
+
+subgoal 2 is:
+ S m + n = n + S m
+
+problem0 &lt; simpl.         
+2 subgoals
+  
+  n : nat
+  ============================
+  n = n + 0
+
+subgoal 2 is:
+ S m + n = n + S m
+
+problem0 &lt; trivial.
+1 subgoal
+  
+  m, n : nat
+  IHm : m + n = n + m
+  ============================
+  S m + n = n + S m
+
+problem0 &lt; simpl.
+1 subgoal
+  
+  m, n : nat
+  IHm : m + n = n + m
+  ============================
+  S (m + n) = n + S m
+
+problem0 &lt; rewrite IHm.
+1 subgoal
+  
+  m, n : nat
+  IHm : m + n = n + m
+  ============================
+  S (n + m) = n + S m
+
+problem0 &lt; trivial.
+No more subgoals.
+
+problem0 &lt; 
+</code></pre>
+
+<blockquote>
+<p>This proof of the commutativity of addition is a bit more involved. We used the <code>induction</code> tactic on <code>m</code> and later rewrote <code>(m+n)</code> as <code>(n+m)</code> in the inductive case utilizing the inductive hypothesis.</p>
+</blockquote>
+
+<pre><code class="language-coq">Coq &lt; Theorem problem0: forall A B C D: Prop,(A-&gt;B)/\(C-&gt;D)/\A/\C -&gt; B/\D.
+1 subgoal
+  
+  ============================
+  forall A B C D : Prop, (A -&gt; B) /\ (C -&gt; D) /\ A /\ C -&gt; B /\ D
+
+problem0 &lt; intros A B C D.
+1 subgoal
+  
+  A, B, C, D : Prop
+  ============================
+  (A -&gt; B) /\ (C -&gt; D) /\ A /\ C -&gt; B /\ D
+
+problem0 &lt; intros H.
+1 subgoal
+  
+  A, B, C, D : Prop
+  H : (A -&gt; B) /\ (C -&gt; D) /\ A /\ C
+  ============================
+  B /\ D
+
+problem0 &lt; destruct H.
+1 subgoal
+  
+  A, B, C, D : Prop
+  H : A -&gt; B
+  H0 : (C -&gt; D) /\ A /\ C
+  ============================
+  B /\ D
+
+problem0 &lt; destruct H0.
+1 subgoal
+  
+  A, B, C, D : Prop
+  H : A -&gt; B
+  H0 : C -&gt; D
+  H1 : A /\ C
+  ============================
+  B /\ D
+
+problem0 &lt; destruct H1.
+1 subgoal
+  
+  A, B, C, D : Prop
+  H : A -&gt; B
+  H0 : C -&gt; D
+  H1 : A
+  H2 : C
+  ============================
+  B /\ D
+
+problem0 &lt; apply H in H1. apply H0 in H2.
+1 subgoal
+  
+  A, B, C, D : Prop
+  H : A -&gt; B
+  H0 : C -&gt; D
+  H1 : B
+  H2 : C
+  ============================
+  B /\ D
+
+1 subgoal
+  
+  A, B, C, D : Prop
+  H : A -&gt; B
+  H0 : C -&gt; D
+  H1 : B
+  H2 : D
+  ============================
+  B /\ D
+
+problem0 &lt; split.
+2 subgoals
+  
+  A, B, C, D : Prop
+  H : A -&gt; B
+  H0 : C -&gt; D
+  H1 : B
+  H2 : D
+  ============================
+  B
+
+subgoal 2 is:
+ D
+
+problem0 &lt; assumption.
+1 subgoal
+  
+  A, B, C, D : Prop
+  H : A -&gt; B
+  H0 : C -&gt; D
+  H1 : B
+  H2 : D
+  ============================
+  D
+
+problem0 &lt; auto.
+No more subgoals.
+</code></pre>
+
+<blockquote>
+<p>Few noteworthy points in this proof include:</p>
+
+<ul>
+<li>We can use the <code>assumption</code> tactic in place of <code>exact ???</code> when the thing we are trying to prove is already in our context</li>
+<li>When we have <code>A And B</code>, we can use <code>split</code> to break it into two cases of proving <code>A</code> and proving <code>B</code>.</li>
+<li>Just like how equality can be used to rewrite statements using <code>rewrite</code>, implications can be applied to statements using <code>apply</code></li>
+<li>The <code>in</code> keyword allows us to manipulate hypotheses rather than our goal.</li>
+</ul>
+</blockquote>
+
+<pre><code class="language-coq">Coq &lt; Theorem problem0: forall (C:Prop) (T:Set) (B: T -&gt; Prop), (exists x : T, C -&gt; B x) -&gt; C -&gt; exists x : T, B x.
+1 subgoal
+  
+  ============================
+  forall (C : Prop) (T : Set) (B : T -&gt; Prop),
+  (exists x : T, C -&gt; B x) -&gt; C -&gt; exists x : T, B x
+
+problem0 &lt; intros C T B H.
+1 subgoal
+  
+  C : Prop
+  T : Set
+  B : T -&gt; Prop
+  H : exists x : T, C -&gt; B x
+  ============================
+  C -&gt; exists x : T, B x
+
+problem0 &lt; destruct H.
+1 subgoal
+  
+  C : Prop
+  T : Set
+  B : T -&gt; Prop
+  x : T
+  H : C -&gt; B x
+  ============================
+  C -&gt; exists x0 : T, B x0
+
+problem0 &lt; exists x.
+1 subgoal
+  
+  C : Prop
+  T : Set
+  B : T -&gt; Prop
+  x : T
+  H : C -&gt; B x
+  H0 : C
+  ============================
+  B x
+
+problem0 &lt; apply H in H0.
+1 subgoal
+  
+  C : Prop
+  T : Set
+  B : T -&gt; Prop
+  x : T
+  H : C -&gt; B x
+  H0 : B x
+  ============================
+  B x
+
+problem0 &lt; exact H0.
+No more subgoals.
+</code></pre>
+
+<blockquote>
+<p>Most of the tactics in the proof are introduced before with the exception of <code>exists</code> which simply states that a variable in our context satisfies the goal that we are trying to prove.</p>
+</blockquote>
+
+<pre><code class="language-coq">Coq &lt; Theorem problem0: forall b1 b2, negb (b1 &amp;&amp; b2) = orb (negb b1) (negb b2).
+1 subgoal
+  
+  ============================
+  forall b1 b2 : bool, negb (b1 &amp;&amp; b2) = (negb b1 || negb b2)%bool
+
+problem0 &lt; intros b1 b2.
+1 subgoal
+  
+  b1, b2 : bool
+  ============================
+  negb (b1 &amp;&amp; b2) = (negb b1 || negb b2)%bool
+
+problem0 &lt; destruct b1.
+2 subgoals
+  
+  b2 : bool
+  ============================
+  negb (true &amp;&amp; b2) = (negb true || negb b2)%bool
+
+subgoal 2 is:
+ negb (false &amp;&amp; b2) = (negb false || negb b2)%bool
+
+problem0 &lt; simpl.
+2 subgoals
+  
+  b2 : bool
+  ============================
+  negb b2 = negb b2
+
+subgoal 2 is:
+ negb (false &amp;&amp; b2) = (negb false || negb b2)%bool
+
+problem0 &lt; trivial.
+1 subgoal
+  
+  b2 : bool
+  ============================
+  negb (false &amp;&amp; b2) = (negb false || negb b2)%bool
+
+problem0 &lt; simpl.
+1 subgoal
+  
+  b2 : bool
+  ============================
+  true = true
+
+problem0 &lt; trivial.
+No more subgoals.
+</code></pre>
+
+<blockquote>
+<p>This last one is also quite easy to prove. We have two boolean values which only lead to four cases. Using <code>destruct</code>, we can divide-and-conquer each of the cases.</p>
+</blockquote>
+
+<h1 id="fun-with-math">Fun with Math</h1>
+
+<p>With the easy ones out of the way, we face a slightly more challenging question:</p>
+
+<pre><code class="language-coq">Coq &lt; Require Import Arith.Mult.
+Theorem math_problem: forall m n, (n + m) * (n + m) =  n * n + 2 * n * m + m * m.
+
+Coq &lt; 1 subgoal
+  
+  ============================
+  forall m n : nat, (n + m) * (n + m) = n * n + 2 * n * m + m * m
+</code></pre>
+
+<p>Here we can see that <a href="https://www.cs.princeton.edu/courses/archive/fall07/cos595/stdlib/html/Coq.Arith.Mult.html">Arith.Mult.</a> has been imported suggesting that we might need to use some of its properties.</p>
+
+<p>Again, we start with introducing the variables:</p>
+
+<pre><code class="language-coq">math_problem &lt; intros m n.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  (n + m) * (n + m) = n * n + 2 * n * m + m * m
+</code></pre>
+
+<p>Then we can use the distributivity of multiplication in <code>Arith.Mult.</code> and a few other properties on addition to simplify our expression.</p>
+
+<pre><code class="language-coq">math_problem &lt; rewrite mult_plus_distr_r.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * (n + m) + m * (n + m) = n * n + 2 * n * m + m * m
+
+math_problem &lt; rewrite mult_plus_distr_l.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * n + n * m + m * (n + m) = n * n + 2 * n * m + m * m
+
+math_problem &lt; rewrite mult_plus_distr_l.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * n + n * m + (m * n + m * m) = n * n + 2 * n * m + m * m
+
+math_problem &lt; simpl.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * n + n * m + (m * n + m * m) = n * n + (n + (n + 0)) * m + m * m
+
+math_problem &lt; rewrite plus_0_r.  
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * n + n * m + (m * n + m * m) = n * n + (n + n) * m + m * m
+
+math_problem &lt; rewrite mult_plus_distr_r.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * n + n * m + (m * n + m * m) = n * n + (n * m + n * m) + m * m
+
+math_problem &lt; rewrite plus_assoc.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * n + n * m + m * n + m * m = n * n + (n * m + n * m) + m * m
+
+math_problem &lt; rewrite plus_assoc.        
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * n + n * m + m * n + m * m = n * n + n * m + n * m + m * m
+
+</code></pre>
+
+<p>At this point, what we really need to prove is that <code>n * m</code> is the same as <code>m * n</code>. We can use <code>cut</code> to state that as a hypothesis and prove it later:</p>
+
+<pre><code class="language-coq">math_problem &lt; cut (n*m=m*n).
+2 subgoals
+  
+  m, n : nat
+  ============================
+  n * m = m * n -&gt;
+  n * n + n * m + m * n + m * m = n * n + n * m + n * m + m * m
+
+subgoal 2 is:
+ n * m = m * n
+
+math_problem &lt; intros H. 
+2 subgoals
+  
+  m, n : nat
+  H : n * m = m * n
+  ============================
+  n * n + n * m + m * n + m * m = n * n + n * m + n * m + m * m
+
+subgoal 2 is:
+ n * m = m * n
+
+math_problem &lt; rewrite H.
+2 subgoals
+  
+  m, n : nat
+  H : n * m = m * n
+  ============================
+  n * n + m * n + m * n + m * m = n * n + m * n + m * n + m * m
+
+subgoal 2 is:
+ n * m = m * n
+
+math_problem &lt; trivial.
+1 subgoal
+  
+  m, n : nat
+  ============================
+  n * m = m * n
+
+math_problem &lt; apply mult_comm.
+No more subgoals.
+</code></pre>
+
+<h1 id="proof-on-lists">Proof on Lists</h1>
+
+<p>As the last question, we are asked to write a proof about lists:</p>
+
+<pre><code class="language-coq">Require Import Le.
+Section last_stage.
+  Variable A : Type.
+
+  Inductive list : Type  := 
+   | nil : list
+   | cons : A -&gt; list -&gt; list.
+
+
+  Fixpoint nth (l : list) (n : nat) : option A :=
+    match n,l with
+      | 0, cons x xs  =&gt; Some x 
+      | S n, cons _ xs  =&gt; nth xs n
+      | _, _ =&gt; None
+    end.
+
+  Fixpoint length (l:list) : nat :=
+    match l with
+      | nil =&gt; 0
+      | cons _ xs =&gt; 1 + length xs
+    end.
+
+Theorem nth_in:  forall (n:nat) (l:list), n &lt; length l -&gt; exists a: A, nth l n = Some a.
+</code></pre>
+
+<p>I struggled a lot with this proof and solved it in the end by referencing <a href="https://github.com/coq/coq/blob/master/theories/Lists/List.v#L468">a similar proof</a> on the standard list type in coq.</p>
+
+<p>Here is my attempt at it:</p>
+
+<pre><code class="language-coq">unfold lt. intro n.
+
+induction n as [| n hn].
+    
+    simpl. intro l.
+    
+    destruct l.
+        simpl. intro H. apply le_Sn_O in H. contradiction.
+        simpl. exists a. trivial.
+
+    simpl. destruct l.
+        simpl. intros H. apply le_Sn_O in H. contradiction.
+        simpl. intros H. apply le_S_n in H. apply hn in H. exact H.
+</code></pre>
+
+<p>The basic idea is to do a nested induction on both the index <code>n</code> as well as the list <code>l</code>. However, you need to be careful with the order in which you introduce things otherwise Coq will generate inductive hypotheses not strong enough to prove the theorem.</p>
+
+<h1 id="summary">Summary</h1>
+
+<p>I really enjoyed getting to know Coq this weekend and managed to catch a glimpse of the full power of Coq as an interactive theorem prover. I really hope this blog post can inspire more people to try Coq and have some fun with it.</p>
+
+<p>Here are some resources that aided me in the process of learning Coq:</p>
+
+<ul>
+<li><a href="http://www.inf.ed.ac.uk/teaching/courses/tspl/cheatsheet.pdf">Coq cheat sheet</a>: A great introduction to all the tactics available in Coq and a clear breakdown of when to use what</li>
+<li><a href="http://flint.cs.yale.edu/cs430/sectionNotes/section1/CoqTutorial.pdf">Theorem proving with Coq</a>: A wonderful example-based introduction the language that shows the full process of proving things</li>
+<li><a href="https://pjreddie.com/coq-tactics/">Coq Tactics Index</a>: A more in-depth look at the various tactics with some small tricks mixed in</li>
+</ul>
+
+<h1 id="exploit-flag">Exploit + Flag</h1>
+
+<p>If you care about my exploit script and want to see the flag, here you go:</p>
+
+<pre><code class="language-python">from pwn import *
+
+context.log_level = 'debug'
+
+sh = remote('babykok.hackable.software', 1337)
+
+
+solves = {
+  'forall A B : Type, ((((A -&gt; B) -&gt; A) -&gt; A) -&gt; B) -&gt; B': '''
+    intros A B.
+    auto.
+  ''',
+
+  'forall A B : Prop, A \\/ B -&gt; B \\/ A': '''
+    intros A B.
+    intros H.
+    destruct H.
+    right.
+    exact H.
+    auto.
+  ''',
+
+  'forall A B C D: Prop,(A-&gt;B)/\\(C-&gt;D)/\\A/\\C -&gt; B/\\D.': '''
+    intros A B C D.
+    intros H.
+    destruct H.
+    destruct H0.
+    destruct H1.
+    split.
+    apply H.
+    exact H1.
+    auto.
+  ''',
+
+
+  'forall (C:Prop) (T:Set) (B: T -&gt; Prop), (exists x : T, C -&gt; B x) -&gt; C -&gt; exists x : T, B x.': '''
+    intros C T B.
+    intros H.
+    destruct H.
+    exists x.
+    apply H.
+    exact H0.
+  ''',
+
+  'forall (m n: nat),  m + n = n + m.': '''
+    intros m n.
+    induction m.
+    simpl.
+    trivial.
+    simpl.
+    rewrite IHm.
+    trivial.
+  ''',
+
+  'forall b1 b2, negb (b1 &amp;&amp; b2) = orb (negb b1) (negb b2).': '''
+    intros b1 b2.
+    destruct b1.
+    simpl.
+    trivial.
+    simpl.
+    trivial.
+  ''',
+
+
+  'forall m n, (n + m) * (n + m) =  n * n + 2 * n * m + m * m.': '''
+    intros M N.
+    rewrite mult_plus_distr_r.
+    rewrite mult_plus_distr_l.
+    rewrite mult_plus_distr_l.
+    rewrite plus_assoc.
+    cut (2*N*M=N*M+M*N).
+    intros H.
+    rewrite H.
+    rewrite plus_assoc.
+    trivial.
+    simpl.
+    rewrite plus_0_r.
+    rewrite mult_plus_distr_r.
+    cut (M * N = N * M).
+    intros H1.
+    rewrite H1.
+    trivial.
+    apply mult_comm.
+  ''',
+
+
+  'forall (n:nat) (l:list), n &lt; length l -&gt; exists a: A, nth l n = Some a.': '''
+    unfold lt.
+    intro n.
+    induction n as [| n hn].
+    simpl.
+    intro l.
+    destruct l.
+    simpl.
+    intro H.
+    apply le_Sn_O in H.
+    contradiction.
+    simpl.
+    exists a.
+    trivial.
+    simpl. 
+    destruct l.
+    simpl.
+    intros H.
+    apply le_Sn_O in H.
+    contradiction.
+    simpl.
+    intros H.
+    apply le_S_n in H.
+    apply hn in H.
+    exact H.
+  ''',
+}
+
+while True:
+  question = sh.recvuntil('\n&gt; ')
+  print question
+  for ques in solves:
+    ans = solves[ques]
+
+    if ques in question:
+      ans = map(lambda x: x.strip(), ans.strip().split('\n'))
+      sh.sendline(ans[0])
+      for line in ans[1:]:
+        sh.sendlineafter('\n&gt; ', line)
+      break
+  else:
+    print question
+    sh.interactive()
+
+</code></pre>
+
+<p>flag: <code>DrgnS{xxxx_my_c0q_for_4_flag_17bcbc34b7c565a766e335}</code></p>
+
+                </section>
+            </article>
+
+            
+                <a class="twitter" href="https://twitter.com/intent/tweet?text=https%3a%2f%2ftcode2k16.github.io%2fblog%2fposts%2f2020-11-22-a-hands-on-introduction-to-coq%2f - A%20Hands-on%20Introduction%20to%20Coq by @tcode2k16"><span class="icon-twitter"> tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+            
+
+            
+                <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'github-blog-14'; 
+
+     
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+
+            
+
+            
+
+            <footer id="footer">
+    
+        <div id="social">
+
+	
+	
+    <a class="symbol" href="https://www.github.com/tcode2k16">
+        <i class="fa fa-github-square"></i>
+    </a>
+    
+    <a class="symbol" href="https://twitter.com/tcode2k16">
+        <i class="fa fa-twitter-square"></i>
+    </a>
+    
+
+
+</div>
+
+    
+    <p class="small">
+    
+       © Copyright 2020 <i class="fa fa-heart" aria-hidden="true"></i> Alan Chang
+    
+    </p>
+    <p class="small">
+        Powered by <a href="http://www.gohugo.io/">Hugo</a> Theme By <a href="https://github.com/nodejh/hugo-theme-cactus-plus">nodejh</a>
+    </p>
+</footer>
+
+        </section>
+
+        <script src="https://tcode2k16.github.io/blog/js/jquery-3.3.1.min.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/main.js"></script>
+<script src="https://tcode2k16.github.io/blog/js/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+
+
+  
+<script type="application/javascript">
+var doNotTrack = false;
+if (!doNotTrack) {
+	(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+	ga('create', 'UA-88069322-2', 'auto');
+	
+	ga('send', 'pageview');
+}
+</script>
+
+
+
+
+
+    </body>
+</html>
