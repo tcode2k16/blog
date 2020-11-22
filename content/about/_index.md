@@ -6,7 +6,7 @@ hidden = true
 
 ### About me
 
-I am a high school student in Singapore who is interested in programming and cyber security.
+I am a 1st-year Computer Science undergrad at Oxford who is interested in programming and cyber security.
 
 
 ***
